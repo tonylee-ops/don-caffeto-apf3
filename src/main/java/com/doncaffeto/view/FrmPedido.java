@@ -23,9 +23,11 @@ public class FrmPedido extends javax.swing.JFrame {
     private void personalizar() {
         Tema.aplicar(this);
         Tema.ayuda(txtBuscar, "Buscar producto...");
+        Tema.ayuda(txtNota, "Nota (ej. sin azúcar)");
         Tema.ayuda(txtDireccion, "Calle, número y referencia");
         Tema.ayuda(txtTelefono, "9 dígitos");
-        setSize(1180, 720);
+        Tema.ayuda(txtObservacion, "Ej. cliente con apuro");
+        setSize(1200, 740);
         setLocationRelativeTo(null);
     }
 
@@ -49,6 +51,7 @@ public class FrmPedido extends javax.swing.JFrame {
         tblProductos = new javax.swing.JTable();
         lblEtqCantidad = new javax.swing.JLabel();
         spnCantidad = new javax.swing.JSpinner();
+        txtNota = new javax.swing.JTextField();
         btnAgregar = new javax.swing.JButton();
         pnlCardPedido = new javax.swing.JPanel();
         lblSubPedido = new javax.swing.JLabel();
@@ -67,6 +70,8 @@ public class FrmPedido extends javax.swing.JFrame {
         btnMas = new javax.swing.JButton();
         btnQuitar = new javax.swing.JButton();
         lblTotal = new javax.swing.JLabel();
+        lblEtqObservacion = new javax.swing.JLabel();
+        txtObservacion = new javax.swing.JTextField();
         btnLimpiar = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
 
@@ -79,9 +84,7 @@ public class FrmPedido extends javax.swing.JFrame {
 
         lblSubCarta.setText("Carta");
 
-        lblAyudaCarta.setText("Doble clic en un producto para agregarlo");
-
-        txtBuscar.setToolTipText("Escribe para filtrar la carta");
+        lblAyudaCarta.setText("Doble clic para agregar");
 
         cmbCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todas las categorías" }));
 
@@ -105,11 +108,11 @@ public class FrmPedido extends javax.swing.JFrame {
 
         scrProductos.setViewportView(tblProductos);
 
-        lblEtqCantidad.setText("Cantidad");
+        lblEtqCantidad.setText("Cant.");
 
         spnCantidad.setModel(new javax.swing.SpinnerNumberModel(1, 1, 50, 1));
 
-        btnAgregar.setText("Agregar al pedido");
+        btnAgregar.setText("Agregar");
 
         javax.swing.GroupLayout pnlCardCartaLayout = new javax.swing.GroupLayout(pnlCardCarta);
         pnlCardCarta.setLayout(pnlCardCartaLayout);
@@ -125,7 +128,7 @@ public class FrmPedido extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(txtBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
                 .addGap(8, 8, 8)
-                .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
             .addGroup(pnlCardCartaLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
@@ -135,8 +138,10 @@ public class FrmPedido extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(lblEtqCantidad)
                 .addGap(8, 8, 8)
-                .addComponent(spnCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(spnCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(txtNota, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                .addGap(8, 8, 8)
                 .addComponent(btnAgregar)
                 .addGap(18, 18, 18))
         );
@@ -153,11 +158,12 @@ public class FrmPedido extends javax.swing.JFrame {
                     .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(10, 10, 10)
                 .addGroup(pnlCardCartaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
+                    .addComponent(scrProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE))
                 .addGap(10, 10, 10)
                 .addGroup(pnlCardCartaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEtqCantidad)
                     .addComponent(spnCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAgregar))
                 .addGap(18, 18, 18))
         );
@@ -183,7 +189,7 @@ public class FrmPedido extends javax.swing.JFrame {
         
             },
             new String [] {
-                "Producto", "Cant.", "Precio", "Importe"
+                "Producto", "Nota", "Cant.", "Importe"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -208,9 +214,11 @@ public class FrmPedido extends javax.swing.JFrame {
 
         lblTotal.setText("S/ 0.00");
 
+        lblEtqObservacion.setText("Observación");
+
         btnLimpiar.setText("Limpiar");
 
-        btnGuardar.setText("Guardar pedido");
+        btnGuardar.setText("Enviar a cocina");
 
         javax.swing.GroupLayout pnlCardPedidoLayout = new javax.swing.GroupLayout(pnlCardPedido);
         pnlCardPedido.setLayout(pnlCardPedidoLayout);
@@ -224,23 +232,23 @@ public class FrmPedido extends javax.swing.JFrame {
                 .addGap(18, 18, 18))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(lblEtqModalidad, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblEtqModalidad, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8)
                 .addComponent(cmbModalidad, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
                 .addGap(8, 8, 8)
-                .addComponent(lblEtqMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblEtqMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8)
-                .addComponent(cmbMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmbMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(lblEtqDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblEtqDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8)
                 .addComponent(txtDireccion, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                 .addGap(18, 18, 18))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(lblEtqTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblEtqTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8)
                 .addComponent(txtTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                 .addGap(18, 18, 18))
@@ -260,6 +268,12 @@ public class FrmPedido extends javax.swing.JFrame {
                 .addGap(18, 18, 18))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
+                .addComponent(lblEtqObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(txtObservacion, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
+            .addGroup(pnlCardPedidoLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
                 .addComponent(btnLimpiar)
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(btnGuardar)
@@ -272,30 +286,34 @@ public class FrmPedido extends javax.swing.JFrame {
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSubPedido)
                     .addComponent(lblItems))
-                .addGap(10, 10, 10)
+                .addGap(9, 9, 9)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEtqModalidad)
                     .addComponent(cmbModalidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblEtqMesa)
                     .addComponent(cmbMesa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
+                .addGap(9, 9, 9)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEtqDireccion)
                     .addComponent(txtDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
+                .addGap(9, 9, 9)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEtqTelefono)
                     .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
+                .addGap(9, 9, 9)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
-                .addGap(10, 10, 10)
+                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
+                .addGap(9, 9, 9)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnMenos)
                     .addComponent(btnMas)
                     .addComponent(btnQuitar)
                     .addComponent(lblTotal))
-                .addGap(10, 10, 10)
+                .addGap(9, 9, 9)
+                .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEtqObservacion)
+                    .addComponent(txtObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnLimpiar)
                     .addComponent(btnGuardar))
@@ -314,9 +332,9 @@ public class FrmPedido extends javax.swing.JFrame {
                 .addGap(20, 20, 20))
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addComponent(pnlCardCarta, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
+                .addComponent(pnlCardCarta, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
                 .addGap(16, 16, 16)
-                .addComponent(pnlCardPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                .addComponent(pnlCardPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
                 .addGap(20, 20, 20))
         );
         layout.setVerticalGroup(
@@ -328,8 +346,8 @@ public class FrmPedido extends javax.swing.JFrame {
                     .addComponent(lblMesero))
                 .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlCardCarta, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
-                    .addComponent(pnlCardPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE))
+                    .addComponent(pnlCardCarta, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
+                    .addComponent(pnlCardPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE))
                 .addGap(20, 20, 20))
         );
 
@@ -419,6 +437,14 @@ public class FrmPedido extends javax.swing.JFrame {
         return txtDireccion;
     }
 
+    public javax.swing.JTextField getTxtNota() {
+        return txtNota;
+    }
+
+    public javax.swing.JTextField getTxtObservacion() {
+        return txtObservacion;
+    }
+
     public javax.swing.JTextField getTxtTelefono() {
         return txtTelefono;
     }
@@ -444,6 +470,7 @@ public class FrmPedido extends javax.swing.JFrame {
     private javax.swing.JLabel lblEtqDireccion;
     private javax.swing.JLabel lblEtqMesa;
     private javax.swing.JLabel lblEtqModalidad;
+    private javax.swing.JLabel lblEtqObservacion;
     private javax.swing.JLabel lblEtqTelefono;
     private javax.swing.JLabel lblItems;
     private javax.swing.JLabel lblMesero;
@@ -460,6 +487,8 @@ public class FrmPedido extends javax.swing.JFrame {
     private javax.swing.JTable tblProductos;
     private javax.swing.JTextField txtBuscar;
     private javax.swing.JTextField txtDireccion;
+    private javax.swing.JTextField txtNota;
+    private javax.swing.JTextField txtObservacion;
     private javax.swing.JTextField txtTelefono;
     // End of variables declaration//GEN-END:variables
 
@@ -479,7 +508,8 @@ public class FrmPedido extends javax.swing.JFrame {
      * tblProductos               | JTable         | Carta
      * lblEtqCantidad             | JLabel         | Etiqueta
      * spnCantidad                | JSpinner       | Cantidad
-     * btnAgregar                 | JButton        | Botón «Agregar al pedido»
+     * txtNota                    | JTextField     | Nota para cocina
+     * btnAgregar                 | JButton        | Botón «Agregar»
      * pnlCardPedido              | JPanel         | Datos y detalle del pedido
      * lblSubPedido               | JLabel         | Subtítulo
      * lblItems                   | JLabel         | Cantidad de productos
@@ -497,7 +527,9 @@ public class FrmPedido extends javax.swing.JFrame {
      * btnMas                     | JButton        | Botón «+»
      * btnQuitar                  | JButton        | Botón «Quitar»
      * lblTotal                   | JLabel         | Total del pedido
+     * lblEtqObservacion          | JLabel         | Etiqueta
+     * txtObservacion             | JTextField     | Observación general
      * btnLimpiar                 | JButton        | Botón «Limpiar»
-     * btnGuardar                 | JButton        | Botón «Guardar pedido»
+     * btnGuardar                 | JButton        | Botón «Enviar a cocina»
      */
 }

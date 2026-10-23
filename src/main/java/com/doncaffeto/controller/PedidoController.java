@@ -1,20 +1,20 @@
 package com.doncaffeto.controller;
 
-import com.doncaffeto.dao.MesaDAO;
-import com.doncaffeto.dao.ProductoDAO;
+import com.doncaffeto.Servicios;
 import com.doncaffeto.model.DetallePedido;
 import com.doncaffeto.model.Mesa;
 import com.doncaffeto.model.Pedido;
 import com.doncaffeto.model.Producto;
 import com.doncaffeto.model.Usuario;
-import com.doncaffeto.service.PedidoService;
 import com.doncaffeto.util.Tema;
 import com.doncaffeto.view.FrmPedido;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
@@ -23,40 +23,34 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 /**
- * Controla el registro de un pedido nuevo.
+ * Controla el registro de un pedido nuevo (mesero).
  *
  * @author Equipo Don Caffeto
  */
 public class PedidoController {
 
-    /** Valores que se guardan en la base, en el mismo orden que el combo (Salón, Para llevar, Delivery). */
+    /** Valores de la base, en el mismo orden que el combo (Salón, Para llevar, Delivery). */
     private static final String[] MODALIDADES = {"SALON", "PARA_LLEVAR", "DELIVERY"};
 
     private final FrmPedido vista;
-    private final PedidoService pedidoService;
-    private final ProductoDAO productoDAO;
-    private final MesaDAO mesaDAO;
+    private final Servicios servicios;
     private final Usuario usuario;
-    private List<Producto> productos;
+    private List<Producto> productos = new ArrayList<>();
     private TableRowSorter<DefaultTableModel> filtro;
     private Pedido pedido = new Pedido();
 
     /**
-     * @param vista         pantalla de pedido
-     * @param pedidoService servicio de pedidos
-     * @param productoDAO   acceso a productos
-     * @param mesaDAO       acceso a mesas
-     * @param usuario       mesero que registra
+     * @param vista     pantalla de pedido
+     * @param servicios servicios de la aplicación
+     * @param usuario   mesero que registra
      */
-    public PedidoController(FrmPedido vista, PedidoService pedidoService, ProductoDAO productoDAO,
-                            MesaDAO mesaDAO, Usuario usuario) {
+    public PedidoController(FrmPedido vista, Servicios servicios, Usuario usuario) {
         this.vista = vista;
-        this.pedidoService = pedidoService;
-        this.productoDAO = productoDAO;
-        this.mesaDAO = mesaDAO;
+        this.servicios = servicios;
         this.usuario = usuario;
         vista.getLblMesero().setText("Mesero: " + usuario.getNombres());
         vista.getBtnAgregar().addActionListener(e -> agregar());
+        vista.getTxtNota().addActionListener(e -> agregar());
         vista.getBtnMas().addActionListener(e -> cambiarCantidad(1));
         vista.getBtnMenos().addActionListener(e -> cambiarCantidad(-1));
         vista.getBtnQuitar().addActionListener(e -> quitar());
@@ -83,32 +77,33 @@ public class PedidoController {
     /** Carga la carta y las mesas libres, y muestra la pantalla. */
     public void iniciar() {
         try {
-            productos = productoDAO.listarDisponibles();
-            DefaultTableModel modelo = (DefaultTableModel) vista.getTblProductos().getModel();
+            productos = servicios.productos.carta();
+            List<Object[]> filas = new ArrayList<>();
             TreeSet<String> categorias = new TreeSet<>();
             for (Producto p : productos) {
-                modelo.addRow(new Object[]{p.getNombre(), p.getCategoria(), p.getPrecio()});
+                filas.add(new Object[]{p.getNombre(), p.getCategoria(), p.getPrecio()});
                 categorias.add(p.getCategoria());
             }
-            filtro = new TableRowSorter<>(modelo);
+            Tablas.llenar(vista.getTblProductos(), filas);
+            filtro = new TableRowSorter<>((DefaultTableModel) vista.getTblProductos().getModel());
             vista.getTblProductos().setRowSorter(filtro);
             DefaultComboBoxModel<Object> cats = new DefaultComboBoxModel<>();
             cats.addElement("Todas las categorías");
             categorias.forEach(cats::addElement);
             vista.getCmbCategoria().setModel(cats);
             cargarMesas();
-            cambiarModalidad();
-            mostrarDetalle();
-            vista.setVisible(true);
-            vista.getTxtBuscar().requestFocusInWindow();
         } catch (SQLException e) {
-            Mensajes.error(null, "No se pudo cargar la carta. Revise la conexión con MySQL.");
+            Mensajes.de(vista, e);
         }
+        cambiarModalidad();
+        mostrarDetalle();
+        vista.setVisible(true);
+        vista.getTxtBuscar().requestFocusInWindow();
     }
 
     private void cargarMesas() throws SQLException {
         DefaultComboBoxModel<Object> modelo = new DefaultComboBoxModel<>();
-        List<Mesa> libres = mesaDAO.listarLibres();
+        List<Mesa> libres = servicios.pedidos.mesasLibres();
         if (libres.isEmpty()) {
             modelo.addElement("Sin mesas libres");
         }
@@ -138,16 +133,13 @@ public class PedidoController {
         if (filtro == null) {
             return;
         }
-        String texto = vista.getTxtBuscar().getText().trim();
-        RowFilter<DefaultTableModel, Integer> porNombre = RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(texto), 0);
-        if (vista.getCmbCategoria().getSelectedIndex() <= 0) {
-            filtro.setRowFilter(porNombre);
-        } else {
+        List<RowFilter<DefaultTableModel, Integer>> filtros = new ArrayList<>();
+        filtros.add(RowFilter.regexFilter("(?i)" + Pattern.quote(vista.getTxtBuscar().getText().trim()), 0));
+        if (vista.getCmbCategoria().getSelectedIndex() > 0) {
             String categoria = String.valueOf(vista.getCmbCategoria().getSelectedItem());
-            RowFilter<DefaultTableModel, Integer> porCategoria = RowFilter.regexFilter(
-                    "^" + java.util.regex.Pattern.quote(categoria) + "$", 1);
-            filtro.setRowFilter(RowFilter.andFilter(List.of(porNombre, porCategoria)));
+            filtros.add(RowFilter.regexFilter("^" + Pattern.quote(categoria) + "$", 1));
         }
+        filtro.setRowFilter(RowFilter.andFilter(filtros));
     }
 
     private void agregar() {
@@ -158,8 +150,10 @@ public class PedidoController {
         }
         Producto p = productos.get(vista.getTblProductos().convertRowIndexToModel(fila));
         try {
-            pedidoService.agregarProducto(pedido, p, (Integer) vista.getSpnCantidad().getValue());
+            servicios.pedidos.agregarProducto(pedido, p, (Integer) vista.getSpnCantidad().getValue(),
+                    vista.getTxtNota().getText());
             vista.getSpnCantidad().setValue(1);
+            vista.getTxtNota().setText("");
             mostrarDetalle();
         } catch (IllegalArgumentException e) {
             Mensajes.aviso(vista, e.getMessage());
@@ -169,7 +163,7 @@ public class PedidoController {
     private void cambiarCantidad(int cambio) {
         int fila = vista.getTblDetalle().getSelectedRow();
         if (fila >= 0) {
-            pedidoService.cambiarCantidad(pedido, fila, cambio);
+            servicios.pedidos.cambiarCantidad(pedido, fila, cambio);
             mostrarDetalle();
             if (fila < pedido.getDetalles().size()) {
                 vista.getTblDetalle().setRowSelectionInterval(fila, fila);
@@ -189,21 +183,26 @@ public class PedidoController {
         if (!pedido.getDetalles().isEmpty() && !Mensajes.confirmar(vista, "¿Borrar todos los productos del pedido?")) {
             return;
         }
+        reiniciar();
+    }
+
+    private void reiniciar() {
         pedido = new Pedido();
         vista.getCmbModalidad().setSelectedIndex(0);
+        vista.getTxtObservacion().setText("");
         mostrarDetalle();
     }
 
     private void mostrarDetalle() {
-        DefaultTableModel modelo = (DefaultTableModel) vista.getTblDetalle().getModel();
-        modelo.setRowCount(0);
+        List<Object[]> filas = new ArrayList<>();
         int unidades = 0;
         for (DetallePedido d : pedido.getDetalles()) {
-            modelo.addRow(new Object[]{d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getImporte()});
+            filas.add(new Object[]{d.getProducto(), Tablas.nota(d), d.getCantidad(), d.getImporte()});
             unidades += d.getCantidad();
         }
+        Tablas.llenar(vista.getTblDetalle(), filas);
         vista.getLblItems().setText(unidades == 1 ? "1 producto" : unidades + " productos");
-        vista.getLblTotal().setText(Tema.soles(pedidoService.calcularTotal(pedido)));
+        vista.getLblTotal().setText(Tema.soles(servicios.pedidos.calcularTotal(pedido)));
         actualizarBotones();
     }
 
@@ -221,21 +220,17 @@ public class PedidoController {
         String modalidad = modalidad();
         Object mesa = vista.getCmbMesa().getSelectedItem();
         pedido.setModalidad(modalidad);
-        pedido.setIdUsuario(usuario.getIdUsuario());
         pedido.setIdMesa("SALON".equals(modalidad) && mesa instanceof Mesa ? ((Mesa) mesa).getIdMesa() : null);
         pedido.setDireccion("DELIVERY".equals(modalidad) ? vista.getTxtDireccion().getText().trim() : null);
         pedido.setTelefono("DELIVERY".equals(modalidad) ? vista.getTxtTelefono().getText().trim() : null);
+        pedido.setObservacion(vista.getTxtObservacion().getText());
         try {
-            int id = pedidoService.guardar(pedido);
-            Mensajes.info(vista, "Pedido N° " + id + " registrado.\nPuedes confirmarlo en «Pedidos del día».");
-            pedido = new Pedido();
-            vista.getCmbModalidad().setSelectedIndex(0);
+            int id = servicios.pedidos.guardar(pedido, usuario);
+            Mensajes.info(vista, "Pedido N° " + id + " enviado a cocina.");
             cargarMesas();
-            mostrarDetalle();
-        } catch (IllegalArgumentException e) {
-            Mensajes.aviso(vista, e.getMessage());
-        } catch (SQLException e) {
-            Mensajes.error(vista, "No se pudo guardar el pedido:\n" + e.getMessage());
+            reiniciar();
+        } catch (IllegalArgumentException | SecurityException | SQLException e) {
+            Mensajes.de(vista, e);
         }
     }
 }

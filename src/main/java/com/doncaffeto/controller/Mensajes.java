@@ -4,7 +4,7 @@ import java.awt.Component;
 import javax.swing.JOptionPane;
 
 /**
- * Ventanas de mensaje con el mismo título y estilo en toda la aplicación.
+ * Ventanas de mensaje con el mismo título en toda la aplicación.
  *
  * @author Equipo Don Caffeto
  */
@@ -25,7 +25,7 @@ public final class Mensajes {
 
     /**
      * @param padre   ventana
-     * @param mensaje texto de advertencia (dato faltante o incorrecto)
+     * @param mensaje dato faltante o incorrecto
      */
     public static void aviso(Component padre, String mensaje) {
         JOptionPane.showMessageDialog(padre, mensaje, TITULO, JOptionPane.WARNING_MESSAGE);
@@ -33,10 +33,24 @@ public final class Mensajes {
 
     /**
      * @param padre   ventana
-     * @param mensaje texto del error
+     * @param mensaje error
      */
     public static void error(Component padre, String mensaje) {
         JOptionPane.showMessageDialog(padre, mensaje, TITULO, JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Muestra el mensaje adecuado según el tipo de error.
+     *
+     * @param padre ventana
+     * @param e     error ocurrido
+     */
+    public static void de(Component padre, Exception e) {
+        if (e instanceof IllegalArgumentException || e instanceof SecurityException) {
+            aviso(padre, e.getMessage());
+        } else {
+            error(padre, "No se pudo completar la operación.\n" + e.getMessage());
+        }
     }
 
     /**

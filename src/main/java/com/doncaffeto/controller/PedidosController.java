@@ -1,63 +1,57 @@
 package com.doncaffeto.controller;
 
+import com.doncaffeto.Servicios;
 import com.doncaffeto.model.DetallePedido;
 import com.doncaffeto.model.Pedido;
 import com.doncaffeto.model.Usuario;
-import com.doncaffeto.service.PedidoService;
-import com.doncaffeto.util.ExportarExcel;
+import com.doncaffeto.service.Autorizacion;
 import com.doncaffeto.util.Tema;
+import com.doncaffeto.util.Validador;
 import com.doncaffeto.view.FrmPedidos;
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
 
 /**
- * Controla la lista de pedidos: búsqueda por fecha, confirmación y exportación a Excel.
+ * Controla la lista de pedidos del día: detalle, anulación y exportación a Excel.
  *
  * @author Equipo Don Caffeto
  */
 public class PedidosController {
 
-    private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
-    private static final Map<String, String> MODALIDAD = Map.of(
-            "SALON", "Salón", "PARA_LLEVAR", "Para llevar", "DELIVERY", "Delivery");
+    private static final String[] COLUMNAS = {"N°", "Hora", "Modalidad", "Destino", "Mesero", "Estado", "Total"};
 
     private final FrmPedidos vista;
-    private final PedidoService pedidoService;
+    private final Servicios servicios;
     private final Usuario usuario;
     private List<Pedido> pedidos = new ArrayList<>();
+    private final List<Object[]> filas = new ArrayList<>();
     private LocalDate fecha = LocalDate.now();
 
     /**
-     * @param vista         pantalla de pedidos
-     * @param pedidoService servicio de pedidos
-     * @param usuario       usuario en sesión
+     * @param vista     pantalla de pedidos
+     * @param servicios servicios de la aplicación
+     * @param usuario   usuario en sesión
      */
-    public PedidosController(FrmPedidos vista, PedidoService pedidoService, Usuario usuario) {
+    public PedidosController(FrmPedidos vista, Servicios servicios, Usuario usuario) {
         this.vista = vista;
-        this.pedidoService = pedidoService;
+        this.servicios = servicios;
         this.usuario = usuario;
-        vista.getTxtFecha().setText(fecha.format(FECHA));
+        vista.getTxtFecha().setText(fecha.format(Validador.FECHA));
+        vista.getBtnAnular().setVisible(Autorizacion.permite(usuario, Autorizacion.PEDIDOS));
         vista.getBtnBuscar().addActionListener(e -> buscar());
         vista.getTxtFecha().addActionListener(e -> buscar());
         vista.getBtnHoy().addActionListener(e -> {
-            vista.getTxtFecha().setText(LocalDate.now().format(FECHA));
+            vista.getTxtFecha().setText(LocalDate.now().format(Validador.FECHA));
             buscar();
         });
-        vista.getBtnConfirmar().addActionListener(e -> confirmar());
-        vista.getBtnExportar().addActionListener(e -> exportar());
+        vista.getBtnAnular().addActionListener(e -> anular());
+        vista.getBtnExportar().addActionListener(e -> Tablas.exportar(vista, "Pedidos", COLUMNAS, filas,
+                "pedidos_" + fecha.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
         vista.getTblPedidos().getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 mostrarDetalle();
@@ -72,29 +66,31 @@ public class PedidosController {
     }
 
     private void buscar() {
-        try {
-            fecha = LocalDate.parse(vista.getTxtFecha().getText().trim(), FECHA);
-        } catch (DateTimeParseException e) {
+        LocalDate f = Validador.fecha(vista.getTxtFecha().getText());
+        if (f == null) {
             Mensajes.aviso(vista, "Escribe la fecha como dd/mm/aaaa (por ejemplo 23/10/2026).");
             return;
         }
+        fecha = f;
         try {
-            pedidos = pedidoService.listar(fecha);
+            pedidos = servicios.pedidos.listar(fecha);
         } catch (SQLException e) {
-            Mensajes.error(vista, "No se pudo consultar los pedidos. Revise la conexión con MySQL.");
+            Mensajes.de(vista, e);
             return;
         }
-        DefaultTableModel modelo = (DefaultTableModel) vista.getTblPedidos().getModel();
-        modelo.setRowCount(0);
+        filas.clear();
         BigDecimal suma = BigDecimal.ZERO;
         for (Pedido p : pedidos) {
-            modelo.addRow(new Object[]{p.getIdPedido(), p.getFecha().format(HORA), MODALIDAD.get(p.getModalidad()),
-                    p.getNumeroMesa() == null ? "—" : "Mesa " + p.getNumeroMesa(), p.getMesero(), p.getEstado(),
-                    p.getTotal()});
-            suma = suma.add(p.getTotal());
+            filas.add(new Object[]{p.getIdPedido(), p.getFecha().format(HORA), Tablas.MODALIDAD.get(p.getModalidad()),
+                    Tablas.destino(p), p.getMesero(), Tablas.ESTADO.get(p.getEstado()), p.getTotal()});
+            if (!"CANCELADO".equals(p.getEstado())) {
+                suma = suma.add(p.getTotal());
+            }
         }
-        vista.getLblResumen().setText(pedidos.isEmpty() ? "No hay pedidos el " + fecha.format(FECHA)
-                : pedidos.size() + (pedidos.size() == 1 ? " pedido" : " pedidos") + "  ·  Total " + Tema.soles(suma));
+        Tablas.llenar(vista.getTblPedidos(), filas);
+        vista.getLblResumen().setText(pedidos.isEmpty() ? "No hay pedidos el " + fecha.format(Validador.FECHA)
+                : pedidos.size() + (pedidos.size() == 1 ? " pedido" : " pedidos") + "  ·  Total " + Tema.soles(suma)
+                + " (sin anulados)");
         vista.getBtnExportar().setEnabled(!pedidos.isEmpty());
         mostrarDetalle();
     }
@@ -105,60 +101,40 @@ public class PedidosController {
     }
 
     private void mostrarDetalle() {
-        DefaultTableModel modelo = (DefaultTableModel) vista.getTblDetalle().getModel();
-        modelo.setRowCount(0);
         Pedido p = seleccionado();
-        vista.getBtnConfirmar().setEnabled(p != null && "REGISTRADO".equals(p.getEstado()));
+        vista.getBtnAnular().setEnabled(p != null && "PENDIENTE".equals(p.getEstado()));
+        List<Object[]> detalle = new ArrayList<>();
         if (p == null) {
             vista.getLblSeleccion().setText("Selecciona un pedido para ver su detalle");
-            return;
-        }
-        vista.getLblSeleccion().setText("Pedido N° " + p.getIdPedido() + "  ·  " + MODALIDAD.get(p.getModalidad())
-                + "  ·  " + p.getEstado());
-        try {
-            for (DetallePedido d : pedidoService.detalle(p.getIdPedido())) {
-                modelo.addRow(new Object[]{d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getImporte()});
+            vista.getLblObservacion().setText(" ");
+        } else {
+            vista.getLblSeleccion().setText("Pedido N° " + p.getIdPedido() + "  ·  " + Tablas.destino(p)
+                    + "  ·  " + Tablas.ESTADO.get(p.getEstado()));
+            vista.getLblObservacion().setText(p.getObservacion() == null ? " " : "Observación: " + p.getObservacion());
+            try {
+                for (DetallePedido d : servicios.pedidos.detalle(p.getIdPedido())) {
+                    detalle.add(new Object[]{d.getProducto(), Tablas.nota(d), d.getCantidad(), d.getPrecioUnitario(),
+                            d.getImporte()});
+                }
+            } catch (SQLException e) {
+                Mensajes.de(vista, e);
             }
-        } catch (SQLException e) {
-            Mensajes.error(vista, "No se pudo cargar el detalle del pedido.");
         }
+        Tablas.llenar(vista.getTblDetalle(), detalle);
     }
 
-    private void confirmar() {
+    private void anular() {
         Pedido p = seleccionado();
-        if (p == null || !Mensajes.confirmar(vista, "¿Enviar el pedido N° " + p.getIdPedido() + " a cocina?")) {
+        if (p == null || !Mensajes.confirmar(vista, "¿Anular el pedido N° " + p.getIdPedido() + "?\n"
+                + "La cocina dejará de verlo.")) {
             return;
         }
         try {
-            pedidoService.confirmar(p, usuario.getIdUsuario());
-            Mensajes.info(vista, "Pedido N° " + p.getIdPedido() + " enviado a cocina.");
+            servicios.pedidos.anular(p, usuario);
+            Mensajes.info(vista, "Pedido N° " + p.getIdPedido() + " anulado.");
             buscar();
-        } catch (IllegalArgumentException e) {
-            Mensajes.aviso(vista, e.getMessage());
-        } catch (SQLException e) {
-            Mensajes.error(vista, "No se pudo confirmar:\n" + e.getMessage());
-        }
-    }
-
-    private void exportar() {
-        JFileChooser selector = new JFileChooser();
-        selector.setFileFilter(new FileNameExtensionFilter("Libro de Excel (*.xlsx)", "xlsx"));
-        selector.setSelectedFile(new File("pedidos_" + fecha.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".xlsx"));
-        if (selector.showSaveDialog(vista) != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-        File archivo = selector.getSelectedFile();
-        if (!archivo.getName().toLowerCase().endsWith(".xlsx")) {
-            archivo = new File(archivo.getParentFile(), archivo.getName() + ".xlsx");
-        }
-        try {
-            ExportarExcel.pedidos(pedidos, archivo);
-            if (Mensajes.confirmar(vista, "Excel guardado en:\n" + archivo.getAbsolutePath() + "\n\n¿Abrirlo ahora?")
-                    && Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().open(archivo);
-            }
-        } catch (IOException e) {
-            Mensajes.error(vista, "No se pudo guardar el archivo:\n" + e.getMessage());
+        } catch (IllegalArgumentException | SecurityException | SQLException e) {
+            Mensajes.de(vista, e);
         }
     }
 }

@@ -1,29 +1,33 @@
 package com.doncaffeto.controller;
 
-import com.doncaffeto.dao.impl.MesaDAOImpl;
-import com.doncaffeto.dao.impl.PedidoDAOImpl;
-import com.doncaffeto.dao.impl.ProductoDAOImpl;
+import com.doncaffeto.Servicios;
 import com.doncaffeto.model.Usuario;
-import com.doncaffeto.service.LoginService;
-import com.doncaffeto.service.PedidoService;
+import com.doncaffeto.service.Autorizacion;
+import com.doncaffeto.view.FrmCaja;
+import com.doncaffeto.view.FrmCocina;
 import com.doncaffeto.view.FrmLogin;
 import com.doncaffeto.view.FrmPedido;
 import com.doncaffeto.view.FrmPedidos;
 import com.doncaffeto.view.FrmPrincipal;
+import com.doncaffeto.view.FrmProductos;
+import com.doncaffeto.view.FrmReportes;
+import com.doncaffeto.view.FrmUsuarios;
 import java.awt.Frame;
 import java.awt.Window;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Locale;
-import javax.swing.JComponent;
+import java.util.Map;
+import java.util.function.Supplier;
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.KeyStroke;
+import javax.swing.JPanel;
 
 /**
- * Controla el menú principal. Muestra solo las opciones permitidas para el rol.
+ * Controla el menú principal: muestra solo los módulos que permite el rol y los abre.
  *
  * @author Equipo Don Caffeto
  */
@@ -31,46 +35,75 @@ public class PrincipalController {
 
     private final FrmPrincipal vista;
     private final Usuario usuario;
-    private final LoginService loginService;
-    private final PedidoService pedidoService = new PedidoService(new PedidoDAOImpl());
-    private JFrame ventanaPedido;
-    private JFrame ventanaPedidos;
+    private final Servicios servicios;
+    private final Map<String, JFrame> abiertas = new HashMap<>();
 
     /**
-     * @param vista        menú principal
-     * @param usuario      usuario que inició sesión
-     * @param loginService servicio de login (se reutiliza al cerrar sesión)
+     * @param vista     menú principal
+     * @param usuario   usuario que inició sesión
+     * @param servicios servicios de la aplicación
      */
-    public PrincipalController(FrmPrincipal vista, Usuario usuario, LoginService loginService) {
+    public PrincipalController(FrmPrincipal vista, Usuario usuario, Servicios servicios) {
         this.vista = vista;
         this.usuario = usuario;
-        this.loginService = loginService;
-        String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy",
+        this.servicios = servicios;
+        String hoy = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy",
                 new Locale("es", "PE")));
         vista.getLblUsuario().setText(usuario.getNombres() + "  ·  " + usuario.getRol());
-        vista.getLblSaludo().setText("¡Hola, " + usuario.getNombres() + "!");
-        vista.getLblFecha().setText(fecha.substring(0, 1).toUpperCase() + fecha.substring(1));
+        vista.getLblSaludo().setText("¡Hola, " + usuario.getNombres().split(" ")[0] + "!");
+        vista.getLblFecha().setText(Character.toUpperCase(hoy.charAt(0)) + hoy.substring(1));
 
-        boolean puedeRegistrar = LoginService.puedeRegistrarPedidos(usuario.getRol());
-        vista.getBtnMenuNuevoPedido().setVisible(puedeRegistrar);
-        vista.getPnlCardNuevo().setVisible(puedeRegistrar);
+        modulo("pedido", Autorizacion.PEDIDOS, vista.getBtnMenuNuevoPedido(), vista.getBtnNuevoPedido(),
+                vista.getPnlCardNuevoPedido(), () -> {
+                    FrmPedido f = new FrmPedido();
+                    new PedidoController(f, servicios, usuario).iniciar();
+                    return f;
+                });
+        modulo("pedidos", new String[]{"ADMIN", "MESERO", "COCINA", "CAJERO"}, vista.getBtnMenuPedidos(),
+                vista.getBtnPedidos(), vista.getPnlCardPedidos(), () -> {
+                    FrmPedidos f = new FrmPedidos();
+                    new PedidosController(f, servicios, usuario).iniciar();
+                    return f;
+                });
+        modulo("cocina", Autorizacion.COCINA, vista.getBtnMenuCocina(), vista.getBtnCocina(),
+                vista.getPnlCardCocina(), () -> {
+                    FrmCocina f = new FrmCocina();
+                    new CocinaController(f, servicios, usuario).iniciar();
+                    return f;
+                });
+        modulo("caja", Autorizacion.CAJA, vista.getBtnMenuCaja(), vista.getBtnCaja(), vista.getPnlCardCaja(), () -> {
+            FrmCaja f = new FrmCaja();
+            new CajaController(f, servicios, usuario).iniciar();
+            return f;
+        });
+        modulo("productos", Autorizacion.ADMIN, vista.getBtnMenuProductos(), vista.getBtnProductos(),
+                vista.getPnlCardProductos(), () -> {
+                    FrmProductos f = new FrmProductos();
+                    new ProductosController(f, servicios, usuario).iniciar();
+                    return f;
+                });
+        modulo("usuarios", Autorizacion.ADMIN, vista.getBtnMenuUsuarios(), vista.getBtnUsuarios(),
+                vista.getPnlCardUsuarios(), () -> {
+                    FrmUsuarios f = new FrmUsuarios();
+                    new UsuariosController(f, servicios, usuario).iniciar();
+                    return f;
+                });
+        modulo("reportes", Autorizacion.ADMIN, vista.getBtnMenuReportes(), vista.getBtnReportes(),
+                vista.getPnlCardReportes(), () -> {
+                    FrmReportes f = new FrmReportes();
+                    new ReportesController(f, servicios, usuario).iniciar();
+                    return f;
+                });
 
-        vista.getBtnMenuNuevoPedido().addActionListener(e -> abrirNuevoPedido());
-        vista.getBtnNuevoPedido().addActionListener(e -> abrirNuevoPedido());
-        vista.getBtnMenuPedidos().addActionListener(e -> abrirPedidos());
-        vista.getBtnPedidos().addActionListener(e -> abrirPedidos());
         vista.getBtnCerrarSesion().addActionListener(e -> cerrarSesion());
         vista.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                if (Mensajes.confirmar(vista, "¿Desea salir de Don Caffeto?")) {
+                if (Mensajes.confirmar(vista, "¿Deseas salir de Don Caffeto?")) {
                     System.exit(0);
                 }
             }
         });
-        // atajos de teclado: Ctrl+N nuevo pedido, Ctrl+P pedidos
-        atajo(KeyEvent.VK_N, "nuevo", () -> { if (puedeRegistrar) { abrirNuevoPedido(); } });
-        atajo(KeyEvent.VK_P, "pedidos", this::abrirPedidos);
     }
 
     /** Muestra la pantalla. */
@@ -78,41 +111,26 @@ public class PrincipalController {
         vista.setVisible(true);
     }
 
-    private void atajo(int tecla, String nombre, Runnable accion) {
-        vista.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(tecla, KeyEvent.CTRL_DOWN_MASK), nombre);
-        vista.getRootPane().getActionMap().put(nombre, new javax.swing.AbstractAction() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                accion.run();
+    /**
+     * Muestra el módulo solo si el rol lo permite y conecta el botón del menú y el de la tarjeta.
+     * Si la ventana ya está abierta, la trae al frente en lugar de abrir otra.
+     */
+    private void modulo(String clave, String[] roles, JButton menu, JButton tarjeta, JPanel panel,
+                        Supplier<JFrame> abrir) {
+        boolean permitido = Autorizacion.permite(usuario, roles);
+        menu.setVisible(permitido);
+        panel.setVisible(permitido);
+        Runnable accion = () -> {
+            JFrame ventana = abiertas.get(clave);
+            if (ventana != null && ventana.isDisplayable()) {
+                ventana.setExtendedState(Frame.NORMAL);
+                ventana.toFront();
+            } else {
+                abiertas.put(clave, abrir.get());
             }
-        });
-    }
-
-    /** Si la ventana ya está abierta la trae al frente en lugar de abrir otra. */
-    private boolean traerAlFrente(JFrame ventana) {
-        if (ventana != null && ventana.isDisplayable()) {
-            ventana.setExtendedState(Frame.NORMAL);
-            ventana.toFront();
-            return true;
-        }
-        return false;
-    }
-
-    private void abrirNuevoPedido() {
-        if (!traerAlFrente(ventanaPedido)) {
-            FrmPedido frm = new FrmPedido();
-            new PedidoController(frm, pedidoService, new ProductoDAOImpl(), new MesaDAOImpl(), usuario).iniciar();
-            ventanaPedido = frm;
-        }
-    }
-
-    private void abrirPedidos() {
-        if (!traerAlFrente(ventanaPedidos)) {
-            FrmPedidos frm = new FrmPedidos();
-            new PedidosController(frm, pedidoService, usuario).iniciar();
-            ventanaPedidos = frm;
-        }
+        };
+        menu.addActionListener(e -> accion.run());
+        tarjeta.addActionListener(e -> accion.run());
     }
 
     private void cerrarSesion() {
@@ -122,6 +140,6 @@ public class PrincipalController {
         for (Window w : Window.getWindows()) {
             w.dispose();
         }
-        new LoginController(new FrmLogin(), loginService).iniciar();
+        new LoginController(new FrmLogin(), servicios).iniciar();
     }
 }

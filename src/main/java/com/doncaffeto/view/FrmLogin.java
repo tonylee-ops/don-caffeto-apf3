@@ -107,7 +107,7 @@ public class FrmLogin extends javax.swing.JFrame {
 
         lblTitulo.setText("Bienvenido");
 
-        lblAyuda.setText("Ingresa con tu usuario para registrar pedidos");
+        lblAyuda.setText("Ingresa con tu usuario para empezar");
 
         lblEtqUsuario.setText("Usuario");
 
@@ -121,7 +121,7 @@ public class FrmLogin extends javax.swing.JFrame {
 
         btnIngresar.setText("Ingresar");
 
-        lblAyudaVersion.setText("Don Caffeto · Avance 3");
+        lblAyudaVersion.setText("Don Caffeto · Sistema de ventas");
 
         javax.swing.GroupLayout pnlFormularioLayout = new javax.swing.GroupLayout(pnlFormulario);
         pnlFormulario.setLayout(pnlFormularioLayout);

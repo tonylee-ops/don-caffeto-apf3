@@ -26,6 +26,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Estilo visual de Don Caffeto (paleta naranja).
@@ -163,6 +164,14 @@ public final class Tema {
             l.setFont(new Font(LETRA, Font.BOLD, 22));
         } else if (nombre.startsWith("lblSub")) {
             l.setFont(new Font(LETRA, Font.BOLD, 17));
+        } else if (nombre.equals("lblVuelto")) {
+            l.setForeground(VERDE);
+            l.setFont(new Font(LETRA, Font.BOLD, 20));
+        } else if (StringUtils.equalsAny(nombre, "lblSeleccion", "lblModo", "lblResumen", "lblItems")) {
+            l.setFont(new Font(LETRA, Font.BOLD, 13));
+        } else if (nombre.equals("lblObservacion")) {
+            l.setForeground(NARANJA_OSCURO);
+            l.setFont(new Font(LETRA, Font.ITALIC, 13));
         } else if (nombre.equals("lblTotal")) {
             l.setForeground(NARANJA);
             l.setFont(new Font(LETRA, Font.BOLD, 26));
@@ -187,12 +196,12 @@ public final class Tema {
             b.setHorizontalAlignment(SwingConstants.LEFT);
         } else if (nombre.equals("btnCerrarSesion")) {
             colores(b, NARANJA, NARANJA_OSCURO, Color.WHITE, BorderFactory.createLineBorder(Color.WHITE, 1, true));
-        } else if (nombre.equals("btnQuitar") || nombre.equals("btnLimpiar")) {
+        } else if (StringUtils.equalsAny(nombre, "btnQuitar", "btnLimpiar", "btnAnular")) {
             colores(b, Color.WHITE, new Color(0xFFF0F0), ROJO, BorderFactory.createLineBorder(ROJO, 1, true));
-        } else if (nombre.equals("btnHoy") || nombre.equals("btnExportar") || nombre.equals("btnMas")
-                || nombre.equals("btnMenos")) {
+        } else if (StringUtils.equalsAny(nombre, "btnHoy", "btnExportar", "btnMas", "btnMenos", "btnActualizar",
+                "btnNuevo")) {
             colores(b, Color.WHITE, NARANJA_CLARO, NARANJA, BorderFactory.createLineBorder(NARANJA, 1, true));
-        } else if (nombre.equals("btnConfirmar") || nombre.equals("btnGuardar")) {
+        } else if (StringUtils.equalsAny(nombre, "btnGuardar", "btnCobrar", "btnListo")) {
             colores(b, VERDE, new Color(0x237A35), Color.WHITE, BorderFactory.createEmptyBorder(1, 6, 1, 6));
         } else {
             colores(b, NARANJA, NARANJA_OSCURO, Color.WHITE, BorderFactory.createEmptyBorder(1, 6, 1, 6));
@@ -268,12 +277,28 @@ public final class Tema {
                                                            int fila, int col) {
                 super.getTableCellRendererComponent(tabla, valor, sel, foco, fila, col);
                 String estado = String.valueOf(valor);
-                setForeground("REGISTRADO".equals(estado) ? NARANJA_OSCURO
-                        : "CANCELADO".equals(estado) ? ROJO : VERDE);
+                setForeground(color(estado));
                 setFont(getFont().deriveFont(Font.BOLD));
                 return this;
             }
         });
+    }
+
+    /**
+     * @param estado estado del pedido como se muestra (Pendiente, En preparación...)
+     * @return color con el que se muestra
+     */
+    public static Color color(String estado) {
+        switch (estado) {
+            case "Pendiente":
+                return NARANJA_OSCURO;
+            case "En preparación":
+                return new Color(0x1971C2);
+            case "Cancelado":
+                return ROJO;
+            default:
+                return VERDE;
+        }
     }
 
     /**

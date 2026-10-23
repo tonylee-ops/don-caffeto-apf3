@@ -228,7 +228,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="lblAyuda">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Ingresa con tu usuario para registrar pedidos"/>
+            <Property name="text" type="java.lang.String" value="Ingresa con tu usuario para empezar"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lblEtqUsuario">
@@ -265,7 +265,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="lblAyudaVersion">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Don Caffeto · Avance 3"/>
+            <Property name="text" type="java.lang.String" value="Don Caffeto · Sistema de ventas"/>
           </Properties>
         </Component>
       </SubComponents>

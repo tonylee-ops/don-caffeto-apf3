@@ -33,9 +33,9 @@
           </Group>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-              <Component id="pnlCardCarta" pref="540" max="32767" attributes="0"/>
+              <Component id="pnlCardCarta" pref="560" max="32767" attributes="0"/>
               <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-              <Component id="pnlCardPedido" pref="520" max="32767" attributes="0"/>
+              <Component id="pnlCardPedido" pref="540" max="32767" attributes="0"/>
               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -50,8 +50,8 @@
               </Group>
               <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="pnlCardCarta" alignment="0" pref="520" max="32767" attributes="0"/>
-                  <Component id="pnlCardPedido" alignment="0" pref="520" max="32767" attributes="0"/>
+                  <Component id="pnlCardCarta" alignment="0" pref="540" max="32767" attributes="0"/>
+                  <Component id="pnlCardPedido" alignment="0" pref="540" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
           </Group>
@@ -85,7 +85,7 @@
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Component id="txtBuscar" pref="260" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                  <Component id="cmbCategoria" min="-2" pref="220" max="-2" attributes="0"/>
+                  <Component id="cmbCategoria" min="-2" pref="200" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
@@ -97,8 +97,10 @@
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Component id="lblEtqCantidad" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                  <Component id="spnCantidad" min="-2" pref="80" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <Component id="spnCantidad" min="-2" pref="70" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                  <Component id="txtNota" pref="180" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                   <Component id="btnAgregar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               </Group>
@@ -119,12 +121,13 @@
                   </Group>
                   <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="scrProductos" alignment="0" pref="330" max="32767" attributes="0"/>
+                      <Component id="scrProductos" alignment="0" pref="320" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="lblEtqCantidad" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="spnCantidad" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtNota" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnAgregar" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
@@ -140,13 +143,10 @@
         </Component>
         <Component class="javax.swing.JLabel" name="lblAyudaCarta">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Doble clic en un producto para agregarlo"/>
+            <Property name="text" type="java.lang.String" value="Doble clic para agregar"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtBuscar">
-          <Properties>
-            <Property name="toolTipText" type="java.lang.String" value="Escribe para filtrar la carta"/>
-          </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="cmbCategoria">
           <Properties>
@@ -183,7 +183,7 @@
         </Container>
         <Component class="javax.swing.JLabel" name="lblEtqCantidad">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Cantidad"/>
+            <Property name="text" type="java.lang.String" value="Cant."/>
           </Properties>
         </Component>
         <Component class="javax.swing.JSpinner" name="spnCantidad">
@@ -193,9 +193,11 @@
             </Property>
           </Properties>
         </Component>
+        <Component class="javax.swing.JTextField" name="txtNota">
+        </Component>
         <Component class="javax.swing.JButton" name="btnAgregar">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Agregar al pedido"/>
+            <Property name="text" type="java.lang.String" value="Agregar"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -214,25 +216,25 @@
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                  <Component id="lblEtqModalidad" min="-2" pref="90" max="-2" attributes="0"/>
+                  <Component id="lblEtqModalidad" min="-2" pref="95" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                   <Component id="cmbModalidad" pref="140" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                  <Component id="lblEtqMesa" min="-2" pref="50" max="-2" attributes="0"/>
+                  <Component id="lblEtqMesa" min="-2" pref="45" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                  <Component id="cmbMesa" min="-2" pref="120" max="-2" attributes="0"/>
+                  <Component id="cmbMesa" min="-2" pref="130" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                  <Component id="lblEtqDireccion" min="-2" pref="90" max="-2" attributes="0"/>
+                  <Component id="lblEtqDireccion" min="-2" pref="95" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                   <Component id="txtDireccion" pref="300" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                  <Component id="lblEtqTelefono" min="-2" pref="90" max="-2" attributes="0"/>
+                  <Component id="lblEtqTelefono" min="-2" pref="95" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                   <Component id="txtTelefono" pref="300" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
@@ -255,6 +257,13 @@
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                  <Component id="lblEtqObservacion" min="-2" pref="95" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                  <Component id="txtObservacion" pref="300" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Component id="btnLimpiar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   <Component id="btnGuardar" min="-2" max="-2" attributes="0"/>
@@ -270,35 +279,40 @@
                       <Component id="lblSubPedido" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lblItems" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="lblEtqModalidad" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cmbModalidad" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lblEtqMesa" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cmbMesa" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="lblEtqDireccion" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="txtDireccion" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="lblEtqTelefono" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="txtTelefono" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="scrDetalle" alignment="0" pref="200" max="32767" attributes="0"/>
+                      <Component id="scrDetalle" alignment="0" pref="170" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="btnMenos" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnMas" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnQuitar" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lblTotal" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="lblEtqObservacion" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtObservacion" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="btnLimpiar" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnGuardar" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -381,8 +395,8 @@
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                   <Table columnCount="4" rowCount="0">
                     <Column editable="false" title="Producto" type="java.lang.Object"/>
+                    <Column editable="false" title="Nota" type="java.lang.Object"/>
                     <Column editable="false" title="Cant." type="java.lang.Object"/>
-                    <Column editable="false" title="Precio" type="java.lang.Object"/>
                     <Column editable="false" title="Importe" type="java.lang.Object"/>
                   </Table>
                 </Property>
@@ -413,6 +427,13 @@
             <Property name="text" type="java.lang.String" value="S/ 0.00"/>
           </Properties>
         </Component>
+        <Component class="javax.swing.JLabel" name="lblEtqObservacion">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Observación"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="txtObservacion">
+        </Component>
         <Component class="javax.swing.JButton" name="btnLimpiar">
           <Properties>
             <Property name="text" type="java.lang.String" value="Limpiar"/>
@@ -420,7 +441,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="btnGuardar">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Guardar pedido"/>
+            <Property name="text" type="java.lang.String" value="Enviar a cocina"/>
           </Properties>
         </Component>
       </SubComponents>

@@ -1,8 +1,6 @@
 package com.doncaffeto;
 
 import com.doncaffeto.controller.LoginController;
-import com.doncaffeto.dao.impl.UsuarioDAOImpl;
-import com.doncaffeto.service.LoginService;
 import com.doncaffeto.util.Tema;
 import com.doncaffeto.view.FrmLogin;
 import java.awt.EventQueue;
@@ -21,9 +19,6 @@ public class App {
      */
     public static void main(String[] args) {
         Tema.instalar();
-        EventQueue.invokeLater(() -> {
-            LoginService loginService = new LoginService(new UsuarioDAOImpl());
-            new LoginController(new FrmLogin(), loginService).iniciar();
-        });
+        EventQueue.invokeLater(() -> new LoginController(new FrmLogin(), new Servicios()).iniciar());
     }
 }

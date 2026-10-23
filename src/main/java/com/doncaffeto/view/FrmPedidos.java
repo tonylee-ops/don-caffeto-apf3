@@ -3,7 +3,7 @@ package com.doncaffeto.view;
 import com.doncaffeto.util.Tema;
 
 /**
- * Pedidos por fecha, confirmación y exportación a Excel.
+ * Pedidos por fecha, anulación y exportación a Excel.
  * <p>
  * JFrame Form editable en NetBeans (pestaña Design). La vista NO tiene lógica de
  * negocio ni SQL: el controller registra los listeners usando los getters.
@@ -24,7 +24,7 @@ public class FrmPedidos extends javax.swing.JFrame {
         Tema.aplicar(this);
         Tema.ayuda(txtFecha, "dd/mm/aaaa");
         Tema.colorearEstado(tblPedidos, 5);
-        setSize(1100, 720);
+        setSize(1120, 740);
         setLocationRelativeTo(null);
     }
 
@@ -49,9 +49,10 @@ public class FrmPedidos extends javax.swing.JFrame {
         pnlCardDetalle = new javax.swing.JPanel();
         lblSubDetalle = new javax.swing.JLabel();
         lblSeleccion = new javax.swing.JLabel();
+        lblObservacion = new javax.swing.JLabel();
         scrDetalle = new javax.swing.JScrollPane();
         tblDetalle = new javax.swing.JTable();
-        btnConfirmar = new javax.swing.JButton();
+        btnAnular = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Don Caffeto - Pedidos");
@@ -59,8 +60,6 @@ public class FrmPedidos extends javax.swing.JFrame {
         lblTitulo.setText("Pedidos del día");
 
         lblEtqFecha.setText("Fecha");
-
-        txtFecha.setToolTipText("Formato dd/mm/aaaa");
 
         btnHoy.setText("Hoy");
 
@@ -71,7 +70,7 @@ public class FrmPedidos extends javax.swing.JFrame {
         
             },
             new String [] {
-                "N°", "Hora", "Modalidad", "Mesa", "Mesero", "Estado", "Total"
+                "N°", "Hora", "Modalidad", "Destino", "Mesero", "Estado", "Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -94,16 +93,18 @@ public class FrmPedidos extends javax.swing.JFrame {
 
         lblSeleccion.setText("Selecciona un pedido para ver su detalle");
 
+        lblObservacion.setText(" ");
+
         tblDetalle.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
         
             },
             new String [] {
-                "Producto", "Cant.", "Precio", "Importe"
+                "Producto", "Nota", "Cant.", "Precio", "Importe"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
         
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -114,7 +115,7 @@ public class FrmPedidos extends javax.swing.JFrame {
 
         scrDetalle.setViewportView(tblDetalle);
 
-        btnConfirmar.setText("Confirmar y enviar a cocina");
+        btnAnular.setText("Anular pedido");
 
         javax.swing.GroupLayout pnlCardDetalleLayout = new javax.swing.GroupLayout(pnlCardDetalle);
         pnlCardDetalle.setLayout(pnlCardDetalleLayout);
@@ -128,12 +129,16 @@ public class FrmPedidos extends javax.swing.JFrame {
                 .addGap(16, 16, 16))
             .addGroup(pnlCardDetalleLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
+                .addComponent(lblObservacion, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardDetalleLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
                 .addGap(16, 16, 16))
             .addGroup(pnlCardDetalleLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(btnConfirmar)
+                .addComponent(btnAnular)
                 .addGap(16, 16, 16))
         );
         pnlCardDetalleLayout.setVerticalGroup(
@@ -143,12 +148,15 @@ public class FrmPedidos extends javax.swing.JFrame {
                 .addGroup(pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSubDetalle)
                     .addComponent(lblSeleccion))
-                .addGap(10, 10, 10)
-                .addGroup(pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))
-                .addGap(10, 10, 10)
+                .addGap(8, 8, 8)
                 .addGroup(pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnConfirmar))
+                    .addComponent(lblObservacion))
+                .addGap(8, 8, 8)
+                .addGroup(pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
+                .addGap(8, 8, 8)
+                .addGroup(pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAnular))
                 .addGap(16, 16, 16))
         );
 
@@ -195,14 +203,14 @@ public class FrmPedidos extends javax.swing.JFrame {
                     .addComponent(btnBuscar))
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
+                    .addComponent(scrPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE))
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblResumen)
                     .addComponent(btnExportar))
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlCardDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE))
+                    .addComponent(pnlCardDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE))
                 .addGap(20, 20, 20))
         );
 
@@ -212,12 +220,12 @@ public class FrmPedidos extends javax.swing.JFrame {
 
     // ---------- Getters para el controller ----------
 
-    public javax.swing.JButton getBtnBuscar() {
-        return btnBuscar;
+    public javax.swing.JButton getBtnAnular() {
+        return btnAnular;
     }
 
-    public javax.swing.JButton getBtnConfirmar() {
-        return btnConfirmar;
+    public javax.swing.JButton getBtnBuscar() {
+        return btnBuscar;
     }
 
     public javax.swing.JButton getBtnExportar() {
@@ -226,6 +234,10 @@ public class FrmPedidos extends javax.swing.JFrame {
 
     public javax.swing.JButton getBtnHoy() {
         return btnHoy;
+    }
+
+    public javax.swing.JLabel getLblObservacion() {
+        return lblObservacion;
     }
 
     public javax.swing.JLabel getLblResumen() {
@@ -263,11 +275,12 @@ public class FrmPedidos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAnular;
     private javax.swing.JButton btnBuscar;
-    private javax.swing.JButton btnConfirmar;
     private javax.swing.JButton btnExportar;
     private javax.swing.JButton btnHoy;
     private javax.swing.JLabel lblEtqFecha;
+    private javax.swing.JLabel lblObservacion;
     private javax.swing.JLabel lblResumen;
     private javax.swing.JLabel lblSeleccion;
     private javax.swing.JLabel lblSubDetalle;
@@ -292,13 +305,14 @@ public class FrmPedidos extends javax.swing.JFrame {
      * btnBuscar                  | JButton        | Botón «Buscar»
      * scrPedidos                 | JScrollPane    | Barra de desplazamiento de tblPedidos
      * tblPedidos                 | JTable         | Pedidos
-     * lblResumen                 | JLabel         | Resumen: cantidad y total del día
+     * lblResumen                 | JLabel         | Resumen del día
      * btnExportar                | JButton        | Botón «Exportar a Excel»
      * pnlCardDetalle             | JPanel         | Detalle del pedido seleccionado
      * lblSubDetalle              | JLabel         | Subtítulo
      * lblSeleccion               | JLabel         | Pedido seleccionado
+     * lblObservacion             | JLabel         | Observación del pedido
      * scrDetalle                 | JScrollPane    | Barra de desplazamiento de tblDetalle
      * tblDetalle                 | JTable         | Detalle del pedido
-     * btnConfirmar               | JButton        | Botón «Confirmar y enviar a cocina»
+     * btnAnular                  | JButton        | Botón «Anular pedido»
      */
 }
