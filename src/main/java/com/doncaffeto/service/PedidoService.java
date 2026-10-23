@@ -53,6 +53,23 @@ public class PedidoService {
     }
 
     /**
+     * Suma o resta unidades a una línea. Si llega a 0, la línea se quita.
+     *
+     * @param pedido pedido en registro
+     * @param indice posición de la línea
+     * @param cambio +1 para sumar, -1 para restar
+     */
+    public void cambiarCantidad(Pedido pedido, int indice, int cambio) {
+        DetallePedido d = pedido.getDetalles().get(indice);
+        int nueva = d.getCantidad() + cambio;
+        if (nueva <= 0) {
+            pedido.getDetalles().remove(indice);
+        } else {
+            d.setCantidad(nueva);
+        }
+    }
+
+    /**
      * @param pedido pedido
      * @return suma de los importes de todas las líneas
      */

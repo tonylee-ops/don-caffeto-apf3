@@ -3,7 +3,7 @@ package com.doncaffeto.view;
 import com.doncaffeto.util.Tema;
 
 /**
- * Lista de pedidos por fecha, confirmación y exportación a Excel.
+ * Pedidos por fecha, confirmación y exportación a Excel.
  * <p>
  * JFrame Form editable en NetBeans (pestaña Design). La vista NO tiene lógica de
  * negocio ni SQL: el controller registra los listeners usando los getters.
@@ -22,8 +22,9 @@ public class FrmPedidos extends javax.swing.JFrame {
      */
     private void personalizar() {
         Tema.aplicar(this);
-        Tema.titulo(lblTitulo);
-        setSize(740, 560);
+        Tema.ayuda(txtFecha, "dd/mm/aaaa");
+        Tema.colorearEstado(tblPedidos, 5);
+        setSize(1100, 720);
         setLocationRelativeTo(null);
     }
 
@@ -39,21 +40,29 @@ public class FrmPedidos extends javax.swing.JFrame {
         lblTitulo = new javax.swing.JLabel();
         lblEtqFecha = new javax.swing.JLabel();
         txtFecha = new javax.swing.JTextField();
+        btnHoy = new javax.swing.JButton();
         btnBuscar = new javax.swing.JButton();
         scrPedidos = new javax.swing.JScrollPane();
         tblPedidos = new javax.swing.JTable();
-        lblEtqDetalle = new javax.swing.JLabel();
+        lblResumen = new javax.swing.JLabel();
+        btnExportar = new javax.swing.JButton();
+        pnlCardDetalle = new javax.swing.JPanel();
+        lblSubDetalle = new javax.swing.JLabel();
+        lblSeleccion = new javax.swing.JLabel();
         scrDetalle = new javax.swing.JScrollPane();
         tblDetalle = new javax.swing.JTable();
         btnConfirmar = new javax.swing.JButton();
-        btnExportar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Don Caffeto - Pedidos");
 
-        lblTitulo.setText("Pedidos");
+        lblTitulo.setText("Pedidos del día");
 
         lblEtqFecha.setText("Fecha");
+
+        txtFecha.setToolTipText("Formato dd/mm/aaaa");
+
+        btnHoy.setText("Hoy");
 
         btnBuscar.setText("Buscar");
 
@@ -77,14 +86,20 @@ public class FrmPedidos extends javax.swing.JFrame {
 
         scrPedidos.setViewportView(tblPedidos);
 
-        lblEtqDetalle.setText("Detalle del pedido seleccionado");
+        lblResumen.setText(" ");
+
+        btnExportar.setText("Exportar a Excel");
+
+        lblSubDetalle.setText("Detalle");
+
+        lblSeleccion.setText("Selecciona un pedido para ver su detalle");
 
         tblDetalle.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
         
             },
             new String [] {
-                "Producto", "Cantidad", "Precio", "Importe"
+                "Producto", "Cant.", "Precio", "Importe"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -99,66 +114,96 @@ public class FrmPedidos extends javax.swing.JFrame {
 
         scrDetalle.setViewportView(tblDetalle);
 
-        btnConfirmar.setText("Confirmar (enviar a cocina)");
+        btnConfirmar.setText("Confirmar y enviar a cocina");
 
-        btnExportar.setText("Exportar a Excel");
+        javax.swing.GroupLayout pnlCardDetalleLayout = new javax.swing.GroupLayout(pnlCardDetalle);
+        pnlCardDetalle.setLayout(pnlCardDetalleLayout);
+        pnlCardDetalleLayout.setHorizontalGroup(
+            pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardDetalleLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(lblSubDetalle)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(lblSeleccion)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardDetalleLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardDetalleLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnConfirmar)
+                .addGap(16, 16, 16))
+        );
+        pnlCardDetalleLayout.setVerticalGroup(
+            pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardDetalleLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSubDetalle)
+                    .addComponent(lblSeleccion))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnConfirmar))
+                .addGap(16, 16, 16))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(20, 20, 20)
                 .addComponent(lblTitulo)
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(lblEtqFecha)
                 .addGap(10, 10, 10)
-                .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addComponent(btnHoy)
                 .addGap(10, 10, 10)
                 .addComponent(btnBuscar)
-                .addGap(16, 16, 16))
+                .addGap(20, 20, 20))
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(scrPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
-                .addGap(16, 16, 16))
+                .addGap(20, 20, 20)
+                .addComponent(scrPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(lblEtqDetalle)
-                .addGap(16, 16, 16))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
-                .addGap(16, 16, 16))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(btnConfirmar)
+                .addGap(20, 20, 20)
+                .addComponent(lblResumen)
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(btnExportar)
-                .addGap(16, 16, 16))
+                .addGap(20, 20, 20))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(pnlCardDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTitulo)
                     .addComponent(lblEtqFecha)
                     .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnHoy)
                     .addComponent(btnBuscar))
-                .addGap(10, 10, 10)
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE))
-                .addGap(10, 10, 10)
+                    .addComponent(scrPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblEtqDetalle))
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnConfirmar)
+                    .addComponent(lblResumen)
                     .addComponent(btnExportar))
-                .addGap(16, 16, 16))
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlCardDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
 
         pack();
@@ -179,8 +224,24 @@ public class FrmPedidos extends javax.swing.JFrame {
         return btnExportar;
     }
 
+    public javax.swing.JButton getBtnHoy() {
+        return btnHoy;
+    }
+
+    public javax.swing.JLabel getLblResumen() {
+        return lblResumen;
+    }
+
+    public javax.swing.JLabel getLblSeleccion() {
+        return lblSeleccion;
+    }
+
     public javax.swing.JLabel getLblTitulo() {
         return lblTitulo;
+    }
+
+    public javax.swing.JPanel getPnlCardDetalle() {
+        return pnlCardDetalle;
     }
 
     public javax.swing.JTable getTblDetalle() {
@@ -205,9 +266,13 @@ public class FrmPedidos extends javax.swing.JFrame {
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnConfirmar;
     private javax.swing.JButton btnExportar;
-    private javax.swing.JLabel lblEtqDetalle;
+    private javax.swing.JButton btnHoy;
     private javax.swing.JLabel lblEtqFecha;
+    private javax.swing.JLabel lblResumen;
+    private javax.swing.JLabel lblSeleccion;
+    private javax.swing.JLabel lblSubDetalle;
     private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel pnlCardDetalle;
     private javax.swing.JScrollPane scrDetalle;
     private javax.swing.JScrollPane scrPedidos;
     private javax.swing.JTable tblDetalle;
@@ -222,14 +287,18 @@ public class FrmPedidos extends javax.swing.JFrame {
      * ------------------------------------------------------------------------------------------------
      * lblTitulo                  | JLabel         | Título
      * lblEtqFecha                | JLabel         | Etiqueta
-     * txtFecha                   | JTextField     | Fecha (dd/mm/aaaa)
+     * txtFecha                   | JTextField     | Fecha dd/mm/aaaa
+     * btnHoy                     | JButton        | Botón «Hoy»
      * btnBuscar                  | JButton        | Botón «Buscar»
      * scrPedidos                 | JScrollPane    | Barra de desplazamiento de tblPedidos
-     * tblPedidos                 | JTable         | Pedidos del día
-     * lblEtqDetalle              | JLabel         | Etiqueta
+     * tblPedidos                 | JTable         | Pedidos
+     * lblResumen                 | JLabel         | Resumen: cantidad y total del día
+     * btnExportar                | JButton        | Botón «Exportar a Excel»
+     * pnlCardDetalle             | JPanel         | Detalle del pedido seleccionado
+     * lblSubDetalle              | JLabel         | Subtítulo
+     * lblSeleccion               | JLabel         | Pedido seleccionado
      * scrDetalle                 | JScrollPane    | Barra de desplazamiento de tblDetalle
      * tblDetalle                 | JTable         | Detalle del pedido
-     * btnConfirmar               | JButton        | Botón «Confirmar (enviar a cocina)»
-     * btnExportar                | JButton        | Botón «Exportar a Excel»
+     * btnConfirmar               | JButton        | Botón «Confirmar y enviar a cocina»
      */
 }

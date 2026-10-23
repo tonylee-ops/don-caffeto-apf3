@@ -6,6 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -30,9 +34,20 @@ public final class ExportarExcel {
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             Sheet hoja = libro.createSheet("Pedidos");
             String[] titulos = {"N°", "Fecha", "Modalidad", "Mesa", "Mesero", "Estado", "Total"};
+            Font negrita = libro.createFont();
+            negrita.setBold(true);
+            negrita.setColor(IndexedColors.WHITE.getIndex());
+            CellStyle estiloCabecera = libro.createCellStyle();
+            estiloCabecera.setFont(negrita);
+            estiloCabecera.setFillForegroundColor(IndexedColors.ORANGE.getIndex());
+            estiloCabecera.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            CellStyle estiloSoles = libro.createCellStyle();
+            estiloSoles.setDataFormat(libro.createDataFormat().getFormat("\"S/ \"#,##0.00"));
+
             Row cabecera = hoja.createRow(0);
             for (int i = 0; i < titulos.length; i++) {
                 cabecera.createCell(i).setCellValue(titulos[i]);
+                cabecera.getCell(i).setCellStyle(estiloCabecera);
             }
             int fila = 1;
             for (Pedido p : pedidos) {
@@ -44,6 +59,7 @@ public final class ExportarExcel {
                 r.createCell(4).setCellValue(p.getMesero());
                 r.createCell(5).setCellValue(p.getEstado());
                 r.createCell(6).setCellValue(p.getTotal().doubleValue());
+                r.getCell(6).setCellStyle(estiloSoles);
             }
             for (int i = 0; i < titulos.length; i++) {
                 hoja.autoSizeColumn(i);

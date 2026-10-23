@@ -41,6 +41,16 @@ public class PedidoServiceTest {
         assertEquals(3, pedido.getDetalles().get(0).getCantidad());
     }
 
+    @Test
+    public void restarHastaCeroQuitaLaLinea() {
+        service.agregarProducto(pedido, americano, 1);
+        service.cambiarCantidad(pedido, 0, +1);
+        assertEquals(2, pedido.getDetalles().get(0).getCantidad());
+        service.cambiarCantidad(pedido, 0, -1);
+        service.cambiarCantidad(pedido, 0, -1);
+        assertEquals(0, pedido.getDetalles().size());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void noAceptaCantidadCero() {
         service.agregarProducto(pedido, americano, 0);

@@ -6,10 +6,22 @@ Aplicación de escritorio en Java 17 (Swing) con MySQL para registrar los pedido
 
 | Pantalla | Qué hace |
 |---|---|
-| Iniciar sesión | Usuario y contraseña; bloqueo después de 3 intentos fallidos |
-| Menú principal | Muestra las opciones según el rol |
-| Nuevo pedido | Salón (con mesa), para llevar o delivery; agrega productos y calcula el total |
-| Pedidos | Lista por fecha, ver detalle, confirmar (enviar a cocina) y exportar a Excel |
+| Iniciar sesión | Usuario y contraseña, opción "Mostrar contraseña", bloqueo después de 3 intentos fallidos |
+| Menú principal | Barra superior, menú lateral y tarjetas; solo muestra lo que permite el rol |
+| Nuevo pedido | Carta con buscador y filtro por categoría, doble clic para agregar, botones + / − / Quitar, total en vivo; salón (mesa), para llevar o delivery |
+| Pedidos del día | Búsqueda por fecha, estados con color, resumen del día, detalle, confirmar (enviar a cocina) y exportar a Excel |
+
+### Interfaz y experiencia de usuario
+
+- Paleta naranja y café de la marca, tarjetas blancas, tablas con filas alternas y montos en soles (`S/ 12.00`).
+- Los campos que no aplican se desactivan (la mesa solo en salón, dirección y teléfono solo en delivery).
+- Los botones solo se activan cuando tienen sentido (Guardar con productos, Confirmar solo pedidos REGISTRADOS).
+- Confirmación antes de acciones importantes (enviar a cocina, borrar el pedido, cerrar sesión, salir).
+- Mensajes claros, textos de ayuda dentro de los campos y atajos de teclado: **Enter** para ingresar,
+  **Ctrl+N** nuevo pedido y **Ctrl+P** pedidos.
+- Si una ventana ya está abierta, se trae al frente en lugar de abrir otra.
+- El estilo se aplica por el nombre del componente (`btn`, `lbl`, `pnlCard`...), así que lo que agregues
+  en la pestaña Design de NetBeans sale con el mismo diseño.
 
 ## Arquitectura
 
