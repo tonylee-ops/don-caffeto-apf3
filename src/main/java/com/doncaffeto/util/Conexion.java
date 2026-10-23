@@ -1,29 +1,43 @@
 package com.doncaffeto.util;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Abre conexiones a MySQL con los datos de config.properties.
+ * Abre conexiones a MySQL. Los datos se leen de {@code config.properties} en la carpeta del
+ * proyecto; ese archivo no se sube a GitHub, así la contraseña nunca queda publicada.
  *
  * @author Equipo Don Caffeto
  */
 public final class Conexion {
 
-    private static final Properties CONFIG = new Properties();
-
-    static {
-        try (InputStream in = Conexion.class.getResourceAsStream("/config.properties")) {
-            CONFIG.load(in);
-        } catch (Exception e) {
-            throw new IllegalStateException("No se encontró config.properties", e);
-        }
-    }
+    private static Properties config;
 
     private Conexion() {
+    }
+
+    private static synchronized Properties config() throws SQLException {
+        if (config == null) {
+            Path archivo = Path.of("config.properties");
+            if (!Files.exists(archivo)) {
+                throw new SQLException("No existe config.properties. Copie config.example.properties "
+                        + "con ese nombre y escriba la clave de MySQL.");
+            }
+            Properties p = new Properties();
+            try (InputStream in = Files.newInputStream(archivo)) {
+                p.load(in);
+            } catch (IOException e) {
+                throw new SQLException("No se pudo leer config.properties", e);
+            }
+            config = p;
+        }
+        return config;
     }
 
     /**
@@ -31,7 +45,8 @@ public final class Conexion {
      * @throws SQLException si MySQL no responde o los datos son incorrectos
      */
     public static Connection obtener() throws SQLException {
-        return DriverManager.getConnection(CONFIG.getProperty("db.url"),
-                CONFIG.getProperty("db.user"), CONFIG.getProperty("db.password"));
+        Properties p = config();
+        return DriverManager.getConnection(p.getProperty("db.url"), p.getProperty("db.user"),
+                p.getProperty("db.password"));
     }
 }

@@ -19,9 +19,10 @@ public class MesaDAOImpl implements MesaDAO {
 
     @Override
     public List<Mesa> listarLibres() throws SQLException {
-        String sql = "SELECT id_mesa, numero, estado FROM mesa WHERE estado = 'LIBRE' ORDER BY numero";
         List<Mesa> lista = new ArrayList<>();
-        try (Connection cn = Conexion.obtener(); PreparedStatement ps = cn.prepareStatement(sql);
+        try (Connection cn = Conexion.obtener();
+             PreparedStatement ps = cn.prepareStatement(
+                     "SELECT id_mesa, numero, estado FROM mesas WHERE estado = 'LIBRE' ORDER BY numero");
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(new Mesa(rs.getInt("id_mesa"), rs.getInt("numero"), rs.getString("estado")));

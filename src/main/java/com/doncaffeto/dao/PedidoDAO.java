@@ -7,14 +7,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Acceso a datos de pedidos.
+ * Acceso a datos de pedidos, su detalle y sus observaciones.
  *
  * @author Equipo Don Caffeto
  */
 public interface PedidoDAO {
 
     /**
-     * Guarda el pedido y su detalle en una sola transacción.
+     * Guarda el pedido, su detalle y sus observaciones en una sola transacción y ocupa la mesa.
      *
      * @param pedido pedido a guardar
      * @return número del pedido generado
@@ -30,19 +30,27 @@ public interface PedidoDAO {
     List<Pedido> listarPorFecha(LocalDate fecha) throws SQLException;
 
     /**
+     * @param estados estados a buscar (por ejemplo PENDIENTE y EN_PREPARACION para cocina)
+     * @return pedidos en esos estados, del más antiguo al más nuevo
+     * @throws SQLException si falla la consulta
+     */
+    List<Pedido> listarPorEstado(String... estados) throws SQLException;
+
+    /**
      * @param idPedido número del pedido
-     * @return líneas del pedido
+     * @return productos del pedido con sus notas
      * @throws SQLException si falla la consulta
      */
     List<DetallePedido> listarDetalle(int idPedido) throws SQLException;
 
     /**
-     * Cambia el estado del pedido (usa el procedimiento sp_cambiar_estado_pedido).
+     * Cambia el estado solo si el pedido sigue en el estado esperado. Si se cancela, libera la mesa.
      *
-     * @param idPedido  número del pedido
-     * @param estado    estado nuevo
-     * @param idUsuario usuario que hace el cambio
-     * @throws SQLException si el cambio no es válido (por ejemplo, falta de stock)
+     * @param idPedido número del pedido
+     * @param actual   estado que debe tener ahora
+     * @param nuevo    estado nuevo
+     * @return true si se cambió; false si otro usuario ya lo había cambiado
+     * @throws SQLException si falla la actualización
      */
-    void cambiarEstado(int idPedido, String estado, int idUsuario) throws SQLException;
+    boolean cambiarEstado(int idPedido, String actual, String nuevo) throws SQLException;
 }

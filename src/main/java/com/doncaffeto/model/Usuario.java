@@ -1,7 +1,7 @@
 package com.doncaffeto.model;
 
 /**
- * Usuario del sistema (mesero, cajero, cocina o administrador).
+ * Usuario del sistema (ADMIN, MESERO, COCINA o CAJERO).
  *
  * @author Equipo Don Caffeto
  */
@@ -12,16 +12,17 @@ public class Usuario {
     private String passwordHash;
     private String nombres;
     private String rol;
+    private boolean activo = true;
 
-    /** Crea un usuario vacío. */
+    /** Crea un objeto vacío. */
     public Usuario() {
     }
 
     /**
      * @param idUsuario código del usuario
-     * @param username  nombre de acceso
-     * @param nombres   nombres de la persona
-     * @param rol       ADMIN, MESERO, COCINA o CAJERO
+     * @param username nombre de acceso
+     * @param nombres nombres de la persona
+     * @param rol rol: ADMIN, MESERO, COCINA o CAJERO
      */
     public Usuario(int idUsuario, String username, String nombres, String rol) {
         this.idUsuario = idUsuario;
@@ -31,32 +32,62 @@ public class Usuario {
     }
 
     /** @return código del usuario */
-    public int getIdUsuario() { return idUsuario; }
+    public int getIdUsuario() {
+        return idUsuario;
+    }
 
     /** @param idUsuario código del usuario */
-    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 
     /** @return nombre de acceso */
-    public String getUsername() { return username; }
+    public String getUsername() {
+        return username;
+    }
 
     /** @param username nombre de acceso */
-    public void setUsername(String username) { this.username = username; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     /** @return contraseña cifrada con BCrypt */
-    public String getPasswordHash() { return passwordHash; }
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 
     /** @param passwordHash contraseña cifrada con BCrypt */
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 
     /** @return nombres de la persona */
-    public String getNombres() { return nombres; }
+    public String getNombres() {
+        return nombres;
+    }
 
     /** @param nombres nombres de la persona */
-    public void setNombres(String nombres) { this.nombres = nombres; }
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
 
-    /** @return rol del usuario */
-    public String getRol() { return rol; }
+    /** @return rol: ADMIN, MESERO, COCINA o CAJERO */
+    public String getRol() {
+        return rol;
+    }
 
-    /** @param rol rol del usuario */
-    public void setRol(String rol) { this.rol = rol; }
+    /** @param rol rol: ADMIN, MESERO, COCINA o CAJERO */
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
+    /** @return true si puede ingresar */
+    public boolean isActivo() {
+        return activo;
+    }
+
+    /** @param activo true si puede ingresar */
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
 }

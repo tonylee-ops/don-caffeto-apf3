@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Acceso a datos de mesas.
+ * Acceso a datos de la tabla mesas.
  *
  * @author Equipo Don Caffeto
  */

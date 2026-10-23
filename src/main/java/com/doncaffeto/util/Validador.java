@@ -1,5 +1,9 @@
 package com.doncaffeto.util;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -8,6 +12,9 @@ import org.apache.commons.lang3.StringUtils;
  * @author Equipo Don Caffeto
  */
 public final class Validador {
+
+    /** Formato de fecha que se muestra y se escribe en las pantallas. */
+    public static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private Validador() {
     }
@@ -35,5 +42,32 @@ public final class Validador {
      */
     public static boolean esDni(String dni) {
         return StringUtils.isNumeric(dni) && dni.length() == 8;
+    }
+
+    /**
+     * @param texto monto escrito (acepta coma o punto decimal)
+     * @return el monto, o null si no es un número válido
+     */
+    public static BigDecimal monto(String texto) {
+        if (estaVacio(texto)) {
+            return null;
+        }
+        try {
+            return new BigDecimal(StringUtils.replace(texto.trim(), ",", ".")).setScale(2, java.math.RoundingMode.HALF_UP);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * @param texto fecha escrita como dd/mm/aaaa
+     * @return la fecha, o null si el formato no es válido
+     */
+    public static LocalDate fecha(String texto) {
+        try {
+            return LocalDate.parse(StringUtils.trimToEmpty(texto), FECHA);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 }

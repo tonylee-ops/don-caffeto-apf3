@@ -4,7 +4,6 @@ import com.doncaffeto.dao.PedidoDAO;
 import com.doncaffeto.model.DetallePedido;
 import com.doncaffeto.model.Pedido;
 import com.doncaffeto.util.Conexion;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +12,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,44 +22,71 @@ import java.util.List;
  */
 public class PedidoDAOImpl implements PedidoDAO {
 
+    private static final String SELECT = "SELECT p.id_pedido, p.id_usuario, p.id_mesa, m.numero AS mesa, "
+            + "u.nombres AS mesero, p.modalidad, p.estado, p.total, p.direccion, p.telefono, p.creado_en, "
+            + "(SELECT GROUP_CONCAT(o.texto SEPARATOR ' | ') FROM observaciones_pedido o "
+            + "WHERE o.id_pedido = p.id_pedido) AS observacion "
+            + "FROM pedidos p JOIN usuarios u ON u.id_usuario = p.id_usuario "
+            + "LEFT JOIN mesas m ON m.id_mesa = p.id_mesa ";
+
     @Override
     public int registrar(Pedido pedido) throws SQLException {
-        String sqlPedido = "INSERT INTO pedido (id_mesa, id_usuario, modalidad, direccion_entrega, telefono_contacto) "
-                + "VALUES (?, ?, ?, ?, ?)";
-        String sqlDetalle = "INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio_unitario) "
-                + "VALUES (?, ?, ?, ?)";
         try (Connection cn = Conexion.obtener()) {
             cn.setAutoCommit(false);
             try {
                 int idPedido;
-                try (PreparedStatement ps = cn.prepareStatement(sqlPedido, Statement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement ps = cn.prepareStatement("INSERT INTO pedidos (id_usuario, id_mesa, "
+                        + "modalidad, total, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS)) {
+                    ps.setInt(1, pedido.getIdUsuario());
                     if (pedido.getIdMesa() == null) {
-                        ps.setNull(1, Types.INTEGER);
+                        ps.setNull(2, Types.INTEGER);
                     } else {
-                        ps.setInt(1, pedido.getIdMesa());
+                        ps.setInt(2, pedido.getIdMesa());
                     }
-                    ps.setInt(2, pedido.getIdUsuario());
                     ps.setString(3, pedido.getModalidad());
-                    ps.setString(4, pedido.getDireccion());
-                    ps.setString(5, pedido.getTelefono());
+                    ps.setBigDecimal(4, pedido.getTotal());
+                    ps.setString(5, pedido.getDireccion());
+                    ps.setString(6, pedido.getTelefono());
                     ps.executeUpdate();
-                    try (ResultSet rs = ps.getGeneratedKeys()) {
-                        rs.next();
-                        idPedido = rs.getInt(1);
-                    }
+                    idPedido = idGenerado(ps);
                 }
-                try (PreparedStatement ps = cn.prepareStatement(sqlDetalle)) {
-                    for (DetallePedido d : pedido.getDetalles()) {
+                for (DetallePedido d : pedido.getDetalles()) {
+                    int idDetalle;
+                    try (PreparedStatement ps = cn.prepareStatement("INSERT INTO detalle_pedido (id_pedido, "
+                            + "id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)",
+                            Statement.RETURN_GENERATED_KEYS)) {
                         ps.setInt(1, idPedido);
                         ps.setInt(2, d.getIdProducto());
                         ps.setInt(3, d.getCantidad());
                         ps.setBigDecimal(4, d.getPrecioUnitario());
                         ps.executeUpdate();
+                        idDetalle = idGenerado(ps);
+                    }
+                    if (d.getNota() != null) {
+                        try (PreparedStatement ps = cn.prepareStatement(
+                                "INSERT INTO observaciones_detalle (id_detalle, texto) VALUES (?, ?)")) {
+                            ps.setInt(1, idDetalle);
+                            ps.setString(2, d.getNota());
+                            ps.executeUpdate();
+                        }
                     }
                 }
-                try (CallableStatement cs = cn.prepareCall("{call sp_recalcular_pedido(?)}")) {
-                    cs.setInt(1, idPedido);
-                    cs.execute();
+                if (pedido.getObservacion() != null) {
+                    try (PreparedStatement ps = cn.prepareStatement(
+                            "INSERT INTO observaciones_pedido (id_pedido, id_usuario, texto) VALUES (?, ?, ?)")) {
+                        ps.setInt(1, idPedido);
+                        ps.setInt(2, pedido.getIdUsuario());
+                        ps.setString(3, pedido.getObservacion());
+                        ps.executeUpdate();
+                    }
+                }
+                if (pedido.getIdMesa() != null) {
+                    try (PreparedStatement ps = cn.prepareStatement(
+                            "UPDATE mesas SET estado = 'OCUPADA' WHERE id_mesa = ?")) {
+                        ps.setInt(1, pedido.getIdMesa());
+                        ps.executeUpdate();
+                    }
                 }
                 cn.commit();
                 return idPedido;
@@ -72,40 +99,41 @@ public class PedidoDAOImpl implements PedidoDAO {
 
     @Override
     public List<Pedido> listarPorFecha(LocalDate fecha) throws SQLException {
-        String sql = "SELECT p.id_pedido, p.created_at, p.modalidad, m.numero AS mesa, u.nombres AS mesero, "
-                + "p.estado, p.total FROM pedido p JOIN usuario u ON u.id_usuario = p.id_usuario "
-                + "LEFT JOIN mesa m ON m.id_mesa = p.id_mesa WHERE DATE(p.created_at) = ? ORDER BY p.id_pedido DESC";
-        List<Pedido> lista = new ArrayList<>();
-        try (Connection cn = Conexion.obtener(); PreparedStatement ps = cn.prepareStatement(sql)) {
+        try (Connection cn = Conexion.obtener();
+             PreparedStatement ps = cn.prepareStatement(SELECT + "WHERE DATE(p.creado_en) = ? ORDER BY p.id_pedido DESC")) {
             ps.setObject(1, fecha);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Pedido p = new Pedido();
-                    p.setIdPedido(rs.getInt("id_pedido"));
-                    p.setFecha(rs.getTimestamp("created_at").toLocalDateTime());
-                    p.setModalidad(rs.getString("modalidad"));
-                    p.setNumeroMesa(rs.getObject("mesa", Integer.class));
-                    p.setMesero(rs.getString("mesero"));
-                    p.setEstado(rs.getString("estado"));
-                    p.setTotal(rs.getBigDecimal("total"));
-                    lista.add(p);
-                }
-            }
+            return leer(ps);
         }
-        return lista;
+    }
+
+    @Override
+    public List<Pedido> listarPorEstado(String... estados) throws SQLException {
+        String marcas = String.join(", ", Collections.nCopies(estados.length, "?"));
+        try (Connection cn = Conexion.obtener();
+             PreparedStatement ps = cn.prepareStatement(SELECT + "WHERE p.estado IN (" + marcas + ") ORDER BY p.id_pedido")) {
+            for (int i = 0; i < estados.length; i++) {
+                ps.setString(i + 1, estados[i]);
+            }
+            return leer(ps);
+        }
     }
 
     @Override
     public List<DetallePedido> listarDetalle(int idPedido) throws SQLException {
-        String sql = "SELECT d.id_producto, pr.nombre, d.cantidad, d.precio_unitario FROM detalle_pedido d "
-                + "JOIN producto pr ON pr.id_producto = d.id_producto WHERE d.id_pedido = ? ORDER BY d.id_detalle";
+        String sql = "SELECT d.id_producto, pr.nombre, d.cantidad, d.precio_unitario, "
+                + "(SELECT GROUP_CONCAT(o.texto SEPARATOR ', ') FROM observaciones_detalle o "
+                + "WHERE o.id_detalle = d.id_detalle) AS nota "
+                + "FROM detalle_pedido d JOIN productos pr ON pr.id_producto = d.id_producto "
+                + "WHERE d.id_pedido = ? ORDER BY d.id_detalle";
         List<DetallePedido> lista = new ArrayList<>();
         try (Connection cn = Conexion.obtener(); PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setInt(1, idPedido);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    lista.add(new DetallePedido(rs.getInt("id_producto"), rs.getString("nombre"),
-                            rs.getInt("cantidad"), rs.getBigDecimal("precio_unitario")));
+                    DetallePedido d = new DetallePedido(rs.getInt("id_producto"), rs.getString("nombre"),
+                            rs.getInt("cantidad"), rs.getBigDecimal("precio_unitario"));
+                    d.setNota(rs.getString("nota"));
+                    lista.add(d);
                 }
             }
         }
@@ -113,14 +141,72 @@ public class PedidoDAOImpl implements PedidoDAO {
     }
 
     @Override
-    public void cambiarEstado(int idPedido, String estado, int idUsuario) throws SQLException {
-        try (Connection cn = Conexion.obtener();
-             CallableStatement cs = cn.prepareCall("{call sp_cambiar_estado_pedido(?, ?, ?, ?)}")) {
-            cs.setInt(1, idPedido);
-            cs.setString(2, estado);
-            cs.setInt(3, idUsuario);
-            cs.setString(4, null);
-            cs.execute();
+    public boolean cambiarEstado(int idPedido, String actual, String nuevo) throws SQLException {
+        try (Connection cn = Conexion.obtener()) {
+            cn.setAutoCommit(false);
+            try {
+                int filas;
+                try (PreparedStatement ps = cn.prepareStatement(
+                        "UPDATE pedidos SET estado = ? WHERE id_pedido = ? AND estado = ?")) {
+                    ps.setString(1, nuevo);
+                    ps.setInt(2, idPedido);
+                    ps.setString(3, actual);
+                    filas = ps.executeUpdate();
+                }
+                if (filas == 1 && "CANCELADO".equals(nuevo)) {
+                    liberarMesa(cn, idPedido);
+                }
+                cn.commit();
+                return filas == 1;
+            } catch (SQLException e) {
+                cn.rollback();
+                throw e;
+            }
         }
+    }
+
+    /**
+     * Pone la mesa del pedido como LIBRE (se usa al cancelar y al cobrar).
+     *
+     * @param cn       conexión de la transacción en curso
+     * @param idPedido número del pedido
+     * @throws SQLException si falla la actualización
+     */
+    static void liberarMesa(Connection cn, int idPedido) throws SQLException {
+        try (PreparedStatement ps = cn.prepareStatement("UPDATE mesas SET estado = 'LIBRE' WHERE id_mesa = "
+                + "(SELECT id_mesa FROM pedidos WHERE id_pedido = ?)")) {
+            ps.setInt(1, idPedido);
+            ps.executeUpdate();
+        }
+    }
+
+    private static int idGenerado(PreparedStatement ps) throws SQLException {
+        try (ResultSet rs = ps.getGeneratedKeys()) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+
+    private List<Pedido> leer(PreparedStatement ps) throws SQLException {
+        List<Pedido> lista = new ArrayList<>();
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Pedido p = new Pedido();
+                p.setIdPedido(rs.getInt("id_pedido"));
+                p.setIdUsuario(rs.getInt("id_usuario"));
+                p.setIdMesa(rs.getObject("id_mesa", Integer.class));
+                p.setNumeroMesa(rs.getObject("mesa", Integer.class));
+                p.setMesero(rs.getString("mesero"));
+                p.setModalidad(rs.getString("modalidad"));
+                p.setEstado(rs.getString("estado"));
+                p.setTotal(rs.getBigDecimal("total"));
+                p.setDireccion(rs.getString("direccion"));
+                p.setTelefono(rs.getString("telefono"));
+                p.setObservacion(rs.getString("observacion"));
+                p.setFecha(rs.getTimestamp("creado_en").toLocalDateTime());
+                lista.add(p);
+            }
+        }
+        return lista;
     }
 }
