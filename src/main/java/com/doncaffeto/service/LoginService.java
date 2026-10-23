@@ -26,7 +26,7 @@ public class LoginService {
     private final Map<String, Integer> intentosFallidos = new HashMap<>();
 
     /**
-     * @param usuarioDAO acceso a datos de usuarios (se recibe la interfaz, no la clase MySQL)
+     * @param usuarioDAO acceso a usuarios (se recibe la interfaz, no la clase MySQL)
      */
     public LoginService(UsuarioDAO usuarioDAO) {
         this.usuarioDAO = usuarioDAO;
@@ -41,32 +41,25 @@ public class LoginService {
      */
     public Usuario ingresar(String username, String password) throws SQLException {
         if (Validador.estaVacio(username) || Validador.estaVacio(password)) {
-            throw new IllegalArgumentException("Ingrese usuario y contraseña.");
+            throw new IllegalArgumentException("Ingresa tu usuario y contraseña.");
         }
         String user = username.trim().toLowerCase();
         int intentos = intentosFallidos.getOrDefault(user, 0);
         if (intentos >= MAX_INTENTOS) {
             LOG.warn("Usuario bloqueado intentó ingresar: {}", user);
-            throw new IllegalArgumentException("Usuario bloqueado por " + MAX_INTENTOS + " intentos fallidos.");
+            throw new IllegalArgumentException("Usuario bloqueado por " + MAX_INTENTOS
+                    + " intentos fallidos. Pide al administrador que lo revise.");
         }
         Usuario u = usuarioDAO.buscarPorUsername(user);
         if (u == null || !BCrypt.checkpw(password, u.getPasswordHash())) {
             intentosFallidos.put(user, intentos + 1);
             LOG.warn("Inicio de sesión fallido: {}", user);
-            // mismo mensaje si el usuario no existe o la clave está mal (no se revela cuál falló)
+            // mismo mensaje si el usuario no existe o la clave está mal (no revela cuál falló)
             throw new IllegalArgumentException("Usuario o contraseña incorrectos. Intentos restantes: "
                     + (MAX_INTENTOS - intentos - 1));
         }
         intentosFallidos.remove(user);
         LOG.info("Ingresó {} ({})", user, u.getRol());
         return u;
-    }
-
-    /**
-     * @param rol rol del usuario
-     * @return true si puede registrar pedidos (solo MESERO y ADMIN)
-     */
-    public static boolean puedeRegistrarPedidos(String rol) {
-        return "MESERO".equals(rol) || "ADMIN".equals(rol);
     }
 }
