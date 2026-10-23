@@ -1,0 +1,13 @@
+digraph MVC {
+  rankdir=LR; fontname="Helvetica"; label="Arquitectura MVC - Don Caffeto (Avance 3)"; labelloc=t; fontsize=18;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, fillcolor="#FFF3E0", color="#E65100"];
+  edge [color="#BF360C", fontname="Helvetica", fontsize=9];
+  subgraph cluster_v { label="Vista (view)"; style=filled; fillcolor="#FFE0B2"; FrmLogin; FrmPrincipal; FrmPedido; FrmPedidos; }
+  subgraph cluster_c { label="Controlador (controller)"; style=filled; fillcolor="#FFCC80"; LoginController; PrincipalController; PedidoController; PedidosController; }
+  subgraph cluster_m { label="Modelo (service + model)"; style=filled; fillcolor="#FFB74D"; LoginService; PedidoService; Modelo [label="Usuario · Producto · Mesa\nPedido · DetallePedido"]; }
+  subgraph cluster_d { label="DAO"; style=filled; fillcolor="#FFA726"; DAO [label="UsuarioDAO · ProductoDAO\nMesaDAO · PedidoDAO"]; }
+  BD [shape=cylinder, fillcolor="#4E342E", fontcolor=white, label="MySQL\ndon_caffeto"];
+  FrmLogin -> LoginController; FrmPrincipal -> PrincipalController; FrmPedido -> PedidoController; FrmPedidos -> PedidosController;
+  LoginController -> LoginService; PedidoController -> PedidoService; PedidosController -> PedidoService; PrincipalController -> PedidoService [style=dashed];
+  LoginService -> DAO; PedidoService -> DAO; PedidoService -> Modelo [style=dotted, arrowhead=none]; DAO -> BD [label="JDBC"];
+}

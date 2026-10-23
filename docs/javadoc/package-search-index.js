@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.doncaffeto"},{"l":"com.doncaffeto.controller"},{"l":"com.doncaffeto.dao"},{"l":"com.doncaffeto.dao.impl"},{"l":"com.doncaffeto.model"},{"l":"com.doncaffeto.service"},{"l":"com.doncaffeto.util"},{"l":"com.doncaffeto.view"}];updateSearchResults();
