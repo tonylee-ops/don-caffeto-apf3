@@ -1,16 +1,20 @@
 digraph DAO {
-  rankdir=BT; fontname="Helvetica"; label="Patrón DAO"; labelloc=t; fontsize=18;
-  node [shape=record, style=filled, fillcolor="#FFF3E0", color="#E65100", fontname="Helvetica", fontsize=10];
+  rankdir=BT; fontname="Helvetica"; label="Patrón DAO"; labelloc=t; fontsize=18; nodesep=0.2;
+  node [shape=record, style=filled, fillcolor="#FFF3E0", color="#E65100", fontname="Helvetica", fontsize=9];
   edge [color="#BF360C", arrowhead=onormal, style=dashed];
-  U [label="{«interface»\nUsuarioDAO|+ buscarPorUsername(username)\l}"];
-  P [label="{«interface»\nProductoDAO|+ listarDisponibles()\l}"];
+  U [label="{«interface»\nUsuarioDAO|+ buscarPorUsername()\l+ listar()\l+ guardar()\l}"];
+  C [label="{«interface»\nCategoriaDAO|+ listar()\l}"];
+  P [label="{«interface»\nProductoDAO|+ listar()\l+ guardar()\l}"];
   M [label="{«interface»\nMesaDAO|+ listarLibres()\l}"];
-  D [label="{«interface»\nPedidoDAO|+ registrar(pedido)\l+ listarPorFecha(fecha)\l+ listarDetalle(idPedido)\l+ cambiarEstado(id, estado, usuario)\l}"];
-  UI [label="UsuarioDAOImpl", fillcolor="#FFCC80"]; PI [label="ProductoDAOImpl", fillcolor="#FFCC80"];
-  MI [label="MesaDAOImpl", fillcolor="#FFCC80"]; DI [label="PedidoDAOImpl", fillcolor="#FFCC80"];
-  UI -> U; PI -> P; MI -> M; DI -> D;
-  C [label="Conexion\n(DriverManager + config.properties)", fillcolor="#FFFFFF"];
-  BD [shape=cylinder, style=filled, fillcolor="#4E342E", fontcolor=white, label="MySQL"];
+  D [label="{«interface»\nPedidoDAO|+ registrar()  [transacción]\l+ listarPorFecha()\l+ listarPorEstado()\l+ listarDetalle()\l+ cambiarEstado()\l}"];
+  G [label="{«interface»\nPagoDAO|+ registrarCobro()  [transacción]\l}"];
+  R [label="{«interface»\nReporteDAO|+ ventasPorDia()\l+ productosMasVendidos()\l+ ventasPorMetodo()\l}"];
+  node [shape=box, fillcolor="#FFCC80"];
+  UI [label="UsuarioDAOImpl"]; CI [label="CategoriaDAOImpl"]; PI [label="ProductoDAOImpl"]; MI [label="MesaDAOImpl"];
+  DI [label="PedidoDAOImpl"]; GI [label="PagoDAOImpl"]; RI [label="ReporteDAOImpl"];
+  UI -> U; CI -> C; PI -> P; MI -> M; DI -> D; GI -> G; RI -> R;
+  X [label="Conexion\n(DriverManager + config.properties)", fillcolor="#FFFFFF"];
+  BD [shape=cylinder, fillcolor="#4E342E", fontcolor=white, label="MySQL"];
   edge [style=solid, arrowhead=vee, dir=back];
-  C -> UI; C -> PI; C -> MI; C -> DI; BD -> C;
+  X -> UI; X -> CI; X -> PI; X -> MI; X -> DI; X -> GI; X -> RI; BD -> X;
 }

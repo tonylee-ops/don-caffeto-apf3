@@ -9,9 +9,9 @@ digraph SOLID {
   node [fillcolor="#FFF3E0"];
   S1 [label="Cada capa hace una sola cosa: la vista dibuja,\nel controller atiende eventos, el service valida,\nel DAO guarda en MySQL"];
   O1 [label="Para cambiar de base de datos se crea otra\nimplementación del DAO sin tocar los servicios"];
-  L1 [label="LoginService funciona igual con UsuarioDAOImpl (MySQL)\no con el DAO falso de LoginServiceTest"];
-  I1 [label="Un DAO pequeño por tabla, solo con\nlos métodos que se usan en este avance"];
-  D1 [label="Los servicios reciben la interfaz DAO\npor el constructor (no la clase MySQL)"];
+  L1 [label="Los servicios funcionan igual con los DAO de MySQL\no con los DAO falsos de las pruebas JUnit"];
+  I1 [label="Un DAO pequeño por tema (usuarios, pedidos, pagos...)\nsolo con los métodos que se usan"];
+  D1 [label="Los servicios reciben la interfaz DAO por el constructor;\nsolo la clase Servicios crea las clases MySQL"];
   {rank=same; S; S1} {rank=same; O; O1} {rank=same; L; L1} {rank=same; I; I1} {rank=same; D; D1}
   S -> S1; O -> O1; L -> L1; I -> I1; D -> D1; S -> O -> L -> I -> D [style=invis];
 }
