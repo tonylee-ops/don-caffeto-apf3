@@ -162,6 +162,35 @@ public class PedidoService {
     }
 
     /**
+     * Agrega más productos al pedido de una mesa. La cocina los ve con la nota «Agregado» y, si el
+     * pedido ya estaba listo, vuelve a Pendiente para que los prepare.
+     *
+     * @param pedido  pedido de la mesa
+     * @param nuevos  productos a agregar
+     * @param usuario mesero o administrador
+     * @throws SQLException si falla la base de datos
+     */
+    public void agregarAPedido(Pedido pedido, List<DetallePedido> nuevos, Usuario usuario) throws SQLException {
+        Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
+        if (nuevos.isEmpty()) {
+            throw new IllegalArgumentException("Agrega al menos un producto.");
+        }
+        if ("CUENTA".equals(pedido.getEstadoMesa())) {
+            throw new IllegalArgumentException("La cuenta ya fue pedida: no se pueden agregar productos.");
+        }
+        BigDecimal importe = BigDecimal.ZERO;
+        for (DetallePedido d : nuevos) {
+            importe = importe.add(d.getImporte());
+            d.setNota(d.getNota() == null ? "Agregado" : "Agregado · " + d.getNota());
+        }
+        if (!pedidoDAO.agregarProductos(pedido.getIdPedido(), nuevos, importe)) {
+            throw new IllegalArgumentException("No se pudo agregar: la mesa ya pidió la cuenta o el pedido se cerró.");
+        }
+        LOG.info("Mesa {}: {} productos agregados al pedido {}", pedido.getNumeroMesa(), nuevos.size(),
+                pedido.getIdPedido());
+    }
+
+    /**
      * El mesero pide la cuenta: la mesa pasa a verde y el pedido aparece en caja.
      * Solo se puede cuando la cocina ya terminó el pedido.
      *

@@ -105,6 +105,26 @@ public class PedidoServiceTest {
     }
 
     @Test
+    public void agregarProductosSumaElImporteYMarcaLaNota() throws Exception {
+        Pedido nuevos = new Pedido();
+        service.agregarProducto(nuevos, sandwich, 2, null);
+        service.agregarProducto(nuevos, americano, 1, "sin azúcar");
+        service.agregarAPedido(DatosFalsos.pedidoDeMesa(5, 3, "LISTO", "OCUPADA", "22.00"), nuevos.getDetalles(),
+                DatosFalsos.MESERO);
+        assertEquals(new BigDecimal("26.00"), dao.importeAgregado);
+        assertEquals("Agregado", nuevos.getDetalles().get(0).getNota());
+        assertEquals("Agregado · sin azúcar", nuevos.getDetalles().get(1).getNota());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void noSeAgregaSiYaPidieronLaCuenta() throws Exception {
+        Pedido nuevos = new Pedido();
+        service.agregarProducto(nuevos, sandwich, 1, null);
+        service.agregarAPedido(DatosFalsos.pedidoDeMesa(5, 3, "LISTO", "CUENTA", "22.00"), nuevos.getDetalles(),
+                DatosFalsos.MESERO);
+    }
+
+    @Test
     public void laCuentaSePideCuandoLaCocinaTermino() throws Exception {
         service.pedirCuenta(DatosFalsos.pedidoDeMesa(5, 3, "LISTO", "OCUPADA", "22.00"), DatosFalsos.MESERO);
         assertEquals(Integer.valueOf(3), mesas.cuentas.get(0));

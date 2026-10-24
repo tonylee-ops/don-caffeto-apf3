@@ -55,11 +55,18 @@ public class DatosFalsos {
     static class PedidoDAOFalso implements PedidoDAO {
         final List<String> cambios = new ArrayList<>();
         Pedido registrado;
+        BigDecimal importeAgregado;
 
         @Override
         public int registrar(Pedido pedido) {
             registrado = pedido;
             return 10;
+        }
+
+        @Override
+        public boolean agregarProductos(int idPedido, List<DetallePedido> nuevos, BigDecimal importe) {
+            importeAgregado = importe;
+            return true;
         }
 
         @Override

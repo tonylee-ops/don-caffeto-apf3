@@ -52,25 +52,7 @@ public class PedidoDAOImpl implements PedidoDAO {
                     idPedido = idGenerado(ps);
                 }
                 for (DetallePedido d : pedido.getDetalles()) {
-                    int idDetalle;
-                    try (PreparedStatement ps = cn.prepareStatement("INSERT INTO detalle_pedido (id_pedido, "
-                            + "id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)",
-                            Statement.RETURN_GENERATED_KEYS)) {
-                        ps.setInt(1, idPedido);
-                        ps.setInt(2, d.getIdProducto());
-                        ps.setInt(3, d.getCantidad());
-                        ps.setBigDecimal(4, d.getPrecioUnitario());
-                        ps.executeUpdate();
-                        idDetalle = idGenerado(ps);
-                    }
-                    if (d.getNota() != null) {
-                        try (PreparedStatement ps = cn.prepareStatement(
-                                "INSERT INTO observaciones_detalle (id_detalle, texto) VALUES (?, ?)")) {
-                            ps.setInt(1, idDetalle);
-                            ps.setString(2, d.getNota());
-                            ps.executeUpdate();
-                        }
-                    }
+                    insertarLinea(cn, idPedido, d);
                 }
                 if (pedido.getObservacion() != null) {
                     try (PreparedStatement ps = cn.prepareStatement(
@@ -95,6 +77,59 @@ public class PedidoDAOImpl implements PedidoDAO {
             } catch (SQLException e) {
                 cn.rollback();
                 throw e;
+            }
+        }
+    }
+
+    @Override
+    public boolean agregarProductos(int idPedido, List<DetallePedido> nuevos, java.math.BigDecimal importe)
+            throws SQLException {
+        try (Connection cn = Conexion.obtener()) {
+            cn.setAutoCommit(false);
+            try {
+                // solo si la mesa sigue OCUPADA (no pidió la cuenta) y el pedido no se cerró
+                try (PreparedStatement ps = cn.prepareStatement("UPDATE pedidos p JOIN mesas m ON m.id_mesa = p.id_mesa "
+                        + "SET p.total = p.total + ?, "
+                        + "p.estado = CASE WHEN p.estado = 'LISTO' THEN 'PENDIENTE' ELSE p.estado END "
+                        + "WHERE p.id_pedido = ? AND m.estado = 'OCUPADA' "
+                        + "AND p.estado IN ('PENDIENTE', 'EN_PREPARACION', 'LISTO')")) {
+                    ps.setBigDecimal(1, importe);
+                    ps.setInt(2, idPedido);
+                    if (ps.executeUpdate() == 0) {
+                        cn.rollback();
+                        return false;
+                    }
+                }
+                for (DetallePedido d : nuevos) {
+                    insertarLinea(cn, idPedido, d);
+                }
+                cn.commit();
+                return true;
+            } catch (SQLException e) {
+                cn.rollback();
+                throw e;
+            }
+        }
+    }
+
+    /** Guarda una línea del pedido y, si tiene, su nota para cocina. */
+    private static void insertarLinea(Connection cn, int idPedido, DetallePedido d) throws SQLException {
+        int idDetalle;
+        try (PreparedStatement ps = cn.prepareStatement("INSERT INTO detalle_pedido (id_pedido, "
+                + "id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, idPedido);
+            ps.setInt(2, d.getIdProducto());
+            ps.setInt(3, d.getCantidad());
+            ps.setBigDecimal(4, d.getPrecioUnitario());
+            ps.executeUpdate();
+            idDetalle = idGenerado(ps);
+        }
+        if (d.getNota() != null) {
+            try (PreparedStatement ps = cn.prepareStatement(
+                    "INSERT INTO observaciones_detalle (id_detalle, texto) VALUES (?, ?)")) {
+                ps.setInt(1, idDetalle);
+                ps.setString(2, d.getNota());
+                ps.executeUpdate();
             }
         }
     }

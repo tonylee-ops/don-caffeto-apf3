@@ -24,6 +24,20 @@ public interface PedidoDAO {
     int registrar(Pedido pedido) throws SQLException;
 
     /**
+     * Agrega productos a un pedido de mesa que aún no pidió la cuenta, en una sola transacción:
+     * guarda las líneas, suma su importe al total y, si el pedido ya estaba LISTO, lo devuelve a
+     * PENDIENTE para que la cocina prepare lo nuevo.
+     *
+     * @param idPedido número del pedido
+     * @param nuevos   productos a agregar
+     * @param importe  suma de los importes nuevos
+     * @return false si la mesa ya pidió la cuenta o el pedido se cerró
+     * @throws SQLException si falla el registro
+     */
+    boolean agregarProductos(int idPedido, List<DetallePedido> nuevos, java.math.BigDecimal importe)
+            throws SQLException;
+
+    /**
      * @param fecha día a consultar
      * @return pedidos registrados ese día
      * @throws SQLException si falla la consulta
