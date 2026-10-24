@@ -8,19 +8,10 @@ import com.doncaffeto.model.Producto;
 import com.doncaffeto.model.Usuario;
 import com.doncaffeto.util.Tema;
 import com.doncaffeto.view.FrmPedido;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.RowFilter;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 
 /**
  * Controla el registro de un pedido nuevo (mesero). Se abre desde el mapa de mesas con la mesa
@@ -39,8 +30,7 @@ public class PedidoController {
     private final Mesa mesa;
     private final String modalidadFija;
     private final Runnable alGuardar;
-    private List<Producto> productos = new ArrayList<>();
-    private TableRowSorter<DefaultTableModel> filtro;
+    private final Carta carta;
     private Pedido pedido = new Pedido();
 
     /**
@@ -68,40 +58,14 @@ public class PedidoController {
         vista.getBtnLimpiar().addActionListener(e -> limpiar());
         vista.getBtnGuardar().addActionListener(e -> guardar());
         vista.getCmbModalidad().addActionListener(e -> cambiarModalidad());
-        vista.getCmbCategoria().addActionListener(e -> filtrar());
-        vista.getTxtBuscar().getDocument().addDocumentListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e) { filtrar(); }
-            @Override public void removeUpdate(DocumentEvent e) { filtrar(); }
-            @Override public void changedUpdate(DocumentEvent e) { filtrar(); }
-        });
-        vista.getTblProductos().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    agregar();
-                }
-            }
-        });
+        carta = new Carta(vista.getTblProductos(), vista.getTxtBuscar(), vista.getCmbCategoria(), this::agregar);
         vista.getTblDetalle().getSelectionModel().addListSelectionListener(e -> actualizarBotones());
     }
 
     /** Carga la carta y las mesas libres, y muestra la pantalla. */
     public void iniciar() {
         try {
-            productos = servicios.productos.carta();
-            List<Object[]> filas = new ArrayList<>();
-            TreeSet<String> categorias = new TreeSet<>();
-            for (Producto p : productos) {
-                filas.add(new Object[]{p.getNombre(), p.getCategoria(), p.getPrecio()});
-                categorias.add(p.getCategoria());
-            }
-            Tablas.llenar(vista.getTblProductos(), filas);
-            filtro = new TableRowSorter<>((DefaultTableModel) vista.getTblProductos().getModel());
-            vista.getTblProductos().setRowSorter(filtro);
-            DefaultComboBoxModel<Object> cats = new DefaultComboBoxModel<>();
-            cats.addElement("Todas las categorías");
-            categorias.forEach(cats::addElement);
-            vista.getCmbCategoria().setModel(cats);
+            carta.mostrar(servicios.productos.carta());
         } catch (SQLException e) {
             Mensajes.de(vista, e);
         }
@@ -148,27 +112,12 @@ public class PedidoController {
         }
     }
 
-    /** Filtra la carta por texto y categoría mientras el usuario escribe. */
-    private void filtrar() {
-        if (filtro == null) {
-            return;
-        }
-        List<RowFilter<DefaultTableModel, Integer>> filtros = new ArrayList<>();
-        filtros.add(RowFilter.regexFilter("(?i)" + Pattern.quote(vista.getTxtBuscar().getText().trim()), 0));
-        if (vista.getCmbCategoria().getSelectedIndex() > 0) {
-            String categoria = String.valueOf(vista.getCmbCategoria().getSelectedItem());
-            filtros.add(RowFilter.regexFilter("^" + Pattern.quote(categoria) + "$", 1));
-        }
-        filtro.setRowFilter(RowFilter.andFilter(filtros));
-    }
-
     private void agregar() {
-        int fila = vista.getTblProductos().getSelectedRow();
-        if (fila < 0) {
+        Producto p = carta.seleccionado();
+        if (p == null) {
             Mensajes.aviso(vista, "Selecciona un producto de la carta.");
             return;
         }
-        Producto p = productos.get(vista.getTblProductos().convertRowIndexToModel(fila));
         try {
             servicios.pedidos.agregarProducto(pedido, p, (Integer) vista.getSpnCantidad().getValue(),
                     vista.getTxtNota().getText());

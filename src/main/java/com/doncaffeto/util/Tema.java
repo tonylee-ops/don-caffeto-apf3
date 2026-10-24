@@ -179,6 +179,9 @@ public final class Tema {
         } else if (nombre.equals("lblObservacion")) {
             l.setForeground(NARANJA_OSCURO);
             l.setFont(new Font(LETRA, Font.ITALIC, 13));
+        } else if (nombre.equals("lblTotalNuevos")) {
+            l.setForeground(NARANJA);
+            l.setFont(new Font(LETRA, Font.BOLD, 18));
         } else if (nombre.equals("lblTotal")) {
             l.setForeground(NARANJA);
             l.setFont(new Font(LETRA, Font.BOLD, 26));
@@ -203,14 +206,14 @@ public final class Tema {
             b.setHorizontalAlignment(SwingConstants.LEFT);
         } else if (nombre.equals("btnCerrarSesion")) {
             colores(b, NARANJA, NARANJA_OSCURO, Color.WHITE, BorderFactory.createLineBorder(Color.WHITE, 1, true));
-        } else if (StringUtils.equalsAny(nombre, "btnQuitar", "btnLimpiar", "btnAnular")) {
+        } else if (StringUtils.equalsAny(nombre, "btnQuitar", "btnLimpiar", "btnAnular", "btnQuitarNuevo")) {
             colores(b, Color.WHITE, new Color(0xFFF0F0), ROJO, BorderFactory.createLineBorder(ROJO, 1, true));
         } else if (StringUtils.equalsAny(nombre, "btnHoy", "btnExportar", "btnMas", "btnMenos", "btnActualizar",
                 "btnNuevo")) {
             colores(b, Color.WHITE, NARANJA_CLARO, NARANJA, BorderFactory.createLineBorder(NARANJA, 1, true));
         } else if (nombre.equals("btnCerrar")) {
             colores(b, Color.WHITE, NARANJA_CLARO, NARANJA, BorderFactory.createLineBorder(NARANJA, 1, true));
-        } else if (StringUtils.equalsAny(nombre, "btnGuardar", "btnCobrar", "btnListo", "btnPedirCuenta")) {
+        } else if (StringUtils.equalsAny(nombre, "btnGuardar", "btnCobrar", "btnListo", "btnPedirCuenta", "btnEnviar")) {
             colores(b, VERDE, new Color(0x237A35), Color.WHITE, BorderFactory.createEmptyBorder(1, 6, 1, 6));
         } else {
             colores(b, NARANJA, NARANJA_OSCURO, Color.WHITE, BorderFactory.createEmptyBorder(1, 6, 1, 6));

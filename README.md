@@ -23,7 +23,10 @@ Flujo de un pedido: **Pendiente → En preparación → Listo → Pagado** (o **
 
 - El cronómetro lo calcula MySQL (`ocupada_desde`), así todos los equipos ven el mismo tiempo.
 - El mapa se actualiza solo cada 10 segundos: cuando la caja cobra, la mesa vuelve a gris sin hacer nada.
-- Los pedidos de salón solo se ven **entrando a la mesa** (detalle, estado en cocina, total y botón *Pedir la cuenta*).
+- Los pedidos de salón solo se ven **entrando a la mesa**. A la **izquierda** está el pedido (lo ya enviado,
+  estado en cocina, total y *Pedir la cuenta*); en **medio**, la carta para **agregar más productos**: se eligen,
+  quedan en "Por enviar" y con *Enviar a cocina* se suman al pedido. La cocina los ve con la nota «Agregado» y,
+  si el pedido ya estaba listo, vuelve a Pendiente. Con la cuenta pedida ya no se puede agregar.
 
 Capturas de todas las pantallas: `docs/capturas/`.
 
@@ -90,7 +93,7 @@ DAOs falsos en memoria, así que no necesitan MySQL:
 
 | Clase | Qué prueba |
 |---|---|
-| `PedidoServiceTest` | Total del pedido, notas, cantidades, mesa y delivery obligatorios, anulación, pedir la cuenta solo cuando la cocina terminó, el cajero no puede crear pedidos |
+| `PedidoServiceTest` | Total del pedido, notas, cantidades, mesa y delivery obligatorios, anulación, pedir la cuenta solo cuando la cocina terminó, agregar productos a una mesa, el cajero no puede crear pedidos |
 | `CocinaServiceTest` | Pendiente → En preparación → Listo; el mesero no cambia estados de cocina |
 | `PagoServiceTest` | IGV incluido, vuelto, efectivo insuficiente, una mesa solo se cobra con la cuenta pedida, el mesero no puede cobrar |
 | `LoginServiceTest` | Contraseña BCrypt, mismo mensaje si el usuario no existe, bloqueo tras 3 intentos, permisos por rol |
