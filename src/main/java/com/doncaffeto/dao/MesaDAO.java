@@ -12,8 +12,17 @@ import java.util.List;
 public interface MesaDAO {
 
     /**
-     * @return mesas libres
+     * @return las mesas del salón con su estado y el tiempo que llevan ocupadas
      * @throws SQLException si falla la consulta
      */
-    List<Mesa> listarLibres() throws SQLException;
+    List<Mesa> listar() throws SQLException;
+
+    /**
+     * Pone la mesa en CUENTA (verde) si estaba OCUPADA.
+     *
+     * @param idMesa código de la mesa
+     * @return true si se cambió
+     * @throws SQLException si falla la actualización
+     */
+    boolean pedirCuenta(int idMesa) throws SQLException;
 }

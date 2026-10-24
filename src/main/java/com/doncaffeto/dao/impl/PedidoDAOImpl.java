@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class PedidoDAOImpl implements PedidoDAO {
 
-    private static final String SELECT = "SELECT p.id_pedido, p.id_usuario, p.id_mesa, m.numero AS mesa, "
+    private static final String SELECT = "SELECT p.id_pedido, p.id_usuario, p.id_mesa, m.numero AS mesa, m.estado AS estado_mesa, "
             + "u.nombres AS mesero, p.modalidad, p.estado, p.total, p.direccion, p.telefono, p.creado_en, "
             + "(SELECT GROUP_CONCAT(o.texto SEPARATOR ' | ') FROM observaciones_pedido o "
             + "WHERE o.id_pedido = p.id_pedido) AS observacion "
@@ -82,10 +82,12 @@ public class PedidoDAOImpl implements PedidoDAO {
                     }
                 }
                 if (pedido.getIdMesa() != null) {
-                    try (PreparedStatement ps = cn.prepareStatement(
-                            "UPDATE mesas SET estado = 'OCUPADA' WHERE id_mesa = ?")) {
+                    try (PreparedStatement ps = cn.prepareStatement("UPDATE mesas SET estado = 'OCUPADA', "
+                            + "ocupada_desde = NOW() WHERE id_mesa = ? AND estado = 'LIBRE'")) {
                         ps.setInt(1, pedido.getIdMesa());
-                        ps.executeUpdate();
+                        if (ps.executeUpdate() != 1) {
+                            throw new SQLException("La mesa ya tiene un pedido. Actualiza el mapa de mesas.");
+                        }
                     }
                 }
                 cn.commit();
@@ -115,6 +117,16 @@ public class PedidoDAOImpl implements PedidoDAO {
                 ps.setString(i + 1, estados[i]);
             }
             return leer(ps);
+        }
+    }
+
+    @Override
+    public Pedido pedidoDeMesa(int idMesa) throws SQLException {
+        try (Connection cn = Conexion.obtener(); PreparedStatement ps = cn.prepareStatement(SELECT
+                + "WHERE p.id_mesa = ? AND p.estado NOT IN ('PAGADO', 'CANCELADO') ORDER BY p.id_pedido DESC LIMIT 1")) {
+            ps.setInt(1, idMesa);
+            List<Pedido> lista = leer(ps);
+            return lista.isEmpty() ? null : lista.get(0);
         }
     }
 
@@ -166,14 +178,14 @@ public class PedidoDAOImpl implements PedidoDAO {
     }
 
     /**
-     * Pone la mesa del pedido como LIBRE (se usa al cancelar y al cobrar).
+     * Pone la mesa del pedido como LIBRE (gris) y detiene su cronómetro. Se usa al cancelar y al cobrar.
      *
      * @param cn       conexión de la transacción en curso
      * @param idPedido número del pedido
      * @throws SQLException si falla la actualización
      */
     static void liberarMesa(Connection cn, int idPedido) throws SQLException {
-        try (PreparedStatement ps = cn.prepareStatement("UPDATE mesas SET estado = 'LIBRE' WHERE id_mesa = "
+        try (PreparedStatement ps = cn.prepareStatement("UPDATE mesas SET estado = 'LIBRE', ocupada_desde = NULL WHERE id_mesa = "
                 + "(SELECT id_mesa FROM pedidos WHERE id_pedido = ?)")) {
             ps.setInt(1, idPedido);
             ps.executeUpdate();
@@ -196,6 +208,7 @@ public class PedidoDAOImpl implements PedidoDAO {
                 p.setIdUsuario(rs.getInt("id_usuario"));
                 p.setIdMesa(rs.getObject("id_mesa", Integer.class));
                 p.setNumeroMesa(rs.getObject("mesa", Integer.class));
+                p.setEstadoMesa(rs.getString("estado_mesa"));
                 p.setMesero(rs.getString("mesero"));
                 p.setModalidad(rs.getString("modalidad"));
                 p.setEstado(rs.getString("estado"));

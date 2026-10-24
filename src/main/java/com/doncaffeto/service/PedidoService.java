@@ -116,7 +116,8 @@ public class PedidoService {
     }
 
     /**
-     * Valida y guarda el pedido. Queda PENDIENTE y aparece en la pantalla de cocina.
+     * Valida y guarda el pedido. Queda PENDIENTE, aparece en la pantalla de cocina y su mesa
+     * pasa a naranja.
      *
      * @param pedido  pedido a guardar
      * @param usuario mesero que lo registra
@@ -138,11 +139,48 @@ public class PedidoService {
     }
 
     /**
-     * @return mesas libres para pedidos de salón
+     * @param usuario mesero o administrador
+     * @return las mesas del salón con su estado y cronómetro
      * @throws SQLException si falla la base de datos
      */
-    public List<Mesa> mesasLibres() throws SQLException {
-        return mesaDAO.listarLibres();
+    public List<Mesa> mesas(Usuario usuario) throws SQLException {
+        Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
+        return ImmutableList.copyOf(mesaDAO.listar());
+    }
+
+    /**
+     * Los pedidos de salón solo se ven entrando a su mesa.
+     *
+     * @param mesa    mesa elegida en el mapa
+     * @param usuario mesero o administrador
+     * @return el pedido abierto de la mesa, o null si está libre
+     * @throws SQLException si falla la base de datos
+     */
+    public Pedido pedidoDeMesa(Mesa mesa, Usuario usuario) throws SQLException {
+        Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
+        return pedidoDAO.pedidoDeMesa(mesa.getIdMesa());
+    }
+
+    /**
+     * El mesero pide la cuenta: la mesa pasa a verde y el pedido aparece en caja.
+     * Solo se puede cuando la cocina ya terminó el pedido.
+     *
+     * @param pedido  pedido de la mesa
+     * @param usuario mesero o administrador
+     * @throws SQLException si falla la base de datos
+     */
+    public void pedirCuenta(Pedido pedido, Usuario usuario) throws SQLException {
+        Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
+        if (pedido.getIdMesa() == null) {
+            throw new IllegalArgumentException("Solo los pedidos de salón piden la cuenta.");
+        }
+        if (!"LISTO".equals(pedido.getEstado())) {
+            throw new IllegalArgumentException("La cocina todavía no termina este pedido.");
+        }
+        if (!mesaDAO.pedirCuenta(pedido.getIdMesa())) {
+            throw new IllegalArgumentException("La cuenta de esta mesa ya fue pedida.");
+        }
+        LOG.info("Mesa {} pidió la cuenta (pedido {})", pedido.getNumeroMesa(), pedido.getIdPedido());
     }
 
     /**

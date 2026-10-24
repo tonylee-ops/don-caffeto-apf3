@@ -27,6 +27,30 @@ public class DatosFalsos {
         return p;
     }
 
+    static Pedido pedidoDeMesa(int id, int mesa, String estado, String estadoMesa, String total) {
+        Pedido p = pedido(id, estado, total);
+        p.setIdMesa(mesa);
+        p.setNumeroMesa(mesa);
+        p.setEstadoMesa(estadoMesa);
+        return p;
+    }
+
+    /** MesaDAO que anota a qué mesas se les pidió la cuenta. */
+    static class MesaDAOFalso implements com.doncaffeto.dao.MesaDAO {
+        final List<Integer> cuentas = new ArrayList<>();
+
+        @Override
+        public List<com.doncaffeto.model.Mesa> listar() {
+            return new ArrayList<>();
+        }
+
+        @Override
+        public boolean pedirCuenta(int idMesa) {
+            cuentas.add(idMesa);
+            return true;
+        }
+    }
+
     /** PedidoDAO que guarda en una lista y anota los cambios de estado. */
     static class PedidoDAOFalso implements PedidoDAO {
         final List<String> cambios = new ArrayList<>();
@@ -46,6 +70,11 @@ public class DatosFalsos {
         @Override
         public List<Pedido> listarPorEstado(String... estados) {
             return new ArrayList<>();
+        }
+
+        @Override
+        public Pedido pedidoDeMesa(int idMesa) {
+            return null;
         }
 
         @Override

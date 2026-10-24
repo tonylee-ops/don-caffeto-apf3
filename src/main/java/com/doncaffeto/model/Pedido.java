@@ -17,6 +17,7 @@ public class Pedido {
     private String mesero;
     private Integer idMesa;
     private Integer numeroMesa;
+    private String estadoMesa;
     private String modalidad;
     private String estado;
     private String direccion;
@@ -78,6 +79,16 @@ public class Pedido {
     /** @param numeroMesa número de la mesa (solo salón) */
     public void setNumeroMesa(Integer numeroMesa) {
         this.numeroMesa = numeroMesa;
+    }
+
+    /** @return estado de la mesa (LIBRE, OCUPADA o CUENTA); null si no es de salón */
+    public String getEstadoMesa() {
+        return estadoMesa;
+    }
+
+    /** @param estadoMesa estado de la mesa */
+    public void setEstadoMesa(String estadoMesa) {
+        this.estadoMesa = estadoMesa;
     }
 
     /** @return SALON, PARA_LLEVAR o DELIVERY */

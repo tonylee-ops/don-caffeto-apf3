@@ -18,16 +18,28 @@ import java.util.List;
 public class MesaDAOImpl implements MesaDAO {
 
     @Override
-    public List<Mesa> listarLibres() throws SQLException {
+    public List<Mesa> listar() throws SQLException {
+        String sql = "SELECT id_mesa, numero, capacidad, estado, "
+                + "COALESCE(TIMESTAMPDIFF(SECOND, ocupada_desde, NOW()), 0) AS segundos FROM mesas ORDER BY numero";
         List<Mesa> lista = new ArrayList<>();
-        try (Connection cn = Conexion.obtener();
-             PreparedStatement ps = cn.prepareStatement(
-                     "SELECT id_mesa, numero, estado FROM mesas WHERE estado = 'LIBRE' ORDER BY numero");
+        try (Connection cn = Conexion.obtener(); PreparedStatement ps = cn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                lista.add(new Mesa(rs.getInt("id_mesa"), rs.getInt("numero"), rs.getString("estado")));
+                Mesa m = new Mesa(rs.getInt("id_mesa"), rs.getInt("numero"), rs.getString("estado"));
+                m.setCapacidad(rs.getInt("capacidad"));
+                m.setSegundosOcupada(rs.getLong("segundos"));
+                lista.add(m);
             }
         }
         return lista;
+    }
+
+    @Override
+    public boolean pedirCuenta(int idMesa) throws SQLException {
+        try (Connection cn = Conexion.obtener(); PreparedStatement ps = cn.prepareStatement(
+                "UPDATE mesas SET estado = 'CUENTA' WHERE id_mesa = ? AND estado = 'OCUPADA'")) {
+            ps.setInt(1, idMesa);
+            return ps.executeUpdate() == 1;
+        }
     }
 }

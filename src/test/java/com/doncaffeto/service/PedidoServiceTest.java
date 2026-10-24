@@ -15,6 +15,7 @@ import org.junit.Test;
 public class PedidoServiceTest {
 
     private DatosFalsos.PedidoDAOFalso dao;
+    private DatosFalsos.MesaDAOFalso mesas;
     private PedidoService service;
     private Pedido pedido;
     private Producto americano;
@@ -23,7 +24,8 @@ public class PedidoServiceTest {
     @Before
     public void preparar() {
         dao = new DatosFalsos.PedidoDAOFalso();
-        service = new PedidoService(dao, null);
+        mesas = new DatosFalsos.MesaDAOFalso();
+        service = new PedidoService(dao, mesas);
         pedido = new Pedido();
         americano = new Producto(2, "Americano", "Cafés calientes", new BigDecimal("6.00"));
         sandwich = new Producto(10, "Sándwich de pollo", "Sándwiches", new BigDecimal("10.00"));
@@ -100,6 +102,23 @@ public class PedidoServiceTest {
         pedido.setModalidad("PARA_LLEVAR");
         service.agregarProducto(pedido, sandwich, 1, null);
         service.guardar(pedido, DatosFalsos.CAJERO);
+    }
+
+    @Test
+    public void laCuentaSePideCuandoLaCocinaTermino() throws Exception {
+        service.pedirCuenta(DatosFalsos.pedidoDeMesa(5, 3, "LISTO", "OCUPADA", "22.00"), DatosFalsos.MESERO);
+        assertEquals(Integer.valueOf(3), mesas.cuentas.get(0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void noSePideCuentaSiLaCocinaNoTermina() throws Exception {
+        service.pedirCuenta(DatosFalsos.pedidoDeMesa(5, 3, "EN_PREPARACION", "OCUPADA", "22.00"),
+                DatosFalsos.MESERO);
+    }
+
+    @Test(expected = SecurityException.class)
+    public void laCocinaNoVeLasMesas() throws Exception {
+        service.mesas(DatosFalsos.COCINA);
     }
 
     @Test

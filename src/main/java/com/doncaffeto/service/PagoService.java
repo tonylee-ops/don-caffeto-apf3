@@ -8,6 +8,7 @@ import com.doncaffeto.model.Usuario;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,16 +58,30 @@ public class PagoService {
 
     /**
      * @param usuario cajero o administrador
-     * @return pedidos LISTOS para cobrar
+     * @return pedidos LISTOS para cobrar (los de salón, solo si el mesero pidió la cuenta)
      * @throws SQLException si falla la base de datos
      */
     public List<Pedido> porCobrar(Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.CAJA);
-        return pedidoDAO.listarPorEstado("LISTO");
+        List<Pedido> lista = new ArrayList<>();
+        for (Pedido p : pedidoDAO.listarPorEstado("LISTO")) {
+            if (puedeCobrarse(p)) {
+                lista.add(p);
+            }
+        }
+        return lista;
     }
 
     /**
-     * Registra el cobro en una transacción (pago + venta + pedido PAGADO + mesa libre).
+     * @param p pedido LISTO
+     * @return true si es para llevar o delivery, o si su mesa ya pidió la cuenta
+     */
+    public static boolean puedeCobrarse(Pedido p) {
+        return p.getIdMesa() == null || "CUENTA".equals(p.getEstadoMesa());
+    }
+
+    /**
+     * Registra el cobro en una transacción (pago + venta + pedido PAGADO + mesa libre en gris).
      *
      * @param pedido   pedido LISTO
      * @param metodo   EFECTIVO, YAPE, PLIN o TARJETA
@@ -79,6 +94,9 @@ public class PagoService {
         Autorizacion.exigir(usuario, Autorizacion.CAJA);
         if (!"LISTO".equals(pedido.getEstado())) {
             throw new IllegalArgumentException("Solo se cobran pedidos LISTOS.");
+        }
+        if (!puedeCobrarse(pedido)) {
+            throw new IllegalArgumentException("El mesero todavía no pidió la cuenta de esta mesa.");
         }
         BigDecimal total = pedido.getTotal();
         BigDecimal dinero = "EFECTIVO".equals(metodo) ? recibido : total;

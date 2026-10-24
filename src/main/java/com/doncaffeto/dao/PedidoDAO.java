@@ -14,11 +14,12 @@ import java.util.List;
 public interface PedidoDAO {
 
     /**
-     * Guarda el pedido, su detalle y sus observaciones en una sola transacción y ocupa la mesa.
+     * Guarda el pedido, su detalle y sus observaciones en una sola transacción y ocupa la mesa
+     * (pasa a naranja y empieza su cronómetro).
      *
      * @param pedido pedido a guardar
      * @return número del pedido generado
-     * @throws SQLException si falla el registro
+     * @throws SQLException si falla el registro o si la mesa ya estaba ocupada
      */
     int registrar(Pedido pedido) throws SQLException;
 
@@ -35,6 +36,13 @@ public interface PedidoDAO {
      * @throws SQLException si falla la consulta
      */
     List<Pedido> listarPorEstado(String... estados) throws SQLException;
+
+    /**
+     * @param idMesa código de la mesa
+     * @return el pedido abierto (no pagado ni cancelado) de la mesa, o null si no tiene
+     * @throws SQLException si falla la consulta
+     */
+    Pedido pedidoDeMesa(int idMesa) throws SQLException;
 
     /**
      * @param idPedido número del pedido

@@ -59,6 +59,24 @@ public class PagoServiceTest {
                 DatosFalsos.CAJERO);
     }
 
+    @Test
+    public void unaMesaSeCobraSoloCuandoPidieronLaCuenta() {
+        assertEquals(false, PagoService.puedeCobrarse(DatosFalsos.pedidoDeMesa(5, 3, "LISTO", "OCUPADA", "22.00")));
+        assertEquals(true, PagoService.puedeCobrarse(DatosFalsos.pedidoDeMesa(5, 3, "LISTO", "CUENTA", "22.00")));
+        assertEquals(true, PagoService.puedeCobrarse(DatosFalsos.pedido(2, "LISTO", "28.00")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void noCobraUnaMesaSinCuentaPedida() throws Exception {
+        service.cobrar(DatosFalsos.pedidoDeMesa(5, 3, "LISTO", "OCUPADA", "22.00"), "YAPE", null, DatosFalsos.CAJERO);
+    }
+
+    @Test
+    public void cobraUnaMesaConCuentaPedida() throws Exception {
+        service.cobrar(DatosFalsos.pedidoDeMesa(5, 3, "LISTO", "CUENTA", "22.00"), "YAPE", null, DatosFalsos.CAJERO);
+        assertEquals(5, registrado.getIdPedido());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void noCobraPedidosQueNoEstanListos() throws Exception {
         service.cobrar(DatosFalsos.pedido(3, "EN_PREPARACION", "21.00"), "YAPE", null, DatosFalsos.CAJERO);
