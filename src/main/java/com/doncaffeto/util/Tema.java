@@ -179,6 +179,12 @@ public final class Tema {
         } else if (nombre.equals("lblObservacion")) {
             l.setForeground(NARANJA_OSCURO);
             l.setFont(new Font(LETRA, Font.ITALIC, 13));
+        } else if (nombre.equals("lblCantidad")) {
+            l.setForeground(NARANJA_OSCURO);
+            l.setFont(new Font(LETRA, Font.BOLD, 15));
+        } else if (nombre.equals("lblPagina")) {
+            l.setForeground(GRIS);
+            l.setFont(new Font(LETRA, Font.BOLD, 13));
         } else if (nombre.equals("lblTotalNuevos")) {
             l.setForeground(NARANJA);
             l.setFont(new Font(LETRA, Font.BOLD, 18));
@@ -201,7 +207,17 @@ public final class Tema {
         b.setFocusPainted(false);
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         b.setFont(new Font(LETRA, Font.BOLD, 14));
-        if (nombre.startsWith("btnMenu")) {
+        if (nombre.startsWith("btnNum") || StringUtils.equalsAny(nombre, "btnBorrar")) {
+            colores(b, Color.WHITE, NARANJA_CLARO, CAFE, BorderFactory.createLineBorder(BORDE, 1, true));
+            b.setFont(new Font(LETRA, Font.BOLD, 18));
+        } else if (StringUtils.equalsAny(nombre, "btnVaciar", "btnEliminar")) {
+            colores(b, Color.WHITE, new Color(0xFFF0F0), ROJO, BorderFactory.createLineBorder(ROJO, 1, true));
+            b.setFont(new Font(LETRA, Font.BOLD, 13));
+        } else if (StringUtils.equalsAny(nombre, "btnNota", "btnObservacion")) {
+            colores(b, CAFE, new Color(0x4A2E1E), Color.WHITE, BorderFactory.createEmptyBorder(1, 6, 1, 6));
+        } else if (StringUtils.equalsAny(nombre, "btnMesas", "btnAnterior", "btnSiguiente")) {
+            colores(b, Color.WHITE, NARANJA_CLARO, NARANJA, BorderFactory.createLineBorder(NARANJA, 1, true));
+        } else if (nombre.startsWith("btnMenu")) {
             colores(b, CAFE, new Color(0x4A2E1E), Color.WHITE, BorderFactory.createEmptyBorder(4, 2, 4, 2));
             b.setHorizontalAlignment(SwingConstants.LEFT);
         } else if (nombre.equals("btnCerrarSesion")) {
@@ -274,6 +290,62 @@ public final class Tema {
      */
     public static void logo(JLabel etiqueta, int lado) {
         etiqueta.setIcon(new ImageIcon(imagen("/img/logo.png", lado)));
+    }
+
+    /**
+     * Pone un ícono de {@code /img/iconos} sobre el texto del botón (botones grandes de acción).
+     *
+     * @param b      botón
+     * @param nombre nombre del ícono sin extensión
+     */
+    public static void icono(AbstractButton b, String nombre) {
+        java.net.URL url = Tema.class.getResource("/img/iconos/" + nombre + ".png");
+        if (url != null) {
+            b.setIcon(new ImageIcon(url));
+        }
+        b.setVerticalTextPosition(SwingConstants.BOTTOM);
+        b.setHorizontalTextPosition(SwingConstants.CENTER);
+        b.setIconTextGap(6);
+        b.setFont(new Font(LETRA, Font.BOLD, 13));
+    }
+
+    /**
+     * Botón de categoría de la carta (naranja si está elegida).
+     *
+     * @param b       botón
+     * @param elegida true si es la categoría que se está mostrando
+     */
+    public static void categoria(JButton b, boolean elegida) {
+        for (java.awt.event.MouseListener m : b.getMouseListeners()) {
+            if (m instanceof MouseAdapter) {
+                b.removeMouseListener(m); // quita el efecto anterior antes de volver a pintar
+            }
+        }
+        b.setFocusPainted(false);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        b.setFont(new Font(LETRA, Font.BOLD, 14));
+        if (elegida) {
+            colores(b, NARANJA, NARANJA_OSCURO, Color.WHITE, BorderFactory.createEmptyBorder(6, 10, 6, 10));
+        } else {
+            colores(b, Color.WHITE, NARANJA_CLARO, NARANJA, BorderFactory.createLineBorder(NARANJA, 1, true));
+        }
+    }
+
+    /**
+     * Botón grande de un producto: nombre y precio.
+     *
+     * @param b      botón
+     * @param nombre nombre del producto
+     * @param precio precio de venta
+     */
+    public static void producto(JButton b, String nombre, BigDecimal precio) {
+        b.setText("<html><div style='text-align:center'><b>" + nombre + "</b><br><span style='color:#C2410C'>"
+                + soles(precio) + "</span></div></html>");
+        b.setFocusPainted(false);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        b.setFont(new Font(LETRA, Font.PLAIN, 14));
+        b.setPreferredSize(new java.awt.Dimension(140, 84));
+        colores(b, Color.WHITE, NARANJA_CLARO, CAFE, BorderFactory.createLineBorder(BORDE, 1, true));
     }
 
     /**

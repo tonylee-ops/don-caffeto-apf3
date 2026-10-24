@@ -23,10 +23,15 @@ Flujo de un pedido: **Pendiente → En preparación → Listo → Pagado** (o **
 
 - El cronómetro lo calcula MySQL (`ocupada_desde`), así todos los equipos ven el mismo tiempo.
 - El mapa se actualiza solo cada 10 segundos: cuando la caja cobra, la mesa vuelve a gris sin hacer nada.
-- Los pedidos de salón solo se ven **entrando a la mesa**. A la **izquierda** está el pedido (lo ya enviado,
-  estado en cocina, total y *Pedir la cuenta*); en **medio**, la carta para **agregar más productos**: se eligen,
-  quedan en "Por enviar" y con *Enviar a cocina* se suman al pedido. La cocina los ve con la nota «Agregado» y,
-  si el pedido ya estaba listo, vuelve a Pendiente. Con la cuenta pedida ya no se puede agregar.
+- Los pedidos de salón solo se ven **entrando a la mesa**. La pantalla de la mesa es como la de Restometrics:
+  - **Izquierda:** el pedido (Cnt · Descripción · Importe; ✓ = ya está en cocina, *Nuevo* = falta confirmar),
+    el total y un **teclado numérico** (escribe la cantidad y toca el producto; con una línea nueva elegida,
+    el teclado y + / − cambian su cantidad; *Eliminar* la quita y *Vaciar* borra todo lo nuevo).
+  - **En medio:** **categorías** y **productos en botones grandes**, por páginas, con buscador.
+  - **Derecha:** *Confirmar* (envía a cocina; si la mesa estaba libre crea el pedido y la pone en naranja),
+    *Nota* (para el producto elegido), *Observación* (para todo el pedido), *Pedir cuenta*, *Anular* y *Mesas*.
+  - Lo agregado después aparece en cocina con la nota «Agregado»; si el pedido ya estaba listo, vuelve a Pendiente.
+    Con la cuenta pedida la carta se bloquea.
 
 Capturas de todas las pantallas: `docs/capturas/`.
 

@@ -95,13 +95,12 @@ public class MesasController {
                 + cuenta + " con cuenta pedida");
     }
 
-    /** Mesa gris: toma el pedido. Mesa naranja o verde: muestra su pedido. */
+    /**
+     * Abre la pantalla de la mesa: si está gris se toma el pedido; si está naranja o verde se ve su
+     * pedido y se pueden agregar productos.
+     */
     private void abrir(Mesa mesa) {
-        if (mesa.isLibre()) {
-            nuevoPedido(mesa, "SALON");
-        } else {
-            new MesaController(new FrmMesa(), servicios, usuario, mesa, this::cargar).iniciar();
-        }
+        new MesaController(new FrmMesa(), servicios, usuario, mesa, this::cargar).iniciar();
     }
 
     private void nuevoPedido(Mesa mesa, String modalidad) {

@@ -3,7 +3,7 @@ package com.doncaffeto.view;
 import com.doncaffeto.util.Tema;
 
 /**
- * Mesa: a la izquierda su pedido; en medio la carta para agregar más productos.
+ * Mesa estilo Restometrics: pedido y teclado a la izquierda, productos en medio y acciones a la derecha.
  * <p>
  * JFrame Form editable en NetBeans (pestaña Design). La vista NO tiene lógica de
  * negocio ni SQL: el controller registra los listeners usando los getters.
@@ -22,10 +22,18 @@ public class FrmMesa extends javax.swing.JFrame {
      */
     private void personalizar() {
         Tema.aplicar(this);
+        pnlProductos.setLayout(new java.awt.GridLayout(0, 4, 10, 10));
+        pnlCategorias.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 4));
         Tema.ayuda(txtBuscar, "Buscar producto...");
-        Tema.ayuda(txtNota, "Nota (ej. sin azúcar)");
-        setSize(1240, 720);
+        Tema.icono(btnConfirmar, "confirmar");
+        Tema.icono(btnNota, "nota");
+        Tema.icono(btnObservacion, "observacion");
+        Tema.icono(btnPedirCuenta, "cuenta");
+        Tema.icono(btnAnular, "anular");
+        Tema.icono(btnMesas, "mesas");
+        setSize(1366, 768);
         setLocationRelativeTo(null);
+        setExtendedState(MAXIMIZED_BOTH);
     }
 
     /**
@@ -38,63 +46,75 @@ public class FrmMesa extends javax.swing.JFrame {
     private void initComponents() {
 
         lblTitulo = new javax.swing.JLabel();
+        lblMesero = new javax.swing.JLabel();
         lblEstadoMesa = new javax.swing.JLabel();
         lblCronometro = new javax.swing.JLabel();
-        btnCerrar = new javax.swing.JButton();
         pnlCardPedido = new javax.swing.JPanel();
         lblSubPedido = new javax.swing.JLabel();
         lblEstadoCocina = new javax.swing.JLabel();
         lblSeleccion = new javax.swing.JLabel();
-        lblObservacion = new javax.swing.JLabel();
         scrDetalle = new javax.swing.JScrollPane();
         tblDetalle = new javax.swing.JTable();
-        lblIgv = new javax.swing.JLabel();
+        lblObservacion = new javax.swing.JLabel();
+        lblCantidad = new javax.swing.JLabel();
         lblTotal = new javax.swing.JLabel();
-        btnAnular = new javax.swing.JButton();
-        btnPedirCuenta = new javax.swing.JButton();
-        pnlCardAgregar = new javax.swing.JPanel();
-        lblSubAgregar = new javax.swing.JLabel();
-        lblAyudaAgregar = new javax.swing.JLabel();
+        pnlTeclado = new javax.swing.JPanel();
+        btnNum1 = new javax.swing.JButton();
+        btnNum2 = new javax.swing.JButton();
+        btnNum3 = new javax.swing.JButton();
+        btnBorrar = new javax.swing.JButton();
+        btnNum4 = new javax.swing.JButton();
+        btnNum5 = new javax.swing.JButton();
+        btnNum6 = new javax.swing.JButton();
+        btnVaciar = new javax.swing.JButton();
+        btnNum7 = new javax.swing.JButton();
+        btnNum8 = new javax.swing.JButton();
+        btnNum9 = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        btnNum00 = new javax.swing.JButton();
+        btnNum0 = new javax.swing.JButton();
+        btnMas = new javax.swing.JButton();
+        btnMenos = new javax.swing.JButton();
+        pnlCardCarta = new javax.swing.JPanel();
+        lblSubCarta = new javax.swing.JLabel();
         txtBuscar = new javax.swing.JTextField();
-        cmbCategoria = new javax.swing.JComboBox<>();
-        scrProductos = new javax.swing.JScrollPane();
-        tblProductos = new javax.swing.JTable();
-        lblEtqCantidad = new javax.swing.JLabel();
-        spnCantidad = new javax.swing.JSpinner();
-        txtNota = new javax.swing.JTextField();
-        btnAgregar = new javax.swing.JButton();
-        lblSubNuevos = new javax.swing.JLabel();
-        btnQuitarNuevo = new javax.swing.JButton();
-        scrNuevos = new javax.swing.JScrollPane();
-        tblNuevos = new javax.swing.JTable();
-        lblTotalNuevos = new javax.swing.JLabel();
-        btnEnviar = new javax.swing.JButton();
+        pnlCategorias = new javax.swing.JPanel();
+        pnlProductos = new javax.swing.JPanel();
+        btnAnterior = new javax.swing.JButton();
+        lblPagina = new javax.swing.JLabel();
+        btnSiguiente = new javax.swing.JButton();
+        lblAyudaCarta = new javax.swing.JLabel();
+        pnlAcciones = new javax.swing.JPanel();
+        btnConfirmar = new javax.swing.JButton();
+        btnNota = new javax.swing.JButton();
+        btnObservacion = new javax.swing.JButton();
+        btnPedirCuenta = new javax.swing.JButton();
+        btnAnular = new javax.swing.JButton();
+        btnMesas = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Don Caffeto - Mesa");
 
         lblTitulo.setText("Mesa");
 
+        lblMesero.setText(" ");
+
         lblEstadoMesa.setText(" ");
 
         lblCronometro.setText("00:00");
 
-        btnCerrar.setText("Volver a mesas");
-
-        lblSubPedido.setText("Pedido de la mesa");
+        lblSubPedido.setText("Pedido");
 
         lblEstadoCocina.setText(" ");
 
         lblSeleccion.setText(" ");
-
-        lblObservacion.setText(" ");
 
         tblDetalle.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
         
             },
             new String [] {
-                "Producto", "Nota", "Cant.", "Importe"
+                "Cnt.", "Descripción", "Importe", " "
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -109,252 +129,246 @@ public class FrmMesa extends javax.swing.JFrame {
 
         scrDetalle.setViewportView(tblDetalle);
 
-        lblIgv.setText(" ");
+        lblObservacion.setText(" ");
+
+        lblCantidad.setText("Cantidad: 1");
 
         lblTotal.setText("S/ 0.00");
 
-        btnAnular.setText("Anular pedido");
+        btnNum1.setText("1");
 
-        btnPedirCuenta.setText("Pedir la cuenta");
+        btnNum2.setText("2");
+
+        btnNum3.setText("3");
+
+        btnBorrar.setText("Borrar");
+
+        btnNum4.setText("4");
+
+        btnNum5.setText("5");
+
+        btnNum6.setText("6");
+
+        btnVaciar.setText("Vaciar");
+
+        btnNum7.setText("7");
+
+        btnNum8.setText("8");
+
+        btnNum9.setText("9");
+
+        btnEliminar.setText("Eliminar");
+
+        btnNum00.setText("00");
+
+        btnNum0.setText("0");
+
+        btnMas.setText("+");
+
+        btnMenos.setText("−");
+
+        pnlTeclado.setLayout(new java.awt.GridLayout(4, 4, 6, 6));
+        pnlTeclado.add(btnNum1);
+        pnlTeclado.add(btnNum2);
+        pnlTeclado.add(btnNum3);
+        pnlTeclado.add(btnBorrar);
+        pnlTeclado.add(btnNum4);
+        pnlTeclado.add(btnNum5);
+        pnlTeclado.add(btnNum6);
+        pnlTeclado.add(btnVaciar);
+        pnlTeclado.add(btnNum7);
+        pnlTeclado.add(btnNum8);
+        pnlTeclado.add(btnNum9);
+        pnlTeclado.add(btnEliminar);
+        pnlTeclado.add(btnNum00);
+        pnlTeclado.add(btnNum0);
+        pnlTeclado.add(btnMas);
+        pnlTeclado.add(btnMenos);
 
         javax.swing.GroupLayout pnlCardPedidoLayout = new javax.swing.GroupLayout(pnlCardPedido);
         pnlCardPedido.setLayout(pnlCardPedidoLayout);
         pnlCardPedidoLayout.setHorizontalGroup(
             pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addGap(14, 14, 14)
                 .addComponent(lblSubPedido)
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(lblEstadoCocina)
-                .addGap(18, 18, 18))
+                .addGap(14, 14, 14))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addGap(14, 14, 14)
                 .addComponent(lblSeleccion)
-                .addGap(18, 18, 18))
+                .addGap(14, 14, 14))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(lblObservacion, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
-                .addGap(18, 18, 18))
+                .addGap(14, 14, 14)
+                .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addGap(14, 14, 14))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
-                .addGap(18, 18, 18))
+                .addGap(14, 14, 14)
+                .addComponent(lblObservacion, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addGap(14, 14, 14))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(lblIgv)
+                .addGap(14, 14, 14)
+                .addComponent(lblCantidad)
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(lblTotal)
-                .addGap(18, 18, 18))
+                .addGap(14, 14, 14))
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(btnAnular)
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(btnPedirCuenta)
-                .addGap(18, 18, 18))
+                .addGap(14, 14, 14)
+                .addComponent(pnlTeclado, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addGap(14, 14, 14))
         );
         pnlCardPedidoLayout.setVerticalGroup(
             pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCardPedidoLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addGap(14, 14, 14)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSubPedido)
                     .addComponent(lblEstadoCocina))
-                .addGap(10, 10, 10)
+                .addGap(8, 8, 8)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSeleccion))
-                .addGap(10, 10, 10)
+                .addGap(8, 8, 8)
+                .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))
+                .addGap(8, 8, 8)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblObservacion))
-                .addGap(10, 10, 10)
-                .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
-                .addGap(10, 10, 10)
+                .addGap(8, 8, 8)
                 .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblIgv)
+                    .addComponent(lblCantidad)
                     .addComponent(lblTotal))
+                .addGap(8, 8, 8)
+                .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlTeclado, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+                .addGap(14, 14, 14))
+        );
+
+        lblSubCarta.setText("Productos");
+
+        pnlCategorias.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 4));
+
+        pnlProductos.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 12, 12));
+
+        btnAnterior.setText("◀");
+        btnAnterior.setToolTipText("Página anterior");
+
+        lblPagina.setText("1 / 1");
+
+        btnSiguiente.setText("▶");
+        btnSiguiente.setToolTipText("Página siguiente");
+
+        lblAyudaCarta.setText("Escribe la cantidad en el teclado y toca el producto");
+
+        javax.swing.GroupLayout pnlCardCartaLayout = new javax.swing.GroupLayout(pnlCardCarta);
+        pnlCardCarta.setLayout(pnlCardCartaLayout);
+        pnlCardCartaLayout.setHorizontalGroup(
+            pnlCardCartaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardCartaLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(lblSubCarta)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14))
+            .addGroup(pnlCardCartaLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(pnlCategorias, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                .addGap(14, 14, 14))
+            .addGroup(pnlCardCartaLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(pnlProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                .addGap(14, 14, 14))
+            .addGroup(pnlCardCartaLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(btnAnterior)
+                .addGap(8, 8, 8)
+                .addComponent(lblPagina)
+                .addGap(8, 8, 8)
+                .addComponent(btnSiguiente)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(lblAyudaCarta)
+                .addGap(14, 14, 14))
+        );
+        pnlCardCartaLayout.setVerticalGroup(
+            pnlCardCartaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardCartaLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addGroup(pnlCardCartaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSubCarta)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(10, 10, 10)
-                .addGroup(pnlCardPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAnular)
-                    .addComponent(btnPedirCuenta))
-                .addGap(18, 18, 18))
+                .addGroup(pnlCardCartaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardCartaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardCartaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAnterior)
+                    .addComponent(lblPagina)
+                    .addComponent(btnSiguiente)
+                    .addComponent(lblAyudaCarta))
+                .addGap(14, 14, 14))
         );
 
-        lblSubAgregar.setText("Agregar productos");
+        btnConfirmar.setText("Confirmar");
 
-        lblAyudaAgregar.setText("Doble clic para agregar");
+        btnNota.setText("Nota");
 
-        cmbCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todas las categorías" }));
+        btnObservacion.setText("Observación");
 
-        tblProductos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-        
-            },
-            new String [] {
-                "Producto", "Categoría", "Precio"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false
-            };
-        
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblProductos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        btnPedirCuenta.setText("Pedir cuenta");
 
-        scrProductos.setViewportView(tblProductos);
+        btnAnular.setText("Anular");
 
-        lblEtqCantidad.setText("Cant.");
+        btnMesas.setText("Mesas");
 
-        spnCantidad.setModel(new javax.swing.SpinnerNumberModel(1, 1, 50, 1));
-
-        btnAgregar.setText("Agregar");
-
-        lblSubNuevos.setText("Por enviar");
-
-        btnQuitarNuevo.setText("Quitar");
-
-        tblNuevos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-        
-            },
-            new String [] {
-                "Producto", "Nota", "Cant.", "Importe"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-        
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblNuevos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-
-        scrNuevos.setViewportView(tblNuevos);
-
-        lblTotalNuevos.setText("S/ 0.00");
-
-        btnEnviar.setText("Enviar a cocina");
-
-        javax.swing.GroupLayout pnlCardAgregarLayout = new javax.swing.GroupLayout(pnlCardAgregar);
-        pnlCardAgregar.setLayout(pnlCardAgregarLayout);
-        pnlCardAgregarLayout.setHorizontalGroup(
-            pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlCardAgregarLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(lblSubAgregar)
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(lblAyudaAgregar)
-                .addGap(18, 18, 18))
-            .addGroup(pnlCardAgregarLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(txtBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
-                .addGap(8, 8, 8)
-                .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
-            .addGroup(pnlCardAgregarLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(scrProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
-                .addGap(18, 18, 18))
-            .addGroup(pnlCardAgregarLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(lblEtqCantidad)
-                .addGap(8, 8, 8)
-                .addComponent(spnCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(txtNota, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-                .addGap(8, 8, 8)
-                .addComponent(btnAgregar)
-                .addGap(18, 18, 18))
-            .addGroup(pnlCardAgregarLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(lblSubNuevos)
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(btnQuitarNuevo)
-                .addGap(18, 18, 18))
-            .addGroup(pnlCardAgregarLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(scrNuevos, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
-                .addGap(18, 18, 18))
-            .addGroup(pnlCardAgregarLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(lblTotalNuevos)
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(btnEnviar)
-                .addGap(18, 18, 18))
-        );
-        pnlCardAgregarLayout.setVerticalGroup(
-            pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlCardAgregarLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSubAgregar)
-                    .addComponent(lblAyudaAgregar))
-                .addGap(9, 9, 9)
-                .addGroup(pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))
-                .addGap(9, 9, 9)
-                .addGroup(pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblEtqCantidad)
-                    .addComponent(spnCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAgregar))
-                .addGap(9, 9, 9)
-                .addGroup(pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSubNuevos)
-                    .addComponent(btnQuitarNuevo))
-                .addGap(9, 9, 9)
-                .addGroup(pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrNuevos, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
-                .addGap(9, 9, 9)
-                .addGroup(pnlCardAgregarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblTotalNuevos)
-                    .addComponent(btnEnviar))
-                .addGap(18, 18, 18))
-        );
+        pnlAcciones.setLayout(new java.awt.GridLayout(6, 1, 0, 10));
+        pnlAcciones.add(btnConfirmar);
+        pnlAcciones.add(btnNota);
+        pnlAcciones.add(btnObservacion);
+        pnlAcciones.add(btnPedirCuenta);
+        pnlAcciones.add(btnAnular);
+        pnlAcciones.add(btnMesas);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(16, 16, 16)
                 .addComponent(lblTitulo)
                 .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(lblMesero)
+                .addGap(14, 14, 14)
                 .addComponent(lblEstadoMesa)
-                .addGap(16, 16, 16)
+                .addGap(14, 14, 14)
                 .addComponent(lblCronometro)
-                .addGap(16, 16, 16)
-                .addComponent(btnCerrar)
-                .addGap(20, 20, 20))
+                .addGap(16, 16, 16))
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(pnlCardPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
                 .addGap(16, 16, 16)
-                .addComponent(pnlCardAgregar, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
-                .addGap(20, 20, 20))
+                .addComponent(pnlCardPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14)
+                .addComponent(pnlCardCarta, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+                .addGap(14, 14, 14)
+                .addComponent(pnlAcciones, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTitulo)
+                    .addComponent(lblMesero)
                     .addComponent(lblEstadoMesa)
-                    .addComponent(lblCronometro)
-                    .addComponent(btnCerrar))
-                .addGap(14, 14, 14)
+                    .addComponent(lblCronometro))
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlCardPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
-                    .addComponent(pnlCardAgregar, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE))
-                .addGap(20, 20, 20))
+                    .addComponent(pnlCardPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                    .addComponent(pnlCardCarta, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                    .addComponent(pnlAcciones, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE))
+                .addGap(16, 16, 16))
         );
 
         pack();
@@ -363,32 +377,104 @@ public class FrmMesa extends javax.swing.JFrame {
 
     // ---------- Getters para el controller ----------
 
-    public javax.swing.JButton getBtnAgregar() {
-        return btnAgregar;
+    public javax.swing.JButton getBtnAnterior() {
+        return btnAnterior;
     }
 
     public javax.swing.JButton getBtnAnular() {
         return btnAnular;
     }
 
-    public javax.swing.JButton getBtnCerrar() {
-        return btnCerrar;
+    public javax.swing.JButton getBtnBorrar() {
+        return btnBorrar;
     }
 
-    public javax.swing.JButton getBtnEnviar() {
-        return btnEnviar;
+    public javax.swing.JButton getBtnConfirmar() {
+        return btnConfirmar;
+    }
+
+    public javax.swing.JButton getBtnEliminar() {
+        return btnEliminar;
+    }
+
+    public javax.swing.JButton getBtnMas() {
+        return btnMas;
+    }
+
+    public javax.swing.JButton getBtnMenos() {
+        return btnMenos;
+    }
+
+    public javax.swing.JButton getBtnMesas() {
+        return btnMesas;
+    }
+
+    public javax.swing.JButton getBtnNota() {
+        return btnNota;
+    }
+
+    public javax.swing.JButton getBtnNum0() {
+        return btnNum0;
+    }
+
+    public javax.swing.JButton getBtnNum00() {
+        return btnNum00;
+    }
+
+    public javax.swing.JButton getBtnNum1() {
+        return btnNum1;
+    }
+
+    public javax.swing.JButton getBtnNum2() {
+        return btnNum2;
+    }
+
+    public javax.swing.JButton getBtnNum3() {
+        return btnNum3;
+    }
+
+    public javax.swing.JButton getBtnNum4() {
+        return btnNum4;
+    }
+
+    public javax.swing.JButton getBtnNum5() {
+        return btnNum5;
+    }
+
+    public javax.swing.JButton getBtnNum6() {
+        return btnNum6;
+    }
+
+    public javax.swing.JButton getBtnNum7() {
+        return btnNum7;
+    }
+
+    public javax.swing.JButton getBtnNum8() {
+        return btnNum8;
+    }
+
+    public javax.swing.JButton getBtnNum9() {
+        return btnNum9;
+    }
+
+    public javax.swing.JButton getBtnObservacion() {
+        return btnObservacion;
     }
 
     public javax.swing.JButton getBtnPedirCuenta() {
         return btnPedirCuenta;
     }
 
-    public javax.swing.JButton getBtnQuitarNuevo() {
-        return btnQuitarNuevo;
+    public javax.swing.JButton getBtnSiguiente() {
+        return btnSiguiente;
     }
 
-    public javax.swing.JComboBox<Object> getCmbCategoria() {
-        return cmbCategoria;
+    public javax.swing.JButton getBtnVaciar() {
+        return btnVaciar;
+    }
+
+    public javax.swing.JLabel getLblCantidad() {
+        return lblCantidad;
     }
 
     public javax.swing.JLabel getLblCronometro() {
@@ -403,12 +489,16 @@ public class FrmMesa extends javax.swing.JFrame {
         return lblEstadoMesa;
     }
 
-    public javax.swing.JLabel getLblIgv() {
-        return lblIgv;
+    public javax.swing.JLabel getLblMesero() {
+        return lblMesero;
     }
 
     public javax.swing.JLabel getLblObservacion() {
         return lblObservacion;
+    }
+
+    public javax.swing.JLabel getLblPagina() {
+        return lblPagina;
     }
 
     public javax.swing.JLabel getLblSeleccion() {
@@ -423,40 +513,36 @@ public class FrmMesa extends javax.swing.JFrame {
         return lblTotal;
     }
 
-    public javax.swing.JLabel getLblTotalNuevos() {
-        return lblTotalNuevos;
+    public javax.swing.JPanel getPnlAcciones() {
+        return pnlAcciones;
     }
 
-    public javax.swing.JPanel getPnlCardAgregar() {
-        return pnlCardAgregar;
+    public javax.swing.JPanel getPnlCardCarta() {
+        return pnlCardCarta;
     }
 
     public javax.swing.JPanel getPnlCardPedido() {
         return pnlCardPedido;
     }
 
-    public javax.swing.JSpinner getSpnCantidad() {
-        return spnCantidad;
+    public javax.swing.JPanel getPnlCategorias() {
+        return pnlCategorias;
+    }
+
+    public javax.swing.JPanel getPnlProductos() {
+        return pnlProductos;
+    }
+
+    public javax.swing.JPanel getPnlTeclado() {
+        return pnlTeclado;
     }
 
     public javax.swing.JTable getTblDetalle() {
         return tblDetalle;
     }
 
-    public javax.swing.JTable getTblNuevos() {
-        return tblNuevos;
-    }
-
-    public javax.swing.JTable getTblProductos() {
-        return tblProductos;
-    }
-
     public javax.swing.JTextField getTxtBuscar() {
         return txtBuscar;
-    }
-
-    public javax.swing.JTextField getTxtNota() {
-        return txtNota;
     }
 
     /** Vista previa del diseño (Run File en NetBeans). La app inicia en com.doncaffeto.App. */
@@ -466,38 +552,52 @@ public class FrmMesa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnAnterior;
     private javax.swing.JButton btnAnular;
-    private javax.swing.JButton btnCerrar;
-    private javax.swing.JButton btnEnviar;
+    private javax.swing.JButton btnBorrar;
+    private javax.swing.JButton btnConfirmar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnMas;
+    private javax.swing.JButton btnMenos;
+    private javax.swing.JButton btnMesas;
+    private javax.swing.JButton btnNota;
+    private javax.swing.JButton btnNum0;
+    private javax.swing.JButton btnNum00;
+    private javax.swing.JButton btnNum1;
+    private javax.swing.JButton btnNum2;
+    private javax.swing.JButton btnNum3;
+    private javax.swing.JButton btnNum4;
+    private javax.swing.JButton btnNum5;
+    private javax.swing.JButton btnNum6;
+    private javax.swing.JButton btnNum7;
+    private javax.swing.JButton btnNum8;
+    private javax.swing.JButton btnNum9;
+    private javax.swing.JButton btnObservacion;
     private javax.swing.JButton btnPedirCuenta;
-    private javax.swing.JButton btnQuitarNuevo;
-    private javax.swing.JComboBox<Object> cmbCategoria;
-    private javax.swing.JLabel lblAyudaAgregar;
+    private javax.swing.JButton btnSiguiente;
+    private javax.swing.JButton btnVaciar;
+    private javax.swing.JLabel lblAyudaCarta;
+    private javax.swing.JLabel lblCantidad;
     private javax.swing.JLabel lblCronometro;
     private javax.swing.JLabel lblEstadoCocina;
     private javax.swing.JLabel lblEstadoMesa;
-    private javax.swing.JLabel lblEtqCantidad;
-    private javax.swing.JLabel lblIgv;
+    private javax.swing.JLabel lblMesero;
     private javax.swing.JLabel lblObservacion;
+    private javax.swing.JLabel lblPagina;
     private javax.swing.JLabel lblSeleccion;
-    private javax.swing.JLabel lblSubAgregar;
-    private javax.swing.JLabel lblSubNuevos;
+    private javax.swing.JLabel lblSubCarta;
     private javax.swing.JLabel lblSubPedido;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JLabel lblTotal;
-    private javax.swing.JLabel lblTotalNuevos;
-    private javax.swing.JPanel pnlCardAgregar;
+    private javax.swing.JPanel pnlAcciones;
+    private javax.swing.JPanel pnlCardCarta;
     private javax.swing.JPanel pnlCardPedido;
+    private javax.swing.JPanel pnlCategorias;
+    private javax.swing.JPanel pnlProductos;
+    private javax.swing.JPanel pnlTeclado;
     private javax.swing.JScrollPane scrDetalle;
-    private javax.swing.JScrollPane scrNuevos;
-    private javax.swing.JScrollPane scrProductos;
-    private javax.swing.JSpinner spnCantidad;
     private javax.swing.JTable tblDetalle;
-    private javax.swing.JTable tblNuevos;
-    private javax.swing.JTable tblProductos;
     private javax.swing.JTextField txtBuscar;
-    private javax.swing.JTextField txtNota;
     // End of variables declaration//GEN-END:variables
 
     /*
@@ -506,36 +606,50 @@ public class FrmMesa extends javax.swing.JFrame {
      * Nombre                     | Tipo           | Para qué sirve
      * ------------------------------------------------------------------------------------------------
      * lblTitulo                  | JLabel         | Título
+     * lblMesero                  | JLabel         | Mesero
      * lblEstadoMesa              | JLabel         | Estado de la mesa
      * lblCronometro              | JLabel         | Tiempo que lleva ocupada la mesa
-     * btnCerrar                  | JButton        | Botón «Volver a mesas»
-     * pnlCardPedido              | JPanel         | Pedido actual de la mesa (izquierda)
+     * pnlCardPedido              | JPanel         | Pedido de la mesa con teclado numérico (izquierda)
      * lblSubPedido               | JLabel         | Subtítulo
-     * lblEstadoCocina            | JLabel         | Estado del pedido en cocina
-     * lblSeleccion               | JLabel         | Número de pedido y mesero
-     * lblObservacion             | JLabel         | Observación del pedido
+     * lblEstadoCocina            | JLabel         | Estado en cocina
+     * lblSeleccion               | JLabel         | Número de pedido
      * scrDetalle                 | JScrollPane    | Barra de desplazamiento de tblDetalle
-     * tblDetalle                 | JTable         | Productos ya enviados a cocina
-     * lblIgv                     | JLabel         | Desglose del IGV
+     * tblDetalle                 | JTable         | Productos del pedido (enviados y nuevos)
+     * lblObservacion             | JLabel         | Observaciones del pedido
+     * lblCantidad                | JLabel         | Cantidad que se está escribiendo
      * lblTotal                   | JLabel         | Total de la mesa
-     * btnAnular                  | JButton        | Botón «Anular pedido»
-     * btnPedirCuenta             | JButton        | Botón «Pedir la cuenta»
-     * pnlCardAgregar             | JPanel         | Carta para agregar más productos (en medio)
-     * lblSubAgregar              | JLabel         | Subtítulo
-     * lblAyudaAgregar            | JLabel         | Ayuda
+     * pnlTeclado                 | JPanel         | Teclado numérico para cantidades
+     * btnNum1                    | JButton        | Teclado: 1
+     * btnNum2                    | JButton        | Teclado: 2
+     * btnNum3                    | JButton        | Teclado: 3
+     * btnBorrar                  | JButton        | Teclado: Borrar
+     * btnNum4                    | JButton        | Teclado: 4
+     * btnNum5                    | JButton        | Teclado: 5
+     * btnNum6                    | JButton        | Teclado: 6
+     * btnVaciar                  | JButton        | Teclado: Vaciar
+     * btnNum7                    | JButton        | Teclado: 7
+     * btnNum8                    | JButton        | Teclado: 8
+     * btnNum9                    | JButton        | Teclado: 9
+     * btnEliminar                | JButton        | Teclado: Eliminar
+     * btnNum00                   | JButton        | Teclado: 00
+     * btnNum0                    | JButton        | Teclado: 0
+     * btnMas                     | JButton        | Teclado: +
+     * btnMenos                   | JButton        | Teclado: −
+     * pnlCardCarta               | JPanel         | Categorías y productos en botones (en medio)
+     * lblSubCarta                | JLabel         | Subtítulo
      * txtBuscar                  | JTextField     | Buscar producto
-     * cmbCategoria               | JComboBox      | Filtro por categoría
-     * scrProductos               | JScrollPane    | Barra de desplazamiento de tblProductos
-     * tblProductos               | JTable         | Carta
-     * lblEtqCantidad             | JLabel         | Etiqueta
-     * spnCantidad                | JSpinner       | Cantidad
-     * txtNota                    | JTextField     | Nota para cocina
-     * btnAgregar                 | JButton        | Botón «Agregar»
-     * lblSubNuevos               | JLabel         | Subtítulo
-     * btnQuitarNuevo             | JButton        | Botón «Quitar»
-     * scrNuevos                  | JScrollPane    | Barra de desplazamiento de tblNuevos
-     * tblNuevos                  | JTable         | Productos nuevos que aún no se envían
-     * lblTotalNuevos             | JLabel         | Importe de lo nuevo
-     * btnEnviar                  | JButton        | Botón «Enviar a cocina»
+     * pnlCategorias              | JPanel         | Botones de categorías (se crean desde el controlador)
+     * pnlProductos               | JPanel         | Botones de productos (se crean desde el controlador)
+     * btnAnterior                | JButton        | Botón «◀»
+     * lblPagina                  | JLabel         | Página de productos
+     * btnSiguiente               | JButton        | Botón «▶»
+     * lblAyudaCarta              | JLabel         | Ayuda
+     * pnlAcciones                | JPanel         | Botones de acción (derecha)
+     * btnConfirmar               | JButton        | Envía a cocina los productos nuevos
+     * btnNota                    | JButton        | Nota para el producto elegido (ej. sin azúcar)
+     * btnObservacion             | JButton        | Observación general para cocina
+     * btnPedirCuenta             | JButton        | Pide la cuenta: la mesa pasa a verde y el pedido a caja
+     * btnAnular                  | JButton        | Anula el pedido si la cocina aún no lo empezó
+     * btnMesas                   | JButton        | Vuelve al mapa de mesas
      */
 }

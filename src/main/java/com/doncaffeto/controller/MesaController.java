@@ -6,7 +6,6 @@ import com.doncaffeto.model.Mesa;
 import com.doncaffeto.model.Pedido;
 import com.doncaffeto.model.Producto;
 import com.doncaffeto.model.Usuario;
-import com.doncaffeto.service.PagoService;
 import com.doncaffeto.util.Tema;
 import com.doncaffeto.view.FrmMesa;
 import com.doncaffeto.view.componentes.TarjetaMesa;
@@ -15,16 +14,30 @@ import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
- * Pantalla de una mesa: a la izquierda su pedido (lo ya enviado a cocina, total y botón para pedir
- * la cuenta) y en medio la carta para agregar más productos. Es el único lugar donde el mesero ve
- * el pedido de salón.
+ * Pantalla de una mesa al estilo Restometrics:
+ * <ul>
+ *   <li>izquierda: el pedido (lo enviado y lo nuevo), el total y el teclado numérico;</li>
+ *   <li>en medio: categorías y productos en botones grandes, por páginas;</li>
+ *   <li>derecha: Confirmar, Nota, Observación, Pedir cuenta, Anular y Mesas.</li>
+ * </ul>
+ * Sirve para tomar el pedido de una mesa libre y para agregar productos a una ocupada.
+ * Es el único lugar donde el mesero ve el pedido de salón.
  *
  * @author Equipo Don Caffeto
  */
 public class MesaController {
+
+    /** Productos por página (4 columnas x 3 filas). */
+    private static final int POR_PAGINA = 12;
+    private static final String TODAS = "Todos";
 
     private final FrmMesa vista;
     private final Servicios servicios;
@@ -33,10 +46,16 @@ public class MesaController {
     private final Runnable alCambiar;
     private final Timer cronometro;
     private final Timer recarga;
-    private final Carta carta;
-    /** Productos elegidos que todavía no se envían a cocina. */
-    private Pedido nuevos = new Pedido();
-    private Pedido pedido;
+
+    private Pedido pedido;                                   // null mientras la mesa no tenga pedido
+    private List<DetallePedido> enviados = new ArrayList<>(); // ya están en cocina (no se editan)
+    private Pedido nuevos = new Pedido();                    // elegidos, falta confirmar
+    private String observacionNueva;                        // observación de un pedido aún no enviado
+    private String cantidad = "";                           // lo escrito en el teclado
+
+    private List<Producto> carta = new ArrayList<>();
+    private String categoria = TODAS;
+    private int pagina;
 
     /**
      * @param vista     pantalla de la mesa
@@ -52,19 +71,48 @@ public class MesaController {
         this.mesa = mesa;
         this.alCambiar = alCambiar;
         cronometro = new Timer(1000, e -> vista.getLblCronometro().setText(
-                TarjetaMesa.cronometro(mesa.getSegundosOcupada())));
+                mesa.isLibre() ? "00:00" : TarjetaMesa.cronometro(mesa.getSegundosOcupada())));
         recarga = new Timer(10_000, e -> cargar());
-        carta = new Carta(vista.getTblProductos(), vista.getTxtBuscar(), vista.getCmbCategoria(), this::agregar);
         vista.getLblTitulo().setText("Mesa " + mesa.getNumero());
+        vista.getLblMesero().setText("·  " + usuario.getNombres());
         vista.setTitle("Don Caffeto - Mesa " + mesa.getNumero());
-        vista.getBtnAgregar().addActionListener(e -> agregar());
-        vista.getTxtNota().addActionListener(e -> agregar());
-        vista.getBtnQuitarNuevo().addActionListener(e -> quitarNuevo());
-        vista.getBtnEnviar().addActionListener(e -> enviar());
+
+        // teclado numérico
+        JButton[] numeros = {vista.getBtnNum0(), vista.getBtnNum1(), vista.getBtnNum2(), vista.getBtnNum3(),
+            vista.getBtnNum4(), vista.getBtnNum5(), vista.getBtnNum6(), vista.getBtnNum7(), vista.getBtnNum8(),
+            vista.getBtnNum9()};
+        for (int i = 0; i < numeros.length; i++) {
+            String digito = String.valueOf(i);
+            numeros[i].addActionListener(e -> escribir(digito));
+        }
+        vista.getBtnNum00().addActionListener(e -> escribir("00"));
+        vista.getBtnBorrar().addActionListener(e -> borrarDigito());
+        vista.getBtnVaciar().addActionListener(e -> vaciar());
+        vista.getBtnEliminar().addActionListener(e -> eliminarLinea());
+        vista.getBtnMas().addActionListener(e -> sumar(1));
+        vista.getBtnMenos().addActionListener(e -> sumar(-1));
+
+        // carta
+        vista.getBtnAnterior().addActionListener(e -> cambiarPagina(-1));
+        vista.getBtnSiguiente().addActionListener(e -> cambiarPagina(1));
+        vista.getTxtBuscar().getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { irAPagina(0); }
+            @Override public void removeUpdate(DocumentEvent e) { irAPagina(0); }
+            @Override public void changedUpdate(DocumentEvent e) { irAPagina(0); }
+        });
+
+        // acciones
+        vista.getBtnConfirmar().addActionListener(e -> confirmar());
+        vista.getBtnNota().addActionListener(e -> nota());
+        vista.getBtnObservacion().addActionListener(e -> observacion());
         vista.getBtnPedirCuenta().addActionListener(e -> pedirCuenta());
         vista.getBtnAnular().addActionListener(e -> anular());
-        vista.getBtnCerrar().addActionListener(e -> cerrar());
-        vista.getTblNuevos().getSelectionModel().addListSelectionListener(e -> mostrarNuevos(false));
+        vista.getBtnMesas().addActionListener(e -> cerrar());
+        vista.getTblDetalle().getSelectionModel().addListSelectionListener(e -> actualizarBotones());
+        int[] anchos = {45, 170, 80, 55};
+        for (int i = 0; i < anchos.length; i++) {
+            vista.getTblDetalle().getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
+        }
         vista.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -76,123 +124,313 @@ public class MesaController {
 
     /** Carga el pedido y la carta, y muestra la pantalla. */
     public void iniciar() {
-        if (cargar()) {
-            try {
-                carta.mostrar(servicios.productos.carta());
-            } catch (SQLException e) {
-                Mensajes.de(vista, e);
-            }
-            mostrarNuevos(true);
-            cronometro.start();
-            recarga.start();
-            vista.setVisible(true);
-            vista.getTxtBuscar().requestFocusInWindow();
+        if (!cargar()) {
+            return;
         }
+        try {
+            carta = servicios.productos.carta();
+        } catch (SQLException e) {
+            Mensajes.de(vista, e);
+        }
+        mostrarCategorias();
+        irAPagina(0);
+        cronometro.start();
+        recarga.start();
+        vista.setVisible(true);
     }
 
+    // ============================ izquierda: pedido ============================
+
     /**
-     * Vuelve a leer el pedido de la izquierda (la cocina pudo cambiar su estado).
+     * Lee de MySQL lo que ya está en cocina (la cocina pudo cambiar el estado).
      *
-     * @return false si la mesa ya no tiene pedido
+     * @return false si la mesa se liberó mientras tanto
      */
     private boolean cargar() {
+        boolean eraLibre = pedido == null && mesa.isLibre();
         try {
             pedido = servicios.pedidos.pedidoDeMesa(mesa, usuario);
+            enviados = pedido == null ? new ArrayList<>() : servicios.pedidos.detalle(pedido.getIdPedido());
         } catch (SQLException | SecurityException e) {
             Mensajes.de(vista, e);
             return false;
         }
-        if (pedido == null) {
+        if (pedido == null && !eraLibre) {
             Mensajes.info(vista, "La mesa " + mesa.getNumero() + " ya está libre.");
             alCambiar.run();
             vista.dispose();
             return false;
         }
-        mesa.setEstado(pedido.getEstadoMesa());
-        boolean cuenta = "CUENTA".equals(pedido.getEstadoMesa());
-        boolean listo = "LISTO".equals(pedido.getEstado());
-        vista.getLblEstadoMesa().setText(cuenta ? "Cuenta pedida · esperando el pago" : listo ? "Pedido listo" : "En cocina");
-        vista.getLblEstadoMesa().setForeground(Tema.colorMesa(pedido.getEstadoMesa()));
-        vista.getLblCronometro().setForeground(Tema.colorMesa(pedido.getEstadoMesa()));
-        vista.getLblCronometro().setText(TarjetaMesa.cronometro(mesa.getSegundosOcupada()));
-        vista.getLblSeleccion().setText("Pedido N° " + pedido.getIdPedido() + "  ·  Mesero: " + pedido.getMesero());
-        String estado = Tablas.ESTADO.get(pedido.getEstado());
-        vista.getLblEstadoCocina().setText(listo ? "Listo para servir" : estado);
-        vista.getLblEstadoCocina().setForeground(Tema.color(estado));
-        vista.getLblObservacion().setText(pedido.getObservacion() == null ? " " : "Observación: " + pedido.getObservacion());
-        List<Object[]> filas = new ArrayList<>();
-        try {
-            for (DetallePedido d : servicios.pedidos.detalle(pedido.getIdPedido())) {
-                filas.add(new Object[]{d.getProducto(), Tablas.nota(d), d.getCantidad(), d.getImporte()});
-            }
-        } catch (SQLException e) {
-            Mensajes.de(vista, e);
+        if (pedido != null) {
+            mesa.setEstado(pedido.getEstadoMesa());
         }
-        Tablas.llenar(vista.getTblDetalle(), filas);
-        vista.getLblTotal().setText(Tema.soles(pedido.getTotal()));
-        vista.getLblIgv().setText("Incluye IGV 18 %: " + Tema.soles(PagoService.igv(pedido.getTotal())));
-
-        // pedir la cuenta: cuando la cocina terminó; anular: solo si la cocina aún no empezó
-        vista.getBtnPedirCuenta().setVisible(!cuenta);
-        vista.getBtnPedirCuenta().setEnabled(listo && nuevos.getDetalles().isEmpty());
-        vista.getBtnPedirCuenta().setToolTipText(listo ? null : "Disponible cuando la cocina marque el pedido como listo");
-        vista.getBtnAnular().setVisible("PENDIENTE".equals(pedido.getEstado()));
-        // con la cuenta pedida ya no se agregan productos
-        vista.getPnlCardAgregar().setVisible(!cuenta);
+        mostrarPedido();
         return true;
     }
 
-    // ------------------------- agregar productos (en medio) -------------------------
+    private boolean cuentaPedida() {
+        return pedido != null && "CUENTA".equals(pedido.getEstadoMesa());
+    }
 
-    private void agregar() {
-        Producto p = carta.seleccionado();
-        if (p == null) {
-            Mensajes.aviso(vista, "Selecciona un producto de la carta.");
+    private void mostrarPedido() {
+        int seleccion = vista.getTblDetalle().getSelectedRow();
+        List<Object[]> filas = new ArrayList<>();
+        for (DetallePedido d : enviados) {
+            filas.add(new Object[]{d.getCantidad(), descripcion(d), d.getImporte(), "✓"});
+        }
+        for (DetallePedido d : nuevos.getDetalles()) {
+            filas.add(new Object[]{d.getCantidad(), descripcion(d), d.getImporte(), "Nuevo"});
+        }
+        Tablas.llenar(vista.getTblDetalle(), filas);
+        if (seleccion >= 0 && seleccion < filas.size()) {
+            vista.getTblDetalle().setRowSelectionInterval(seleccion, seleccion);
+        }
+        java.math.BigDecimal total = (pedido == null ? java.math.BigDecimal.ZERO : pedido.getTotal())
+                .add(servicios.pedidos.calcularTotal(nuevos));
+        vista.getLblTotal().setText("Total: " + Tema.soles(total));
+
+        if (pedido == null) {
+            vista.getLblSeleccion().setText("Pedido nuevo");
+            vista.getLblEstadoCocina().setText(" ");
+            vista.getLblEstadoMesa().setText("Libre");
+            vista.getLblEstadoMesa().setForeground(Tema.GRIS_MESA);
+        } else {
+            boolean listo = "LISTO".equals(pedido.getEstado());
+            String estado = Tablas.ESTADO.get(pedido.getEstado());
+            vista.getLblSeleccion().setText("Pedido N° " + pedido.getIdPedido() + "  ·  " + pedido.getMesero());
+            vista.getLblEstadoCocina().setText(listo ? "Listo para servir" : estado);
+            vista.getLblEstadoCocina().setForeground(Tema.color(estado));
+            vista.getLblEstadoMesa().setText(Tema.textoMesa(pedido.getEstadoMesa()));
+            vista.getLblEstadoMesa().setForeground(Tema.colorMesa(pedido.getEstadoMesa()));
+        }
+        vista.getLblCronometro().setForeground(Tema.colorMesa(mesa.getEstado()));
+        vista.getLblCronometro().setText(mesa.isLibre() ? "00:00" : TarjetaMesa.cronometro(mesa.getSegundosOcupada()));
+        String obs = pedido == null ? observacionNueva : pedido.getObservacion();
+        vista.getLblObservacion().setText(obs == null ? " " : "Obs.: " + obs);
+        actualizarBotones();
+    }
+
+    private static String descripcion(DetallePedido d) {
+        return d.getNota() == null ? d.getProducto() : d.getProducto() + " (" + d.getNota() + ")";
+    }
+
+    /** Índice de la línea nueva seleccionada, o -1 si se eligió una ya enviada o ninguna. */
+    private int lineaNueva() {
+        int fila = vista.getTblDetalle().getSelectedRow();
+        return fila < enviados.size() ? -1 : fila - enviados.size();
+    }
+
+    private void seleccionarUltima() {
+        int ultima = enviados.size() + nuevos.getDetalles().size() - 1;
+        if (ultima >= 0) {
+            vista.getTblDetalle().setRowSelectionInterval(ultima, ultima);
+        }
+    }
+
+    /** Activa solo lo que tiene sentido en este momento. */
+    private void actualizarBotones() {
+        boolean hayNuevos = !nuevos.getDetalles().isEmpty();
+        boolean lineaNueva = lineaNueva() >= 0;
+        boolean cuenta = cuentaPedida();
+        vista.getBtnConfirmar().setEnabled(hayNuevos && !cuenta);
+        vista.getBtnNota().setEnabled(lineaNueva);
+        vista.getBtnEliminar().setEnabled(lineaNueva);
+        vista.getBtnMas().setEnabled(lineaNueva);
+        vista.getBtnMenos().setEnabled(lineaNueva);
+        vista.getBtnVaciar().setEnabled(hayNuevos);
+        vista.getBtnObservacion().setEnabled(!cuenta);
+        vista.getBtnPedirCuenta().setEnabled(pedido != null && "LISTO".equals(pedido.getEstado()) && !hayNuevos && !cuenta);
+        vista.getBtnPedirCuenta().setToolTipText(pedido != null && !"LISTO".equals(pedido.getEstado())
+                ? "Disponible cuando la cocina marque el pedido como listo" : null);
+        vista.getBtnAnular().setEnabled(pedido != null && "PENDIENTE".equals(pedido.getEstado()));
+        // con la cuenta pedida ya no se agregan productos: la carta y el teclado quedan bloqueados
+        bloquear(vista.getPnlCardCarta(), !cuenta);
+        bloquear(vista.getPnlTeclado(), !cuenta);
+        vista.getLblCantidad().setText(cuenta ? "Cuenta pedida" : "Cantidad: " + (cantidad.isEmpty() ? "1" : cantidad));
+        if (cuenta && vista.getPnlProductos().getLayout() instanceof java.awt.GridLayout) {
+            irAPagina(0); // muestra el aviso en lugar de los productos
+        }
+    }
+
+    /**
+     * Bloquea los botones y campos de un panel (cuando la cuenta ya fue pedida). La cuenta pedida no
+     * vuelve atrás, así que no hace falta reactivarlos: si {@code activo} es true no se cambia nada.
+     */
+    private static void bloquear(java.awt.Container panel, boolean activo) {
+        if (activo) {
             return;
         }
+        for (java.awt.Component c : panel.getComponents()) {
+            if (c instanceof javax.swing.AbstractButton || c instanceof javax.swing.text.JTextComponent) {
+                c.setEnabled(false);
+            }
+            if (c instanceof java.awt.Container) {
+                bloquear((java.awt.Container) c, false);
+            }
+        }
+    }
+
+    // ============================ teclado numérico ============================
+
+    private void escribir(String digitos) {
+        if ((cantidad + digitos).replaceFirst("^0+", "").length() > 2) {
+            return; // máximo 99
+        }
+        cantidad = (cantidad + digitos).replaceFirst("^0+", "");
+        int linea = lineaNueva();
+        if (linea >= 0 && !cantidad.isEmpty()) {
+            servicios.pedidos.fijarCantidad(nuevos, linea, Integer.parseInt(cantidad));
+            mostrarPedido();
+        }
+        mostrarCantidad();
+    }
+
+    private void borrarDigito() {
+        if (!cantidad.isEmpty()) {
+            cantidad = cantidad.substring(0, cantidad.length() - 1);
+        }
+        mostrarCantidad();
+    }
+
+    private void mostrarCantidad() {
+        vista.getLblCantidad().setText("Cantidad: " + (cantidad.isEmpty() ? "1" : cantidad));
+    }
+
+    private int cantidadEscrita() {
+        int c = cantidad.isEmpty() ? 1 : Integer.parseInt(cantidad);
+        cantidad = "";
+        mostrarCantidad();
+        return c;
+    }
+
+    private void sumar(int cambio) {
+        int linea = lineaNueva();
+        if (linea >= 0) {
+            servicios.pedidos.cambiarCantidad(nuevos, linea, cambio);
+            mostrarPedido();
+        }
+    }
+
+    private void eliminarLinea() {
+        int linea = lineaNueva();
+        if (linea >= 0) {
+            nuevos.getDetalles().remove(linea);
+            mostrarPedido();
+        }
+    }
+
+    private void vaciar() {
+        if (Mensajes.confirmar(vista, "¿Quitar todos los productos nuevos que aún no se envían?")) {
+            nuevos = new Pedido();
+            mostrarPedido();
+        }
+    }
+
+    // ============================ en medio: carta ============================
+
+    private void mostrarCategorias() {
+        TreeSet<String> nombres = new TreeSet<>();
+        carta.forEach(p -> nombres.add(p.getCategoria()));
+        List<String> todas = new ArrayList<>();
+        todas.add(TODAS);
+        todas.addAll(nombres);
+        vista.getPnlCategorias().removeAll();
+        for (String c : todas) {
+            JButton b = new JButton(c);
+            Tema.categoria(b, c.equals(categoria));
+            b.addActionListener(e -> {
+                categoria = c;
+                mostrarCategorias();
+                irAPagina(0);
+            });
+            vista.getPnlCategorias().add(b);
+        }
+        vista.getPnlCategorias().revalidate();
+        vista.getPnlCategorias().repaint();
+    }
+
+    private List<Producto> visibles() {
+        String texto = vista.getTxtBuscar().getText().trim().toLowerCase();
+        List<Producto> lista = new ArrayList<>();
+        for (Producto p : carta) {
+            boolean enCategoria = TODAS.equals(categoria) || p.getCategoria().equals(categoria);
+            if (enCategoria && p.getNombre().toLowerCase().contains(texto)) {
+                lista.add(p);
+            }
+        }
+        return lista;
+    }
+
+    private void cambiarPagina(int cambio) {
+        irAPagina(pagina + cambio);
+    }
+
+    private void irAPagina(int numero) {
+        if (cuentaPedida()) {
+            vista.getPnlProductos().removeAll();
+            vista.getPnlProductos().setLayout(new java.awt.BorderLayout());
+            javax.swing.JLabel aviso = new javax.swing.JLabel("<html><div style='text-align:center'><b>La cuenta ya fue "
+                    + "pedida</b><br>Ya no se pueden agregar productos a esta mesa.</div></html>",
+                    javax.swing.SwingConstants.CENTER);
+            aviso.setForeground(Tema.VERDE);
+            aviso.setFont(aviso.getFont().deriveFont(18f));
+            vista.getPnlProductos().add(aviso);
+            vista.getPnlProductos().revalidate();
+            vista.getPnlProductos().repaint();
+            return;
+        }
+        List<Producto> lista = visibles();
+        int paginas = Math.max(1, (lista.size() + POR_PAGINA - 1) / POR_PAGINA);
+        pagina = Math.max(0, Math.min(numero, paginas - 1));
+        vista.getPnlProductos().removeAll();
+        for (int i = pagina * POR_PAGINA; i < Math.min(lista.size(), (pagina + 1) * POR_PAGINA); i++) {
+            Producto p = lista.get(i);
+            JButton b = new JButton();
+            Tema.producto(b, p.getNombre(), p.getPrecio());
+            b.addActionListener(e -> agregar(p));
+            vista.getPnlProductos().add(b);
+        }
+        for (int i = vista.getPnlProductos().getComponentCount(); i < POR_PAGINA; i++) {
+            vista.getPnlProductos().add(new javax.swing.JLabel()); // relleno: los botones mantienen su tamaño
+        }
+        vista.getPnlProductos().revalidate();
+        vista.getPnlProductos().repaint();
+        vista.getLblPagina().setText((pagina + 1) + " / " + paginas);
+        vista.getBtnAnterior().setEnabled(pagina > 0);
+        vista.getBtnSiguiente().setEnabled(pagina < paginas - 1);
+    }
+
+    /** Toca un producto: se agrega con la cantidad escrita en el teclado (1 si no se escribió nada). */
+    private void agregar(Producto p) {
         try {
-            servicios.pedidos.agregarProducto(nuevos, p, (Integer) vista.getSpnCantidad().getValue(),
-                    vista.getTxtNota().getText());
-            vista.getSpnCantidad().setValue(1);
-            vista.getTxtNota().setText("");
-            mostrarNuevos(true);
+            servicios.pedidos.agregarProducto(nuevos, p, cantidadEscrita(), null);
+            mostrarPedido();
+            seleccionarUltima();
         } catch (IllegalArgumentException e) {
             Mensajes.aviso(vista, e.getMessage());
         }
     }
 
-    private void quitarNuevo() {
-        int fila = vista.getTblNuevos().getSelectedRow();
-        if (fila >= 0) {
-            nuevos.getDetalles().remove(fila);
-            mostrarNuevos(true);
-        }
-    }
+    // ============================ derecha: acciones ============================
 
-    /**
-     * @param recargarTabla true para volver a llenar la tabla de "Por enviar"
-     */
-    private void mostrarNuevos(boolean recargarTabla) {
-        if (recargarTabla) {
-            List<Object[]> filas = new ArrayList<>();
-            for (DetallePedido d : nuevos.getDetalles()) {
-                filas.add(new Object[]{d.getProducto(), Tablas.nota(d), d.getCantidad(), d.getImporte()});
-            }
-            Tablas.llenar(vista.getTblNuevos(), filas);
-        }
-        boolean hay = !nuevos.getDetalles().isEmpty();
-        vista.getLblTotalNuevos().setText(hay ? "+ " + Tema.soles(servicios.pedidos.calcularTotal(nuevos)) : " ");
-        vista.getBtnEnviar().setEnabled(hay);
-        vista.getBtnQuitarNuevo().setEnabled(vista.getTblNuevos().getSelectedRow() >= 0);
-        vista.getBtnPedirCuenta().setEnabled(pedido != null && "LISTO".equals(pedido.getEstado()) && !hay);
-    }
-
-    private void enviar() {
+    /** Envía a cocina lo nuevo: crea el pedido si la mesa estaba libre o lo agrega al existente. */
+    private void confirmar() {
         try {
-            servicios.pedidos.agregarAPedido(pedido, nuevos.getDetalles(), usuario);
-            Mensajes.info(vista, "Productos enviados a cocina. Aparecen con la nota «Agregado».");
+            if (pedido == null) {
+                nuevos.setModalidad("SALON");
+                nuevos.setIdMesa(mesa.getIdMesa());
+                nuevos.setObservacion(observacionNueva);
+                int id = servicios.pedidos.guardar(nuevos, usuario);
+                mesa.setEstado("OCUPADA");
+                mesa.setSegundosOcupada(0);
+                Mensajes.info(vista, "Pedido N° " + id + " enviado a cocina. La mesa " + mesa.getNumero()
+                        + " ahora está en naranja.");
+            } else {
+                servicios.pedidos.agregarAPedido(pedido, nuevos.getDetalles(), usuario);
+                Mensajes.info(vista, "Productos enviados a cocina. Aparecen con la nota «Agregado».");
+            }
             nuevos = new Pedido();
-            mostrarNuevos(true);
+            observacionNueva = null;
             alCambiar.run();
             cargar();
         } catch (IllegalArgumentException | SecurityException | SQLException e) {
@@ -201,7 +439,39 @@ public class MesaController {
         }
     }
 
-    // ------------------------- acciones del pedido (izquierda) -------------------------
+    private void nota() {
+        int linea = lineaNueva();
+        if (linea < 0) {
+            return;
+        }
+        DetallePedido d = nuevos.getDetalles().get(linea);
+        Object texto = JOptionPane.showInputDialog(vista, "Nota para «" + d.getProducto() + "» (ej. sin azúcar):",
+                "Nota para cocina", JOptionPane.PLAIN_MESSAGE, null, null, d.getNota());
+        if (texto != null) {
+            String t = texto.toString().trim();
+            d.setNota(t.isEmpty() ? null : t);
+            mostrarPedido();
+        }
+    }
+
+    private void observacion() {
+        Object texto = JOptionPane.showInputDialog(vista, "Observación del pedido para cocina:",
+                "Observación", JOptionPane.PLAIN_MESSAGE, null, null, pedido == null ? observacionNueva : null);
+        if (texto == null || texto.toString().isBlank()) {
+            return;
+        }
+        if (pedido == null) {
+            observacionNueva = texto.toString().trim(); // se envía junto con el pedido
+            mostrarPedido();
+            return;
+        }
+        try {
+            servicios.pedidos.agregarObservacion(pedido, texto.toString(), usuario);
+            cargar();
+        } catch (IllegalArgumentException | SecurityException | SQLException e) {
+            Mensajes.de(vista, e);
+        }
+    }
 
     private void pedirCuenta() {
         if (!Mensajes.confirmar(vista, "¿Pedir la cuenta de la mesa " + mesa.getNumero() + " por "
@@ -233,7 +503,7 @@ public class MesaController {
 
     private void cerrar() {
         if (!nuevos.getDetalles().isEmpty()
-                && !Mensajes.confirmar(vista, "Hay productos sin enviar a cocina. ¿Salir sin enviarlos?")) {
+                && !Mensajes.confirmar(vista, "Hay productos sin confirmar. ¿Volver a mesas sin enviarlos a cocina?")) {
             return;
         }
         vista.dispose();
