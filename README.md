@@ -5,12 +5,25 @@ Todos los equipos (mesero, cocina, caja y administrador) trabajan con la misma b
 
 | Rol | Qué puede hacer |
 |---|---|
-| **Mesero** | Crear pedidos (salón, para llevar o delivery) con notas por producto y observación general; ver y anular pedidos pendientes |
+| **Mesero** | Trabaja desde el **mapa de 7 mesas**: toma el pedido de una mesa libre, ve el pedido de cada mesa solo entrando a ella, pide la cuenta y anula pedidos que la cocina aún no empezó. También registra pedidos para llevar y delivery |
 | **Cocina** | Ver los pedidos pendientes y en preparación (se actualiza solo cada 15 s y suena al llegar uno nuevo) y cambiar su estado |
 | **Cajero** | Cobrar los pedidos listos (efectivo con vuelto, Yape, Plin o tarjeta) |
-| **Administrador** | Todo lo anterior, más gestionar productos y usuarios y ver reportes de ventas |
+| **Administrador** | Todo lo anterior, más la lista de todos los pedidos del día, gestionar productos y usuarios y ver reportes de ventas |
 
 Flujo de un pedido: **Pendiente → En preparación → Listo → Pagado** (o **Cancelado** si se anula antes de cocinarse).
+
+### Mapa de mesas (mesero)
+
+| Color | Estado de la mesa | Qué pasó |
+|---|---|---|
+| Gris | Libre | No tiene pedido. Al tocarla se toma el pedido de esa mesa |
+| Naranja | En cocina | El pedido se tomó y se envió a cocina. Empieza el **cronómetro** de la mesa |
+| Verde | Cuenta pedida | La cocina terminó y el mesero pidió la cuenta. Recién ahí aparece en caja |
+| Gris otra vez | Libre | El cajero registró el pago; la mesa se libera y el cronómetro se detiene |
+
+- El cronómetro lo calcula MySQL (`ocupada_desde`), así todos los equipos ven el mismo tiempo.
+- El mapa se actualiza solo cada 10 segundos: cuando la caja cobra, la mesa vuelve a gris sin hacer nada.
+- Los pedidos de salón solo se ven **entrando a la mesa** (detalle, estado en cocina, total y botón *Pedir la cuenta*).
 
 Capturas de todas las pantallas: `docs/capturas/`.
 
@@ -61,8 +74,14 @@ Tablas: `roles`, `usuarios`, `mesas`, `categorias`, `productos`, `pedidos`, `det
 | `cocina1` | Cocina |
 | `cajero1` | Cajero |
 
-Para ver que todos comparten los mismos datos: crea un pedido con `mesero1`, ábrelo en la cocina con
-`cocina1` y márcalo como listo, y luego cóbralo en la caja con `cajero1`.
+Para ver que todos comparten los mismos datos:
+1. Con `mesero1` abre **Mesas** y toca una mesa gris → agrega productos → **Enviar a cocina** (la mesa queda naranja).
+2. Con `cocina1` marca el pedido como **listo**.
+3. Con `mesero1` entra a la mesa → **Pedir la cuenta** (la mesa queda verde).
+4. Con `cajero1` cóbralo en **Caja**: la mesa vuelve a gris en el mapa.
+
+> Si ya habías importado la base antes de este cambio, vuelve a ejecutar `sql/don_caffeto.sql`
+> (la tabla `mesas` cambió: ahora tiene el estado CUENTA y la hora de ocupación).
 
 ## 5. Pruebas
 
@@ -71,9 +90,9 @@ DAOs falsos en memoria, así que no necesitan MySQL:
 
 | Clase | Qué prueba |
 |---|---|
-| `PedidoServiceTest` | Total del pedido, notas, cantidades, mesa y delivery obligatorios, anulación, el cajero no puede crear pedidos |
+| `PedidoServiceTest` | Total del pedido, notas, cantidades, mesa y delivery obligatorios, anulación, pedir la cuenta solo cuando la cocina terminó, el cajero no puede crear pedidos |
 | `CocinaServiceTest` | Pendiente → En preparación → Listo; el mesero no cambia estados de cocina |
-| `PagoServiceTest` | IGV incluido, vuelto, efectivo insuficiente, solo se cobran pedidos listos, el mesero no puede cobrar |
+| `PagoServiceTest` | IGV incluido, vuelto, efectivo insuficiente, una mesa solo se cobra con la cuenta pedida, el mesero no puede cobrar |
 | `LoginServiceTest` | Contraseña BCrypt, mismo mensaje si el usuario no existe, bloqueo tras 3 intentos, permisos por rol |
 | `UsuarioServiceTest` | La clave se guarda cifrada, mínimo 8 caracteres, solo el administrador gestiona usuarios |
 | `ValidadorTest` | Textos vacíos, teléfono, montos y fechas |

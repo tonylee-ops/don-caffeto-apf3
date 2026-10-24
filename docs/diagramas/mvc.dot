@@ -3,9 +3,9 @@ digraph MVC {
   node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, fillcolor="#FFF3E0", color="#E65100"];
   edge [color="#BF360C", fontname="Helvetica", fontsize=9, arrowsize=0.7];
   subgraph cluster_v { label="Vista (view)\nJFrame Forms"; style=filled; fillcolor="#FFE0B2";
-    FrmLogin; FrmPrincipal; FrmPedido; FrmPedidos; FrmCocina; FrmCaja; FrmProductos; FrmUsuarios; FrmReportes; }
+    FrmLogin; FrmPrincipal; FrmMesas; FrmMesa; FrmPedido; FrmPedidos; FrmCocina; FrmCaja; FrmProductos; FrmUsuarios; FrmReportes; }
   subgraph cluster_c { label="Controlador (controller)"; style=filled; fillcolor="#FFCC80";
-    LoginController; PrincipalController; PedidoController; PedidosController; CocinaController; CajaController;
+    LoginController; PrincipalController; MesasController; MesaController; PedidoController; PedidosController; CocinaController; CajaController;
     ProductosController; UsuariosController; ReportesController; }
   subgraph cluster_m { label="Modelo (service + model)"; style=filled; fillcolor="#FFB74D";
     Autorizacion [label="Autorizacion\n(permisos por rol)", fillcolor="#FFFFFF"];
@@ -13,9 +13,9 @@ digraph MVC {
   subgraph cluster_d { label="DAO"; style=filled; fillcolor="#FFA726";
     DAO [label="7 interfaces DAO\n+ implementaciones MySQL\n(JDBC, PreparedStatement)"]; }
   BD [shape=cylinder, fillcolor="#4E342E", fontcolor=white, label="MySQL\ndon_caffeto"];
-  FrmLogin -> LoginController; FrmPrincipal -> PrincipalController; FrmPedido -> PedidoController; FrmPedidos -> PedidosController;
+  FrmLogin -> LoginController; FrmPrincipal -> PrincipalController; FrmMesas -> MesasController; FrmMesa -> MesaController; FrmPedido -> PedidoController; FrmPedidos -> PedidosController;
   FrmCocina -> CocinaController; FrmCaja -> CajaController; FrmProductos -> ProductosController; FrmUsuarios -> UsuariosController; FrmReportes -> ReportesController;
-  LoginController -> LoginService; PedidoController -> PedidoService; PedidosController -> PedidoService; CocinaController -> CocinaService;
+  LoginController -> LoginService; MesasController -> PedidoService; MesaController -> PedidoService; PedidoController -> PedidoService; PedidosController -> PedidoService; CocinaController -> CocinaService;
   CajaController -> PagoService; ProductosController -> ProductoService; UsuariosController -> UsuarioService; ReportesController -> ReporteService;
   PedidoService -> Autorizacion [style=dashed]; PagoService -> Autorizacion [style=dashed];
   LoginService -> DAO; PedidoService -> DAO; CocinaService -> DAO; PagoService -> DAO; ProductoService -> DAO; UsuarioService -> DAO; ReporteService -> DAO;
