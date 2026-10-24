@@ -38,6 +38,14 @@ public interface PedidoDAO {
             throws SQLException;
 
     /**
+     * @param idPedido  número del pedido
+     * @param idUsuario mesero que escribe la observación
+     * @param texto     observación para cocina (ej. "cliente con apuro")
+     * @throws SQLException si falla el registro
+     */
+    void agregarObservacion(int idPedido, int idUsuario, String texto) throws SQLException;
+
+    /**
      * @param fecha día a consultar
      * @return pedidos registrados ese día
      * @throws SQLException si falla la consulta

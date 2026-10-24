@@ -112,6 +112,17 @@ public class PedidoDAOImpl implements PedidoDAO {
         }
     }
 
+    @Override
+    public void agregarObservacion(int idPedido, int idUsuario, String texto) throws SQLException {
+        try (Connection cn = Conexion.obtener(); PreparedStatement ps = cn.prepareStatement(
+                "INSERT INTO observaciones_pedido (id_pedido, id_usuario, texto) VALUES (?, ?, ?)")) {
+            ps.setInt(1, idPedido);
+            ps.setInt(2, idUsuario);
+            ps.setString(3, texto);
+            ps.executeUpdate();
+        }
+    }
+
     /** Guarda una línea del pedido y, si tiene, su nota para cocina. */
     private static void insertarLinea(Connection cn, int idPedido, DetallePedido d) throws SQLException {
         int idDetalle;

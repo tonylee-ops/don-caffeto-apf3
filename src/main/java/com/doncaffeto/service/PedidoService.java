@@ -191,6 +191,35 @@ public class PedidoService {
     }
 
     /**
+     * Agrega una observación general a un pedido que ya está en cocina.
+     *
+     * @param pedido  pedido de la mesa
+     * @param texto   observación
+     * @param usuario mesero o administrador
+     * @throws SQLException si falla la base de datos
+     */
+    public void agregarObservacion(Pedido pedido, String texto, Usuario usuario) throws SQLException {
+        Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
+        String t = StringUtils.trimToNull(texto);
+        if (t == null) {
+            throw new IllegalArgumentException("Escribe la observación.");
+        }
+        pedidoDAO.agregarObservacion(pedido.getIdPedido(), usuario.getIdUsuario(), StringUtils.abbreviate(t, 200));
+    }
+
+    /**
+     * Fija la cantidad de una línea (lo usa el teclado numérico).
+     *
+     * @param pedido   pedido en registro
+     * @param indice   posición de la línea
+     * @param cantidad cantidad nueva (mayor que 0)
+     */
+    public void fijarCantidad(Pedido pedido, int indice, int cantidad) {
+        Preconditions.checkArgument(cantidad > 0 && cantidad <= 99, "La cantidad debe estar entre 1 y 99.");
+        pedido.getDetalles().get(indice).setCantidad(cantidad);
+    }
+
+    /**
      * El mesero pide la cuenta: la mesa pasa a verde y el pedido aparece en caja.
      * Solo se puede cuando la cocina ya terminó el pedido.
      *

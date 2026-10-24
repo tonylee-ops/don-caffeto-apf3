@@ -116,6 +116,20 @@ public class PedidoServiceTest {
         assertEquals("Agregado · sin azúcar", nuevos.getDetalles().get(1).getNota());
     }
 
+    @Test
+    public void elTecladoFijaLaCantidad() {
+        service.agregarProducto(pedido, americano, 1, null);
+        service.fijarCantidad(pedido, 0, 12);
+        assertEquals(12, pedido.getDetalles().get(0).getCantidad());
+    }
+
+    @Test
+    public void seAgreganObservacionesAUnPedidoEnCocina() throws Exception {
+        service.agregarObservacion(DatosFalsos.pedidoDeMesa(5, 3, "PENDIENTE", "OCUPADA", "22.00"), "  sin cubiertos ",
+                DatosFalsos.MESERO);
+        assertEquals("5:obs:sin cubiertos", dao.cambios.get(0));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void noSeAgregaSiYaPidieronLaCuenta() throws Exception {
         Pedido nuevos = new Pedido();

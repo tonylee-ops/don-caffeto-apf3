@@ -70,6 +70,11 @@ public class DatosFalsos {
         }
 
         @Override
+        public void agregarObservacion(int idPedido, int idUsuario, String texto) {
+            cambios.add(idPedido + ":obs:" + texto);
+        }
+
+        @Override
         public List<Pedido> listarPorFecha(LocalDate fecha) {
             return new ArrayList<>();
         }
