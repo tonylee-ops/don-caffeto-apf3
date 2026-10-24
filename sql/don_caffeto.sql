@@ -33,14 +33,19 @@ CREATE TABLE usuarios (
 
 -- ---------------------------------------------------------------------
 -- Salón y carta
+--   Mesas:  LIBRE (gris) -> OCUPADA (naranja, pedido enviado a cocina)
+--           -> CUENTA (verde, el mesero pidió la cuenta) -> LIBRE al pagar
 -- ---------------------------------------------------------------------
 CREATE TABLE mesas (
-  id_mesa   INT AUTO_INCREMENT PRIMARY KEY,
-  numero    INT NOT NULL,
-  capacidad INT NOT NULL,
-  estado    ENUM('LIBRE', 'OCUPADA') NOT NULL DEFAULT 'LIBRE',
+  id_mesa       INT AUTO_INCREMENT PRIMARY KEY,
+  numero        INT NOT NULL,
+  capacidad     INT NOT NULL,
+  estado        ENUM('LIBRE', 'OCUPADA', 'CUENTA') NOT NULL DEFAULT 'LIBRE',
+  ocupada_desde DATETIME NULL,                     -- para el cronómetro de la mesa
   CONSTRAINT uq_mesas_numero UNIQUE (numero),
-  CONSTRAINT ck_mesas_capacidad CHECK (capacidad > 0)
+  CONSTRAINT ck_mesas_capacidad CHECK (capacidad > 0),
+  CONSTRAINT ck_mesas_hora CHECK ((estado = 'LIBRE' AND ocupada_desde IS NULL)
+                               OR (estado <> 'LIBRE' AND ocupada_desde IS NOT NULL))
 );
 
 CREATE TABLE categorias (
@@ -168,7 +173,7 @@ INSERT INTO usuarios (id_usuario, id_rol, username, password_hash, nombres) VALU
  (4, 4, 'cajero1', '$2a$10$tHo4ruKcsmI4v2tRH5Bui.zPnrBhvsQzm3nFIWUlZ0UYppof1soRe', 'Sofía Camayo');
 
 INSERT INTO mesas (numero, capacidad) VALUES
- (1, 2), (2, 2), (3, 4), (4, 4), (5, 4), (6, 4), (7, 6), (8, 6);
+ (1, 2), (2, 2), (3, 4), (4, 4), (5, 4), (6, 6), (7, 6);
 
 INSERT INTO categorias (id_categoria, nombre) VALUES
  (1, 'Cafés calientes'), (2, 'Bebidas frías'), (3, 'Sándwiches'), (4, 'Desayunos'), (5, 'Postres');
@@ -182,19 +187,23 @@ INSERT INTO productos (id_producto, id_categoria, nombre, precio) VALUES
  (13, 4, 'Tostadas con palta', 9.00), (14, 4, 'Desayuno americano', 16.00), (15, 4, 'Tamal con café', 12.00),
  (16, 5, 'Brownie', 6.00), (17, 5, 'Pie de limón', 8.00), (18, 5, 'Torta de chocolate', 9.00);
 
--- Pedidos de ejemplo de hoy (uno en cada estado)
-INSERT INTO pedidos (id_pedido, id_usuario, id_mesa, modalidad, estado, total, direccion, telefono) VALUES
- (1, 2, 3, 'SALON', 'PAGADO', 22.00, NULL, NULL),
- (2, 2, NULL, 'DELIVERY', 'LISTO', 28.00, 'Jr. Los Cafetales 120', '964333444'),
- (3, 2, 5, 'SALON', 'EN_PREPARACION', 21.00, NULL, NULL),
- (4, 2, NULL, 'PARA_LLEVAR', 'PENDIENTE', 17.00, NULL, NULL);
-UPDATE mesas SET estado = 'OCUPADA' WHERE numero = 5;
+-- Pedidos de ejemplo de hoy: la mesa 3 ya pagó (gris), la mesa 5 está en cocina (naranja)
+-- y la mesa 2 pidió la cuenta (verde).
+INSERT INTO pedidos (id_pedido, id_usuario, id_mesa, modalidad, estado, total, direccion, telefono, creado_en) VALUES
+ (1, 2, 3, 'SALON', 'PAGADO', 22.00, NULL, NULL, NOW() - INTERVAL 90 MINUTE),
+ (2, 2, NULL, 'DELIVERY', 'LISTO', 28.00, 'Jr. Los Cafetales 120', '964333444', NOW() - INTERVAL 25 MINUTE),
+ (3, 2, 5, 'SALON', 'EN_PREPARACION', 21.00, NULL, NULL, NOW() - INTERVAL 12 MINUTE),
+ (4, 2, NULL, 'PARA_LLEVAR', 'PENDIENTE', 17.00, NULL, NULL, NOW() - INTERVAL 3 MINUTE),
+ (5, 2, 2, 'SALON', 'LISTO', 16.00, NULL, NULL, NOW() - INTERVAL 35 MINUTE);
+UPDATE mesas SET estado = 'OCUPADA', ocupada_desde = NOW() - INTERVAL 12 MINUTE WHERE id_mesa = 5;
+UPDATE mesas SET estado = 'CUENTA',  ocupada_desde = NOW() - INTERVAL 35 MINUTE WHERE id_mesa = 2;
 
 INSERT INTO detalle_pedido (id_detalle, id_pedido, id_producto, cantidad, precio_unitario) VALUES
  (1, 1, 2, 2, 6.00), (2, 1, 10, 1, 10.00),
  (3, 2, 14, 1, 16.00), (4, 2, 6, 1, 12.00),
  (5, 3, 3, 1, 9.00), (6, 3, 13, 1, 9.00), (7, 3, 9, 1, 3.00),
- (8, 4, 4, 1, 10.00), (9, 4, 7, 1, 7.00);
+ (8, 4, 4, 1, 10.00), (9, 4, 7, 1, 7.00),
+ (10, 5, 4, 1, 10.00), (11, 5, 16, 1, 6.00);
 
 INSERT INTO observaciones_pedido (id_pedido, id_usuario, texto) VALUES
  (2, 2, 'Tocar el timbre dos veces'),
@@ -207,5 +216,5 @@ INSERT INTO observaciones_detalle (id_detalle, texto) VALUES
 INSERT INTO pagos (id_pago, id_pedido, id_usuario, metodo, monto, recibido, vuelto) VALUES
  (1, 1, 4, 'EFECTIVO', 22.00, 50.00, 28.00);
 
-INSERT INTO ventas (id_pedido, id_pago, subtotal, igv, total) VALUES
- (1, 1, 18.64, 3.36, 22.00);
+INSERT INTO ventas (id_pedido, id_pago, subtotal, igv, total, fecha) VALUES
+ (1, 1, 18.64, 3.36, 22.00, NOW() - INTERVAL 60 MINUTE);
