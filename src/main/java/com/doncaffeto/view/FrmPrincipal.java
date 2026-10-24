@@ -43,7 +43,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         btnCerrarSesion = new javax.swing.JButton();
         pnlMenu = new javax.swing.JPanel();
         lblEtqMenu = new javax.swing.JLabel();
-        btnMenuNuevoPedido = new javax.swing.JButton();
+        btnMenuMesas = new javax.swing.JButton();
         btnMenuPedidos = new javax.swing.JButton();
         btnMenuCocina = new javax.swing.JButton();
         btnMenuCaja = new javax.swing.JButton();
@@ -53,10 +53,10 @@ public class FrmPrincipal extends javax.swing.JFrame {
         pnlInicio = new javax.swing.JPanel();
         lblSaludo = new javax.swing.JLabel();
         lblFecha = new javax.swing.JLabel();
-        pnlCardNuevoPedido = new javax.swing.JPanel();
-        lblSubNuevoPedido = new javax.swing.JLabel();
-        lblAyudaNuevoPedido = new javax.swing.JLabel();
-        btnNuevoPedido = new javax.swing.JButton();
+        pnlCardMesas = new javax.swing.JPanel();
+        lblSubMesas = new javax.swing.JLabel();
+        lblAyudaMesas = new javax.swing.JLabel();
+        btnMesas = new javax.swing.JButton();
         pnlCardPedidos = new javax.swing.JPanel();
         lblSubPedidos = new javax.swing.JLabel();
         lblAyudaPedidos = new javax.swing.JLabel();
@@ -123,7 +123,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         lblEtqMenu.setText("MENÚ");
 
-        btnMenuNuevoPedido.setText("Nuevo pedido");
+        btnMenuMesas.setText("Mesas");
 
         btnMenuPedidos.setText("Pedidos del día");
 
@@ -147,7 +147,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .addGap(16, 16, 16))
             .addGroup(pnlMenuLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(btnMenuNuevoPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addComponent(btnMenuMesas, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                 .addGap(16, 16, 16))
             .addGroup(pnlMenuLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
@@ -182,7 +182,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     .addComponent(lblEtqMenu))
                 .addGap(4, 4, 4)
                 .addGroup(pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnMenuNuevoPedido))
+                    .addComponent(btnMenuMesas))
                 .addGap(4, 4, 4)
                 .addGroup(pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnMenuPedidos))
@@ -209,49 +209,49 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         lblFecha.setText("Fecha");
 
-        lblSubNuevoPedido.setText("Nuevo pedido");
+        lblSubMesas.setText("Mesas");
 
-        lblAyudaNuevoPedido.setText("Salón, para llevar o delivery.");
+        lblAyudaMesas.setText("Toma pedidos y pide la cuenta.");
 
-        btnNuevoPedido.setText("Registrar");
+        btnMesas.setText("Ver mesas");
 
-        javax.swing.GroupLayout pnlCardNuevoPedidoLayout = new javax.swing.GroupLayout(pnlCardNuevoPedido);
-        pnlCardNuevoPedido.setLayout(pnlCardNuevoPedidoLayout);
-        pnlCardNuevoPedidoLayout.setHorizontalGroup(
-            pnlCardNuevoPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlCardNuevoPedidoLayout.createSequentialGroup()
+        javax.swing.GroupLayout pnlCardMesasLayout = new javax.swing.GroupLayout(pnlCardMesas);
+        pnlCardMesas.setLayout(pnlCardMesasLayout);
+        pnlCardMesasLayout.setHorizontalGroup(
+            pnlCardMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardMesasLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(lblSubNuevoPedido)
+                .addComponent(lblSubMesas)
                 .addGap(18, 18, 18))
-            .addGroup(pnlCardNuevoPedidoLayout.createSequentialGroup()
+            .addGroup(pnlCardMesasLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(lblAyudaNuevoPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                .addComponent(lblAyudaMesas, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                 .addGap(18, 18, 18))
-            .addGroup(pnlCardNuevoPedidoLayout.createSequentialGroup()
+            .addGroup(pnlCardMesasLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(btnNuevoPedido)
+                .addComponent(btnMesas)
                 .addGap(18, 18, 18))
         );
-        pnlCardNuevoPedidoLayout.setVerticalGroup(
-            pnlCardNuevoPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlCardNuevoPedidoLayout.createSequentialGroup()
+        pnlCardMesasLayout.setVerticalGroup(
+            pnlCardMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardMesasLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(pnlCardNuevoPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSubNuevoPedido))
+                .addGroup(pnlCardMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSubMesas))
                 .addGap(8, 8, 8)
-                .addGroup(pnlCardNuevoPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblAyudaNuevoPedido))
+                .addGroup(pnlCardMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblAyudaMesas))
                 .addGap(8, 8, 8)
-                .addGroup(pnlCardNuevoPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnNuevoPedido))
+                .addGroup(pnlCardMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnMesas))
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGap(18, 18, 18))
         );
 
         lblSubPedidos.setText("Pedidos del día");
 
-        lblAyudaPedidos.setText("Consulta y anula pedidos.");
+        lblAyudaPedidos.setText("Todos los pedidos del día.");
 
         btnPedidos.setText("Ver pedidos");
 
@@ -503,7 +503,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .addGap(32, 32, 32))
             .addGroup(pnlInicioLayout.createSequentialGroup()
                 .addGap(32, 32, 32)
-                .addComponent(pnlCardNuevoPedido, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addComponent(pnlCardMesas, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                 .addGap(8, 8, 8)
                 .addComponent(pnlCardPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                 .addGap(8, 8, 8)
@@ -532,7 +532,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     .addComponent(lblFecha))
                 .addGap(14, 14, 14)
                 .addGroup(pnlInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlCardNuevoPedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pnlCardMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pnlCardPedidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pnlCardCocina, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pnlCardCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -593,8 +593,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
         return btnMenuCocina;
     }
 
-    public javax.swing.JButton getBtnMenuNuevoPedido() {
-        return btnMenuNuevoPedido;
+    public javax.swing.JButton getBtnMenuMesas() {
+        return btnMenuMesas;
     }
 
     public javax.swing.JButton getBtnMenuPedidos() {
@@ -613,8 +613,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
         return btnMenuUsuarios;
     }
 
-    public javax.swing.JButton getBtnNuevoPedido() {
-        return btnNuevoPedido;
+    public javax.swing.JButton getBtnMesas() {
+        return btnMesas;
     }
 
     public javax.swing.JButton getBtnPedidos() {
@@ -661,8 +661,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
         return pnlCardCocina;
     }
 
-    public javax.swing.JPanel getPnlCardNuevoPedido() {
-        return pnlCardNuevoPedido;
+    public javax.swing.JPanel getPnlCardMesas() {
+        return pnlCardMesas;
     }
 
     public javax.swing.JPanel getPnlCardPedidos() {
@@ -701,19 +701,19 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnCocina;
     private javax.swing.JButton btnMenuCaja;
     private javax.swing.JButton btnMenuCocina;
-    private javax.swing.JButton btnMenuNuevoPedido;
+    private javax.swing.JButton btnMenuMesas;
     private javax.swing.JButton btnMenuPedidos;
     private javax.swing.JButton btnMenuProductos;
     private javax.swing.JButton btnMenuReportes;
     private javax.swing.JButton btnMenuUsuarios;
-    private javax.swing.JButton btnNuevoPedido;
+    private javax.swing.JButton btnMesas;
     private javax.swing.JButton btnPedidos;
     private javax.swing.JButton btnProductos;
     private javax.swing.JButton btnReportes;
     private javax.swing.JButton btnUsuarios;
     private javax.swing.JLabel lblAyudaCaja;
     private javax.swing.JLabel lblAyudaCocina;
-    private javax.swing.JLabel lblAyudaNuevoPedido;
+    private javax.swing.JLabel lblAyudaMesas;
     private javax.swing.JLabel lblAyudaPedidos;
     private javax.swing.JLabel lblAyudaProductos;
     private javax.swing.JLabel lblAyudaReportes;
@@ -725,7 +725,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lblSaludo;
     private javax.swing.JLabel lblSubCaja;
     private javax.swing.JLabel lblSubCocina;
-    private javax.swing.JLabel lblSubNuevoPedido;
+    private javax.swing.JLabel lblSubMesas;
     private javax.swing.JLabel lblSubPedidos;
     private javax.swing.JLabel lblSubProductos;
     private javax.swing.JLabel lblSubReportes;
@@ -734,7 +734,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel pnlBarra;
     private javax.swing.JPanel pnlCardCaja;
     private javax.swing.JPanel pnlCardCocina;
-    private javax.swing.JPanel pnlCardNuevoPedido;
+    private javax.swing.JPanel pnlCardMesas;
     private javax.swing.JPanel pnlCardPedidos;
     private javax.swing.JPanel pnlCardProductos;
     private javax.swing.JPanel pnlCardReportes;
@@ -755,7 +755,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
      * btnCerrarSesion            | JButton        | Botón «Cerrar sesión»
      * pnlMenu                    | JPanel         | Menú lateral (solo muestra lo que permite el rol)
      * lblEtqMenu                 | JLabel         | Título del menú
-     * btnMenuNuevoPedido         | JButton        | Menú: Nuevo pedido
+     * btnMenuMesas               | JButton        | Menú: Mesas
      * btnMenuPedidos             | JButton        | Menú: Pedidos del día
      * btnMenuCocina              | JButton        | Menú: Cocina
      * btnMenuCaja                | JButton        | Menú: Caja
@@ -765,10 +765,10 @@ public class FrmPrincipal extends javax.swing.JFrame {
      * pnlInicio                  | JPanel         | Área de bienvenida con accesos rápidos
      * lblSaludo                  | JLabel         | Saludo al usuario
      * lblFecha                   | JLabel         | Fecha de hoy
-     * pnlCardNuevoPedido         | JPanel         | Tarjeta Nuevo pedido
-     * lblSubNuevoPedido          | JLabel         | Título de la tarjeta
-     * lblAyudaNuevoPedido        | JLabel         | Descripción
-     * btnNuevoPedido             | JButton        | Botón «Registrar»
+     * pnlCardMesas               | JPanel         | Tarjeta Mesas
+     * lblSubMesas                | JLabel         | Título de la tarjeta
+     * lblAyudaMesas              | JLabel         | Descripción
+     * btnMesas                   | JButton        | Botón «Ver mesas»
      * pnlCardPedidos             | JPanel         | Tarjeta Pedidos del día
      * lblSubPedidos              | JLabel         | Título de la tarjeta
      * lblAyudaPedidos            | JLabel         | Descripción

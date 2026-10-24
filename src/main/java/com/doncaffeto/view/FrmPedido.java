@@ -393,6 +393,18 @@ public class FrmPedido extends javax.swing.JFrame {
         return cmbModalidad;
     }
 
+    public javax.swing.JLabel getLblEtqDireccion() {
+        return lblEtqDireccion;
+    }
+
+    public javax.swing.JLabel getLblEtqMesa() {
+        return lblEtqMesa;
+    }
+
+    public javax.swing.JLabel getLblEtqTelefono() {
+        return lblEtqTelefono;
+    }
+
     public javax.swing.JLabel getLblItems() {
         return lblItems;
     }

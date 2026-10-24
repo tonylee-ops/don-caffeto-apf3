@@ -6,7 +6,7 @@ import com.doncaffeto.service.Autorizacion;
 import com.doncaffeto.view.FrmCaja;
 import com.doncaffeto.view.FrmCocina;
 import com.doncaffeto.view.FrmLogin;
-import com.doncaffeto.view.FrmPedido;
+import com.doncaffeto.view.FrmMesas;
 import com.doncaffeto.view.FrmPedidos;
 import com.doncaffeto.view.FrmPrincipal;
 import com.doncaffeto.view.FrmProductos;
@@ -53,13 +53,14 @@ public class PrincipalController {
         vista.getLblSaludo().setText("¡Hola, " + usuario.getNombres().split(" ")[0] + "!");
         vista.getLblFecha().setText(Character.toUpperCase(hoy.charAt(0)) + hoy.substring(1));
 
-        modulo("pedido", Autorizacion.PEDIDOS, vista.getBtnMenuNuevoPedido(), vista.getBtnNuevoPedido(),
-                vista.getPnlCardNuevoPedido(), () -> {
-                    FrmPedido f = new FrmPedido();
-                    new PedidoController(f, servicios, usuario).iniciar();
+        modulo("mesas", Autorizacion.PEDIDOS, vista.getBtnMenuMesas(), vista.getBtnMesas(),
+                vista.getPnlCardMesas(), () -> {
+                    FrmMesas f = new FrmMesas();
+                    new MesasController(f, servicios, usuario).iniciar();
                     return f;
                 });
-        modulo("pedidos", new String[]{"ADMIN", "MESERO", "COCINA", "CAJERO"}, vista.getBtnMenuPedidos(),
+        // el mesero ve los pedidos de salón solo entrando a cada mesa; la lista completa es del administrador
+        modulo("pedidos", Autorizacion.ADMIN, vista.getBtnMenuPedidos(),
                 vista.getBtnPedidos(), vista.getPnlCardPedidos(), () -> {
                     FrmPedidos f = new FrmPedidos();
                     new PedidosController(f, servicios, usuario).iniciar();

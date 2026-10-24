@@ -119,7 +119,7 @@
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-                  <Component id="btnMenuNuevoPedido" pref="200" max="32767" attributes="0"/>
+                  <Component id="btnMenuMesas" pref="200" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
@@ -163,7 +163,7 @@
                   </Group>
                   <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="btnMenuNuevoPedido" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnMenuMesas" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -201,9 +201,9 @@
             <Property name="text" type="java.lang.String" value="MENÚ"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="btnMenuNuevoPedido">
+        <Component class="javax.swing.JButton" name="btnMenuMesas">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Nuevo pedido"/>
+            <Property name="text" type="java.lang.String" value="Mesas"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btnMenuPedidos">
@@ -255,7 +255,7 @@
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                  <Component id="pnlCardNuevoPedido" pref="200" max="32767" attributes="0"/>
+                  <Component id="pnlCardMesas" pref="200" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                   <Component id="pnlCardPedidos" pref="200" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
@@ -289,7 +289,7 @@
                   </Group>
                   <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="pnlCardNuevoPedido" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="pnlCardMesas" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="pnlCardPedidos" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="pnlCardCocina" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="pnlCardCaja" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -317,25 +317,25 @@
             <Property name="text" type="java.lang.String" value="Fecha"/>
           </Properties>
         </Component>
-        <Container class="javax.swing.JPanel" name="pnlCardNuevoPedido">
+        <Container class="javax.swing.JPanel" name="pnlCardMesas">
 
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                      <Component id="lblSubNuevoPedido" min="-2" max="-2" attributes="0"/>
+                      <Component id="lblSubMesas" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                      <Component id="lblAyudaNuevoPedido" pref="180" max="32767" attributes="0"/>
+                      <Component id="lblAyudaMesas" pref="180" max="32767" attributes="0"/>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Component id="btnNuevoPedido" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnMesas" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -345,15 +345,15 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblSubNuevoPedido" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblSubMesas" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblAyudaNuevoPedido" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblAyudaMesas" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnNuevoPedido" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnMesas" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
@@ -362,19 +362,19 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="lblSubNuevoPedido">
+            <Component class="javax.swing.JLabel" name="lblSubMesas">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Nuevo pedido"/>
+                <Property name="text" type="java.lang.String" value="Mesas"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="lblAyudaNuevoPedido">
+            <Component class="javax.swing.JLabel" name="lblAyudaMesas">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Salón, para llevar o delivery."/>
+                <Property name="text" type="java.lang.String" value="Toma pedidos y pide la cuenta."/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="btnNuevoPedido">
+            <Component class="javax.swing.JButton" name="btnMesas">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Registrar"/>
+                <Property name="text" type="java.lang.String" value="Ver mesas"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -431,7 +431,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="lblAyudaPedidos">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Consulta y anula pedidos."/>
+                <Property name="text" type="java.lang.String" value="Todos los pedidos del día."/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btnPedidos">

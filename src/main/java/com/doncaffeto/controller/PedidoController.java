@@ -23,7 +23,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 /**
- * Controla el registro de un pedido nuevo (mesero).
+ * Controla el registro de un pedido nuevo (mesero). Se abre desde el mapa de mesas con la mesa
+ * ya elegida, o con los botones "Para llevar" y "Delivery".
  *
  * @author Equipo Don Caffeto
  */
@@ -35,6 +36,9 @@ public class PedidoController {
     private final FrmPedido vista;
     private final Servicios servicios;
     private final Usuario usuario;
+    private final Mesa mesa;
+    private final String modalidadFija;
+    private final Runnable alGuardar;
     private List<Producto> productos = new ArrayList<>();
     private TableRowSorter<DefaultTableModel> filtro;
     private Pedido pedido = new Pedido();
@@ -43,11 +47,18 @@ public class PedidoController {
      * @param vista     pantalla de pedido
      * @param servicios servicios de la aplicación
      * @param usuario   mesero que registra
+     * @param mesa      mesa elegida en el mapa (null para llevar o delivery)
+     * @param modalidad SALON, PARA_LLEVAR o DELIVERY
+     * @param alGuardar se ejecuta después de guardar (para refrescar el mapa de mesas)
      */
-    public PedidoController(FrmPedido vista, Servicios servicios, Usuario usuario) {
+    public PedidoController(FrmPedido vista, Servicios servicios, Usuario usuario, Mesa mesa, String modalidad,
+                            Runnable alGuardar) {
         this.vista = vista;
         this.servicios = servicios;
         this.usuario = usuario;
+        this.mesa = mesa;
+        this.modalidadFija = modalidad;
+        this.alGuardar = alGuardar;
         vista.getLblMesero().setText("Mesero: " + usuario.getNombres());
         vista.getBtnAgregar().addActionListener(e -> agregar());
         vista.getTxtNota().addActionListener(e -> agregar());
@@ -91,24 +102,28 @@ public class PedidoController {
             cats.addElement("Todas las categorías");
             categorias.forEach(cats::addElement);
             vista.getCmbCategoria().setModel(cats);
-            cargarMesas();
         } catch (SQLException e) {
             Mensajes.de(vista, e);
         }
+        fijarModalidad();
         cambiarModalidad();
         mostrarDetalle();
         vista.setVisible(true);
         vista.getTxtBuscar().requestFocusInWindow();
     }
 
-    private void cargarMesas() throws SQLException {
+    /** La mesa y la modalidad vienen del mapa de mesas y no se cambian aquí. */
+    private void fijarModalidad() {
+        int indice = java.util.Arrays.asList(MODALIDADES).indexOf(modalidadFija);
+        vista.getCmbModalidad().setSelectedIndex(Math.max(indice, 0));
+        vista.getCmbModalidad().setEnabled(false);
         DefaultComboBoxModel<Object> modelo = new DefaultComboBoxModel<>();
-        List<Mesa> libres = servicios.pedidos.mesasLibres();
-        if (libres.isEmpty()) {
-            modelo.addElement("Sin mesas libres");
-        }
-        libres.forEach(modelo::addElement);
+        modelo.addElement(mesa == null ? "—" : mesa);
         vista.getCmbMesa().setModel(modelo);
+        String titulo = mesa != null ? "Mesa " + mesa.getNumero() + " · Nuevo pedido"
+                : "DELIVERY".equals(modalidadFija) ? "Nuevo pedido delivery" : "Nuevo pedido para llevar";
+        vista.getLblTitulo().setText(titulo);
+        vista.setTitle("Don Caffeto - " + titulo);
     }
 
     private String modalidad() {
@@ -119,9 +134,14 @@ public class PedidoController {
     private void cambiarModalidad() {
         boolean salon = "SALON".equals(modalidad());
         boolean delivery = "DELIVERY".equals(modalidad());
-        vista.getCmbMesa().setEnabled(salon);
-        vista.getTxtDireccion().setEnabled(delivery);
-        vista.getTxtTelefono().setEnabled(delivery);
+        // solo se muestran los datos que pide la modalidad
+        vista.getCmbMesa().setEnabled(false);
+        vista.getCmbMesa().setVisible(salon);
+        vista.getLblEtqMesa().setVisible(salon);
+        vista.getTxtDireccion().setVisible(delivery);
+        vista.getLblEtqDireccion().setVisible(delivery);
+        vista.getTxtTelefono().setVisible(delivery);
+        vista.getLblEtqTelefono().setVisible(delivery);
         if (!delivery) {
             vista.getTxtDireccion().setText("");
             vista.getTxtTelefono().setText("");
@@ -188,7 +208,6 @@ public class PedidoController {
 
     private void reiniciar() {
         pedido = new Pedido();
-        vista.getCmbModalidad().setSelectedIndex(0);
         vista.getTxtObservacion().setText("");
         mostrarDetalle();
     }
@@ -218,17 +237,17 @@ public class PedidoController {
 
     private void guardar() {
         String modalidad = modalidad();
-        Object mesa = vista.getCmbMesa().getSelectedItem();
         pedido.setModalidad(modalidad);
-        pedido.setIdMesa("SALON".equals(modalidad) && mesa instanceof Mesa ? ((Mesa) mesa).getIdMesa() : null);
+        pedido.setIdMesa(mesa == null ? null : mesa.getIdMesa());
         pedido.setDireccion("DELIVERY".equals(modalidad) ? vista.getTxtDireccion().getText().trim() : null);
         pedido.setTelefono("DELIVERY".equals(modalidad) ? vista.getTxtTelefono().getText().trim() : null);
         pedido.setObservacion(vista.getTxtObservacion().getText());
         try {
             int id = servicios.pedidos.guardar(pedido, usuario);
-            Mensajes.info(vista, "Pedido N° " + id + " enviado a cocina.");
-            cargarMesas();
-            reiniciar();
+            Mensajes.info(vista, "Pedido N° " + id + " enviado a cocina."
+                    + (mesa == null ? "" : "\nLa mesa " + mesa.getNumero() + " ahora aparece en naranja."));
+            alGuardar.run();
+            vista.dispose();
         } catch (IllegalArgumentException | SecurityException | SQLException e) {
             Mensajes.de(vista, e);
         }

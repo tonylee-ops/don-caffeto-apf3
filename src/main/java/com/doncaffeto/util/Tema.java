@@ -57,6 +57,8 @@ public final class Tema {
     public static final Color BORDE = new Color(0xF1DCC6);
     /** Verde de confirmación. */
     public static final Color VERDE = new Color(0x2F9E44);
+    /** Gris de una mesa libre. */
+    public static final Color GRIS_MESA = new Color(0x8E9196);
     /** Rojo de error. */
     public static final Color ROJO = new Color(0xE03131);
 
@@ -164,6 +166,11 @@ public final class Tema {
             l.setFont(new Font(LETRA, Font.BOLD, 22));
         } else if (nombre.startsWith("lblSub")) {
             l.setFont(new Font(LETRA, Font.BOLD, 17));
+        } else if (nombre.equals("lblCronometro")) {
+            l.setForeground(NARANJA);
+            l.setFont(new Font(Font.MONOSPACED, Font.BOLD, 28));
+        } else if (StringUtils.equalsAny(nombre, "lblEstadoMesa", "lblEstadoCocina")) {
+            l.setFont(new Font(LETRA, Font.BOLD, 15));
         } else if (nombre.equals("lblVuelto")) {
             l.setForeground(VERDE);
             l.setFont(new Font(LETRA, Font.BOLD, 20));
@@ -201,7 +208,9 @@ public final class Tema {
         } else if (StringUtils.equalsAny(nombre, "btnHoy", "btnExportar", "btnMas", "btnMenos", "btnActualizar",
                 "btnNuevo")) {
             colores(b, Color.WHITE, NARANJA_CLARO, NARANJA, BorderFactory.createLineBorder(NARANJA, 1, true));
-        } else if (StringUtils.equalsAny(nombre, "btnGuardar", "btnCobrar", "btnListo")) {
+        } else if (nombre.equals("btnCerrar")) {
+            colores(b, Color.WHITE, NARANJA_CLARO, NARANJA, BorderFactory.createLineBorder(NARANJA, 1, true));
+        } else if (StringUtils.equalsAny(nombre, "btnGuardar", "btnCobrar", "btnListo", "btnPedirCuenta")) {
             colores(b, VERDE, new Color(0x237A35), Color.WHITE, BorderFactory.createEmptyBorder(1, 6, 1, 6));
         } else {
             colores(b, NARANJA, NARANJA_OSCURO, Color.WHITE, BorderFactory.createEmptyBorder(1, 6, 1, 6));
@@ -298,6 +307,47 @@ public final class Tema {
                 return ROJO;
             default:
                 return VERDE;
+        }
+    }
+
+    /**
+     * @param estado estado de la mesa (LIBRE, OCUPADA o CUENTA)
+     * @return gris, naranja o verde
+     */
+    public static Color colorMesa(String estado) {
+        if ("OCUPADA".equals(estado)) {
+            return NARANJA;
+        }
+        return "CUENTA".equals(estado) ? VERDE : GRIS_MESA;
+    }
+
+    /**
+     * @param estado estado de la mesa
+     * @return texto que se muestra en la tarjeta de la mesa
+     */
+    public static String textoMesa(String estado) {
+        if ("OCUPADA".equals(estado)) {
+            return "En cocina";
+        }
+        return "CUENTA".equals(estado) ? "Cuenta pedida" : "Libre";
+    }
+
+    /**
+     * Pinta las etiquetas de la leyenda del mapa de mesas con su color.
+     *
+     * @param libre   leyenda de mesa libre
+     * @param ocupada leyenda de mesa con pedido en cocina
+     * @param cuenta  leyenda de mesa con cuenta pedida
+     */
+    public static void leyenda(JLabel libre, JLabel ocupada, JLabel cuenta) {
+        String[] estados = {"LIBRE", "OCUPADA", "CUENTA"};
+        JLabel[] etiquetas = {libre, ocupada, cuenta};
+        for (int i = 0; i < etiquetas.length; i++) {
+            etiquetas[i].setOpaque(true);
+            etiquetas[i].setBackground(colorMesa(estados[i]));
+            etiquetas[i].setForeground(Color.WHITE);
+            etiquetas[i].setFont(new Font(LETRA, Font.BOLD, 12));
+            etiquetas[i].setBorder(BorderFactory.createEmptyBorder(4, 12, 4, 12));
         }
     }
 
