@@ -4,11 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-/**
- * Pruebas del flujo de estados en cocina.
- */
 public class CocinaServiceTest {
-
     @Test
     public void elPedidoAvanzaPasoAPaso() {
         assertEquals("EN_PREPARACION", CocinaService.siguienteEstado("PENDIENTE"));

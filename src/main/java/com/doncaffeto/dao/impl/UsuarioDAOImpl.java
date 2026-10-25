@@ -10,13 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementación MySQL de {@link UsuarioDAO}.
- *
- * @author Equipo Don Caffeto
- */
 public class UsuarioDAOImpl implements UsuarioDAO {
-
     private static final String SELECT = "SELECT u.id_usuario, u.username, u.password_hash, u.nombres, u.activo, "
             + "r.nombre AS rol FROM usuarios u JOIN roles r ON r.id_rol = u.id_rol ";
 

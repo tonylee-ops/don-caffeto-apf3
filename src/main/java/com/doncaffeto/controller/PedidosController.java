@@ -15,13 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controla la lista de pedidos del día: detalle, anulación y exportación a Excel.
- *
- * @author Equipo Don Caffeto
- */
 public class PedidosController {
-
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
     private static final String[] COLUMNAS = {"N°", "Hora", "Modalidad", "Destino", "Mesero", "Estado", "Total"};
 
@@ -32,11 +26,6 @@ public class PedidosController {
     private final List<Object[]> filas = new ArrayList<>();
     private LocalDate fecha = LocalDate.now();
 
-    /**
-     * @param vista     pantalla de pedidos
-     * @param servicios servicios de la aplicación
-     * @param usuario   usuario en sesión
-     */
     public PedidosController(FrmPedidos vista, Servicios servicios, Usuario usuario) {
         this.vista = vista;
         this.servicios = servicios;
@@ -59,7 +48,6 @@ public class PedidosController {
         });
     }
 
-    /** Busca los pedidos de hoy y muestra la pantalla. */
     public void iniciar() {
         buscar();
         vista.setVisible(true);

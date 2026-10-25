@@ -15,13 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Implementación MySQL de {@link PedidoDAO}.
- *
- * @author Equipo Don Caffeto
- */
 public class PedidoDAOImpl implements PedidoDAO {
-
     private static final String SELECT = "SELECT p.id_pedido, p.id_usuario, p.id_mesa, m.numero AS mesa, m.estado AS estado_mesa, "
             + "u.nombres AS mesero, p.modalidad, p.estado, p.total, p.direccion, p.telefono, p.creado_en, "
             + "(SELECT GROUP_CONCAT(o.texto SEPARATOR ' | ') FROM observaciones_pedido o "
@@ -87,7 +81,6 @@ public class PedidoDAOImpl implements PedidoDAO {
         try (Connection cn = Conexion.obtener()) {
             cn.setAutoCommit(false);
             try {
-                // solo si la mesa sigue OCUPADA (no pidió la cuenta) y el pedido no se cerró
                 try (PreparedStatement ps = cn.prepareStatement("UPDATE pedidos p JOIN mesas m ON m.id_mesa = p.id_mesa "
                         + "SET p.total = p.total + ?, "
                         + "p.estado = CASE WHEN p.estado = 'LISTO' THEN 'PENDIENTE' ELSE p.estado END "
@@ -123,7 +116,6 @@ public class PedidoDAOImpl implements PedidoDAO {
         }
     }
 
-    /** Guarda una línea del pedido y, si tiene, su nota para cocina. */
     private static void insertarLinea(Connection cn, int idPedido, DetallePedido d) throws SQLException {
         int idDetalle;
         try (PreparedStatement ps = cn.prepareStatement("INSERT INTO detalle_pedido (id_pedido, "
@@ -223,13 +215,6 @@ public class PedidoDAOImpl implements PedidoDAO {
         }
     }
 
-    /**
-     * Pone la mesa del pedido como LIBRE (gris) y detiene su cronómetro. Se usa al cancelar y al cobrar.
-     *
-     * @param cn       conexión de la transacción en curso
-     * @param idPedido número del pedido
-     * @throws SQLException si falla la actualización
-     */
     static void liberarMesa(Connection cn, int idPedido) throws SQLException {
         try (PreparedStatement ps = cn.prepareStatement("UPDATE mesas SET estado = 'LIBRE', ocupada_desde = NULL WHERE id_mesa = "
                 + "(SELECT id_mesa FROM pedidos WHERE id_pedido = ?)")) {

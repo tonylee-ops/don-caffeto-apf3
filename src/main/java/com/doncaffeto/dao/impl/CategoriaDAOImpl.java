@@ -10,13 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementación MySQL de {@link CategoriaDAO}.
- *
- * @author Equipo Don Caffeto
- */
 public class CategoriaDAOImpl implements CategoriaDAO {
-
     @Override
     public List<Categoria> listar() throws SQLException {
         List<Categoria> lista = new ArrayList<>();

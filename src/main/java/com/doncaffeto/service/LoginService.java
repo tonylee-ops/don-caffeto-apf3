@@ -10,14 +10,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Inicio de sesión: valida la contraseña con BCrypt y bloquea al usuario tras 3 intentos fallidos.
- *
- * @author Equipo Don Caffeto
- */
 public class LoginService {
-
-    /** Intentos permitidos antes de bloquear. */
     public static final int MAX_INTENTOS = 3;
 
     private static final Logger LOG = LoggerFactory.getLogger(LoginService.class);
@@ -25,20 +18,10 @@ public class LoginService {
     private final UsuarioDAO usuarioDAO;
     private final Map<String, Integer> intentosFallidos = new HashMap<>();
 
-    /**
-     * @param usuarioDAO acceso a usuarios (se recibe la interfaz, no la clase MySQL)
-     */
     public LoginService(UsuarioDAO usuarioDAO) {
         this.usuarioDAO = usuarioDAO;
     }
 
-    /**
-     * @param username nombre de acceso
-     * @param password contraseña escrita por el usuario
-     * @return el usuario si los datos son correctos
-     * @throws IllegalArgumentException con el mensaje para mostrar si algo falla
-     * @throws SQLException si falla la base de datos
-     */
     public Usuario ingresar(String username, String password) throws SQLException {
         if (Validador.estaVacio(username) || Validador.estaVacio(password)) {
             throw new IllegalArgumentException("Ingresa tu usuario y contraseña.");
@@ -54,7 +37,7 @@ public class LoginService {
         if (u == null || !BCrypt.checkpw(password, u.getPasswordHash())) {
             intentosFallidos.put(user, intentos + 1);
             LOG.warn("Inicio de sesión fallido: {}", user);
-            // mismo mensaje si el usuario no existe o la clave está mal (no revela cuál falló)
+
             throw new IllegalArgumentException("Usuario o contraseña incorrectos. Intentos restantes: "
                     + (MAX_INTENTOS - intentos - 1));
         }

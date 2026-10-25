@@ -9,11 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.Test;
 
-/**
- * Pruebas de las validaciones de datos.
- */
 public class ValidadorTest {
-
     @Test
     public void detectaTextoVacio() {
         assertTrue(Validador.estaVacio("   "));

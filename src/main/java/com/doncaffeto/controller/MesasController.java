@@ -14,14 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Timer;
 
-/**
- * Mapa de mesas del mesero. Los cronómetros avanzan cada segundo y los colores se vuelven a leer de
- * MySQL cada 10 segundos (así se ve cuando la caja cobra y la mesa vuelve a gris).
- *
- * @author Equipo Don Caffeto
- */
 public class MesasController {
-
     private final FrmMesas vista;
     private final Servicios servicios;
     private final Usuario usuario;
@@ -29,11 +22,6 @@ public class MesasController {
     private final Timer cronometros;
     private final Timer recarga;
 
-    /**
-     * @param vista     mapa de mesas
-     * @param servicios servicios de la aplicación
-     * @param usuario   mesero o administrador
-     */
     public MesasController(FrmMesas vista, Servicios servicios, Usuario usuario) {
         this.vista = vista;
         this.servicios = servicios;
@@ -45,7 +33,7 @@ public class MesasController {
         vista.addWindowListener(new WindowAdapter() {
             @Override
             public void windowActivated(WindowEvent e) {
-                cargar(); // al volver de otra ventana, el mapa se pone al día
+                cargar();
             }
 
             @Override
@@ -56,7 +44,6 @@ public class MesasController {
         });
     }
 
-    /** Dibuja las mesas, inicia los cronómetros y muestra la pantalla. */
     public void iniciar() {
         cargar();
         cronometros.start();
@@ -64,7 +51,6 @@ public class MesasController {
         vista.setVisible(true);
     }
 
-    /** Lee las mesas de MySQL y actualiza las tarjetas. */
     private void cargar() {
         List<Mesa> mesas;
         try {
@@ -95,10 +81,6 @@ public class MesasController {
                 + cuenta + " con cuenta pedida");
     }
 
-    /**
-     * Abre la pantalla de la mesa: si está gris se toma el pedido; si está naranja o verde se ve su
-     * pedido y se pueden agregar productos.
-     */
     private void abrir(Mesa mesa) {
         new MesaController(new FrmMesa(), servicios, usuario, mesa, this::cargar).iniciar();
     }

@@ -19,14 +19,7 @@ import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-/**
- * Controla la caja: cobra los pedidos LISTOS y calcula el vuelto mientras se escribe.
- *
- * @author Equipo Don Caffeto
- */
 public class CajaController {
-
-    /** Valores de la base, en el mismo orden que el combo. */
     private static final String[] METODOS = {"EFECTIVO", "YAPE", "PLIN", "TARJETA"};
 
     private final FrmCaja vista;
@@ -35,11 +28,6 @@ public class CajaController {
     private final Timer reloj;
     private List<Pedido> pedidos = new ArrayList<>();
 
-    /**
-     * @param vista     pantalla de caja
-     * @param servicios servicios de la aplicación
-     * @param usuario   cajero o administrador
-     */
     public CajaController(FrmCaja vista, Servicios servicios, Usuario usuario) {
         this.vista = vista;
         this.servicios = servicios;
@@ -67,7 +55,6 @@ public class CajaController {
         });
     }
 
-    /** Carga los pedidos por cobrar y muestra la pantalla. */
     public void iniciar() {
         actualizar();
         reloj.start();
@@ -130,7 +117,6 @@ public class CajaController {
         return METODOS[vista.getCmbMetodo().getSelectedIndex()];
     }
 
-    /** Calcula el vuelto en vivo y activa "Cobrar" solo cuando el pago está completo. */
     private void calcularVuelto() {
         Pedido p = seleccionado();
         boolean efectivo = "EFECTIVO".equals(metodo());

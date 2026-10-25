@@ -18,35 +18,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Reglas de negocio de los pedidos (lo usa el mesero).
- *
- * @author Equipo Don Caffeto
- */
 public class PedidoService {
-
     private static final Logger LOG = LoggerFactory.getLogger(PedidoService.class);
 
     private final PedidoDAO pedidoDAO;
     private final MesaDAO mesaDAO;
 
-    /**
-     * @param pedidoDAO acceso a pedidos
-     * @param mesaDAO   acceso a mesas
-     */
     public PedidoService(PedidoDAO pedidoDAO, MesaDAO mesaDAO) {
         this.pedidoDAO = pedidoDAO;
         this.mesaDAO = mesaDAO;
     }
 
-    /**
-     * Agrega un producto al pedido. Si ya estaba con la misma nota, suma la cantidad.
-     *
-     * @param pedido   pedido en registro
-     * @param producto producto elegido
-     * @param cantidad cantidad (mayor que 0)
-     * @param nota     nota para cocina (puede estar vacía)
-     */
     public void agregarProducto(Pedido pedido, Producto producto, int cantidad, String nota) {
         Preconditions.checkArgument(producto != null, "Selecciona un producto de la carta.");
         Preconditions.checkArgument(cantidad > 0, "La cantidad debe ser mayor que 0.");
@@ -63,13 +45,6 @@ public class PedidoService {
         pedido.getDetalles().add(d);
     }
 
-    /**
-     * Suma o resta unidades a una línea. Si llega a 0, la línea se quita.
-     *
-     * @param pedido pedido en registro
-     * @param indice posición de la línea
-     * @param cambio +1 para sumar, -1 para restar
-     */
     public void cambiarCantidad(Pedido pedido, int indice, int cambio) {
         DetallePedido d = pedido.getDetalles().get(indice);
         int nueva = d.getCantidad() + cambio;
@@ -80,10 +55,6 @@ public class PedidoService {
         }
     }
 
-    /**
-     * @param pedido pedido
-     * @return suma de los importes de todas las líneas
-     */
     public BigDecimal calcularTotal(Pedido pedido) {
         BigDecimal total = BigDecimal.ZERO;
         for (DetallePedido d : pedido.getDetalles()) {
@@ -92,12 +63,6 @@ public class PedidoService {
         return total;
     }
 
-    /**
-     * Revisa que el pedido tenga los datos que exige su modalidad.
-     *
-     * @param pedido pedido a revisar
-     * @throws IllegalArgumentException con el mensaje del dato que falta
-     */
     public void validar(Pedido pedido) {
         if (pedido.getDetalles().isEmpty()) {
             throw new IllegalArgumentException("Agrega al menos un producto.");
@@ -115,15 +80,6 @@ public class PedidoService {
         }
     }
 
-    /**
-     * Valida y guarda el pedido. Queda PENDIENTE, aparece en la pantalla de cocina y su mesa
-     * pasa a naranja.
-     *
-     * @param pedido  pedido a guardar
-     * @param usuario mesero que lo registra
-     * @return número del pedido
-     * @throws SQLException si falla la base de datos
-     */
     public int guardar(Pedido pedido, Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
         validar(pedido);
@@ -138,38 +94,16 @@ public class PedidoService {
         return id;
     }
 
-    /**
-     * @param usuario mesero o administrador
-     * @return las mesas del salón con su estado y cronómetro
-     * @throws SQLException si falla la base de datos
-     */
     public List<Mesa> mesas(Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
         return ImmutableList.copyOf(mesaDAO.listar());
     }
 
-    /**
-     * Los pedidos de salón solo se ven entrando a su mesa.
-     *
-     * @param mesa    mesa elegida en el mapa
-     * @param usuario mesero o administrador
-     * @return el pedido abierto de la mesa, o null si está libre
-     * @throws SQLException si falla la base de datos
-     */
     public Pedido pedidoDeMesa(Mesa mesa, Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
         return pedidoDAO.pedidoDeMesa(mesa.getIdMesa());
     }
 
-    /**
-     * Agrega más productos al pedido de una mesa. La cocina los ve con la nota «Agregado» y, si el
-     * pedido ya estaba listo, vuelve a Pendiente para que los prepare.
-     *
-     * @param pedido  pedido de la mesa
-     * @param nuevos  productos a agregar
-     * @param usuario mesero o administrador
-     * @throws SQLException si falla la base de datos
-     */
     public void agregarAPedido(Pedido pedido, List<DetallePedido> nuevos, Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
         if (nuevos.isEmpty()) {
@@ -190,14 +124,6 @@ public class PedidoService {
                 pedido.getIdPedido());
     }
 
-    /**
-     * Agrega una observación general a un pedido que ya está en cocina.
-     *
-     * @param pedido  pedido de la mesa
-     * @param texto   observación
-     * @param usuario mesero o administrador
-     * @throws SQLException si falla la base de datos
-     */
     public void agregarObservacion(Pedido pedido, String texto, Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
         String t = StringUtils.trimToNull(texto);
@@ -207,26 +133,11 @@ public class PedidoService {
         pedidoDAO.agregarObservacion(pedido.getIdPedido(), usuario.getIdUsuario(), StringUtils.abbreviate(t, 200));
     }
 
-    /**
-     * Fija la cantidad de una línea (lo usa el teclado numérico).
-     *
-     * @param pedido   pedido en registro
-     * @param indice   posición de la línea
-     * @param cantidad cantidad nueva (mayor que 0)
-     */
     public void fijarCantidad(Pedido pedido, int indice, int cantidad) {
         Preconditions.checkArgument(cantidad > 0 && cantidad <= 99, "La cantidad debe estar entre 1 y 99.");
         pedido.getDetalles().get(indice).setCantidad(cantidad);
     }
 
-    /**
-     * El mesero pide la cuenta: la mesa pasa a verde y el pedido aparece en caja.
-     * Solo se puede cuando la cocina ya terminó el pedido.
-     *
-     * @param pedido  pedido de la mesa
-     * @param usuario mesero o administrador
-     * @throws SQLException si falla la base de datos
-     */
     public void pedirCuenta(Pedido pedido, Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
         if (pedido.getIdMesa() == null) {
@@ -241,31 +152,14 @@ public class PedidoService {
         LOG.info("Mesa {} pidió la cuenta (pedido {})", pedido.getNumeroMesa(), pedido.getIdPedido());
     }
 
-    /**
-     * @param fecha día a consultar
-     * @return pedidos del día (lista que no se puede modificar)
-     * @throws SQLException si falla la base de datos
-     */
     public List<Pedido> listar(LocalDate fecha) throws SQLException {
         return ImmutableList.copyOf(pedidoDAO.listarPorFecha(fecha));
     }
 
-    /**
-     * @param idPedido número del pedido
-     * @return productos del pedido con sus notas
-     * @throws SQLException si falla la base de datos
-     */
     public List<DetallePedido> detalle(int idPedido) throws SQLException {
         return pedidoDAO.listarDetalle(idPedido);
     }
 
-    /**
-     * Anula un pedido que la cocina todavía no empezó.
-     *
-     * @param pedido  pedido seleccionado
-     * @param usuario mesero o administrador
-     * @throws SQLException si falla la base de datos
-     */
     public void anular(Pedido pedido, Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.PEDIDOS);
         if (!"PENDIENTE".equals(pedido.getEstado())) {

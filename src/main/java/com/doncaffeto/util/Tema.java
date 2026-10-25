@@ -28,38 +28,25 @@ import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * Estilo visual de Don Caffeto (paleta naranja).
- * <p>
- * Cada vista llama a {@link #aplicar(JFrame)} después de initComponents(). El estilo se elige por el
- * prefijo del nombre del componente: {@code btn} botón naranja, {@code btnMenu} botón del menú lateral,
- * {@code pnlCard} tarjeta blanca, {@code lblTitulo} título, etc. Así un componente nuevo agregado en el
- * diseñador de NetBeans toma el estilo sin escribir código.
- * </p>
- *
- * @author Equipo Don Caffeto
- */
 public final class Tema {
-
-    /** Naranja principal. */
     public static final Color NARANJA = new Color(0xE8590C);
-    /** Naranja oscuro (botón con el mouse encima). */
+
     public static final Color NARANJA_OSCURO = new Color(0xC2410C);
-    /** Naranja claro (selección de filas). */
+
     public static final Color NARANJA_CLARO = new Color(0xFFE8D6);
-    /** Fondo crema de las ventanas. */
+
     public static final Color FONDO = new Color(0xFFF8F1);
-    /** Café oscuro del menú lateral y del texto. */
+
     public static final Color CAFE = new Color(0x2B1B12);
-    /** Texto secundario. */
+
     public static final Color GRIS = new Color(0x8A6A55);
-    /** Bordes suaves. */
+
     public static final Color BORDE = new Color(0xF1DCC6);
-    /** Verde de confirmación. */
+
     public static final Color VERDE = new Color(0x2F9E44);
-    /** Gris de una mesa libre. */
+
     public static final Color GRIS_MESA = new Color(0x8E9196);
-    /** Rojo de error. */
+
     public static final Color ROJO = new Color(0xE03131);
 
     private static final String LETRA = "SansSerif";
@@ -67,12 +54,10 @@ public final class Tema {
     private Tema() {
     }
 
-    /** Activa FlatLaf con bordes redondeados. Se llama una vez al iniciar la aplicación. */
     public static void instalar() {
         try {
             FlatLightLaf.setup();
         } catch (Throwable e) {
-            // si FlatLaf no está disponible se usa el aspecto normal de Swing
         }
         UIManager.put("defaultFont", new Font(LETRA, Font.PLAIN, 14));
         UIManager.put("Button.arc", 12);
@@ -84,11 +69,6 @@ public final class Tema {
         UIManager.put("OptionPane.background", Color.WHITE);
     }
 
-    /**
-     * Da estilo a toda la ventana según el nombre de cada componente.
-     *
-     * @param ventana JFrame Form ya inicializado
-     */
     public static void aplicar(JFrame ventana) {
         ventana.getContentPane().setBackground(FONDO);
         ventana.setIconImage(imagen("/img/icono.png", 64));
@@ -103,7 +83,6 @@ public final class Tema {
                     estilo(c, campo.getName());
                 }
             } catch (IllegalAccessException e) {
-                // el campo no se pudo leer: se deja con el estilo por defecto
             }
         }
     }
@@ -124,7 +103,6 @@ public final class Tema {
         } else if (c instanceof JPanel) {
             panel((JPanel) c, nombre);
         } else {
-            // cajas de texto, combos y spinner
             c.setFont(new Font(LETRA, Font.PLAIN, 14));
             c.putClientProperty("JComponent.minimumHeight", 34);
             if (c instanceof JComboBox) {
@@ -148,7 +126,6 @@ public final class Tema {
         }
     }
 
-    /** Pone en blanco el texto de las etiquetas dentro de un panel oscuro. */
     private static void blanco(JPanel p) {
         for (Component c : p.getComponents()) {
             if (c instanceof JLabel) {
@@ -236,7 +213,6 @@ public final class Tema {
         }
     }
 
-    /** Colores normal y con el mouse encima. */
     private static void colores(JButton b, Color fondo, Color encima, Color texto, Border borde) {
         b.setContentAreaFilled(false);
         b.setOpaque(true);
@@ -272,32 +248,14 @@ public final class Tema {
         t.setDefaultRenderer(Object.class, new Celda());
     }
 
-    /**
-     * Muestra un texto de ayuda dentro de una caja de texto vacía (FlatLaf).
-     *
-     * @param campo caja de texto
-     * @param texto texto de ayuda
-     */
     public static void ayuda(JComponent campo, String texto) {
         campo.putClientProperty("JTextField.placeholderText", texto);
     }
 
-    /**
-     * Pone el logo de Don Caffeto en una etiqueta.
-     *
-     * @param etiqueta etiqueta del logo
-     * @param lado     tamaño en píxeles
-     */
     public static void logo(JLabel etiqueta, int lado) {
         etiqueta.setIcon(new ImageIcon(imagen("/img/logo.png", lado)));
     }
 
-    /**
-     * Pone un ícono de {@code /img/iconos} sobre el texto del botón (botones grandes de acción).
-     *
-     * @param b      botón
-     * @param nombre nombre del ícono sin extensión
-     */
     public static void icono(AbstractButton b, String nombre) {
         java.net.URL url = Tema.class.getResource("/img/iconos/" + nombre + ".png");
         if (url != null) {
@@ -309,16 +267,10 @@ public final class Tema {
         b.setFont(new Font(LETRA, Font.BOLD, 13));
     }
 
-    /**
-     * Botón de categoría de la carta (naranja si está elegida).
-     *
-     * @param b       botón
-     * @param elegida true si es la categoría que se está mostrando
-     */
     public static void categoria(JButton b, boolean elegida) {
         for (java.awt.event.MouseListener m : b.getMouseListeners()) {
             if (m instanceof MouseAdapter) {
-                b.removeMouseListener(m); // quita el efecto anterior antes de volver a pintar
+                b.removeMouseListener(m);
             }
         }
         b.setFocusPainted(false);
@@ -331,13 +283,6 @@ public final class Tema {
         }
     }
 
-    /**
-     * Botón grande de un producto: nombre y precio.
-     *
-     * @param b      botón
-     * @param nombre nombre del producto
-     * @param precio precio de venta
-     */
     public static void producto(JButton b, String nombre, BigDecimal precio) {
         b.setText("<html><div style='text-align:center'><b>" + nombre + "</b><br><span style='color:#C2410C'>"
                 + soles(precio) + "</span></div></html>");
@@ -348,12 +293,6 @@ public final class Tema {
         colores(b, Color.WHITE, NARANJA_CLARO, CAFE, BorderFactory.createLineBorder(BORDE, 1, true));
     }
 
-    /**
-     * Pinta la columna de estado con un color por estado.
-     *
-     * @param t       tabla de pedidos
-     * @param columna índice de la columna de estado
-     */
     public static void colorearEstado(JTable t, int columna) {
         t.getColumnModel().getColumn(columna).setCellRenderer(new Celda() {
             @Override
@@ -368,10 +307,6 @@ public final class Tema {
         });
     }
 
-    /**
-     * @param estado estado del pedido como se muestra (Pendiente, En preparación...)
-     * @return color con el que se muestra
-     */
     public static Color color(String estado) {
         switch (estado) {
             case "Pendiente":
@@ -385,10 +320,6 @@ public final class Tema {
         }
     }
 
-    /**
-     * @param estado estado de la mesa (LIBRE, OCUPADA o CUENTA)
-     * @return gris, naranja o verde
-     */
     public static Color colorMesa(String estado) {
         if ("OCUPADA".equals(estado)) {
             return NARANJA;
@@ -396,10 +327,6 @@ public final class Tema {
         return "CUENTA".equals(estado) ? VERDE : GRIS_MESA;
     }
 
-    /**
-     * @param estado estado de la mesa
-     * @return texto que se muestra en la tarjeta de la mesa
-     */
     public static String textoMesa(String estado) {
         if ("OCUPADA".equals(estado)) {
             return "En cocina";
@@ -407,13 +334,6 @@ public final class Tema {
         return "CUENTA".equals(estado) ? "Cuenta pedida" : "Libre";
     }
 
-    /**
-     * Pinta las etiquetas de la leyenda del mapa de mesas con su color.
-     *
-     * @param libre   leyenda de mesa libre
-     * @param ocupada leyenda de mesa con pedido en cocina
-     * @param cuenta  leyenda de mesa con cuenta pedida
-     */
     public static void leyenda(JLabel libre, JLabel ocupada, JLabel cuenta) {
         String[] estados = {"LIBRE", "OCUPADA", "CUENTA"};
         JLabel[] etiquetas = {libre, ocupada, cuenta};
@@ -426,11 +346,6 @@ public final class Tema {
         }
     }
 
-    /**
-     * @param ruta  ruta del recurso
-     * @param lado  tamaño en píxeles
-     * @return imagen escalada (o una imagen vacía si no existe)
-     */
     public static Image imagen(String ruta, int lado) {
         java.net.URL url = Tema.class.getResource(ruta);
         if (url == null) {
@@ -439,15 +354,10 @@ public final class Tema {
         return new ImageIcon(url).getImage().getScaledInstance(lado, lado, Image.SCALE_SMOOTH);
     }
 
-    /**
-     * @param monto monto en soles
-     * @return texto con formato "S/ 12.50"
-     */
     public static String soles(BigDecimal monto) {
         return "S/ " + monto.setScale(2, java.math.RoundingMode.HALF_UP);
     }
 
-    /** Celda con filas alternas y montos alineados a la derecha. */
     private static class Celda extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable tabla, Object valor, boolean sel, boolean foco,

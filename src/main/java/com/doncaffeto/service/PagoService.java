@@ -13,14 +13,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Cobro de pedidos (lo usa el cajero).
- *
- * @author Equipo Don Caffeto
- */
 public class PagoService {
-
-    /** Los precios incluyen IGV del 18 %. */
     private static final BigDecimal FACTOR_IGV = new BigDecimal("1.18");
 
     private static final Logger LOG = LoggerFactory.getLogger(PagoService.class);
@@ -28,39 +21,21 @@ public class PagoService {
     private final PagoDAO pagoDAO;
     private final PedidoDAO pedidoDAO;
 
-    /**
-     * @param pagoDAO   acceso a pagos y ventas
-     * @param pedidoDAO acceso a pedidos
-     */
     public PagoService(PagoDAO pagoDAO, PedidoDAO pedidoDAO) {
         this.pagoDAO = pagoDAO;
         this.pedidoDAO = pedidoDAO;
     }
 
-    /**
-     * @param total total con IGV incluido
-     * @return IGV contenido en el total
-     */
     public static BigDecimal igv(BigDecimal total) {
         BigDecimal base = total.divide(FACTOR_IGV, 2, RoundingMode.HALF_UP);
         return total.subtract(base);
     }
 
-    /**
-     * @param total    total a pagar
-     * @param recibido dinero entregado por el cliente
-     * @return vuelto con 2 decimales (0.00 si no alcanza)
-     */
     public static BigDecimal vuelto(BigDecimal total, BigDecimal recibido) {
         BigDecimal v = recibido.subtract(total).setScale(2, RoundingMode.HALF_UP);
         return v.signum() < 0 ? BigDecimal.ZERO.setScale(2) : v;
     }
 
-    /**
-     * @param usuario cajero o administrador
-     * @return pedidos LISTOS para cobrar (los de salón, solo si el mesero pidió la cuenta)
-     * @throws SQLException si falla la base de datos
-     */
     public List<Pedido> porCobrar(Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.CAJA);
         List<Pedido> lista = new ArrayList<>();
@@ -72,24 +47,10 @@ public class PagoService {
         return lista;
     }
 
-    /**
-     * @param p pedido LISTO
-     * @return true si es para llevar o delivery, o si su mesa ya pidió la cuenta
-     */
     public static boolean puedeCobrarse(Pedido p) {
         return p.getIdMesa() == null || "CUENTA".equals(p.getEstadoMesa());
     }
 
-    /**
-     * Registra el cobro en una transacción (pago + venta + pedido PAGADO + mesa libre en gris).
-     *
-     * @param pedido   pedido LISTO
-     * @param metodo   EFECTIVO, YAPE, PLIN o TARJETA
-     * @param recibido dinero recibido (solo efectivo; en los otros métodos es el total)
-     * @param usuario  cajero o administrador
-     * @return el pago registrado (con el vuelto)
-     * @throws SQLException si falla la base de datos
-     */
     public Pago cobrar(Pedido pedido, String metodo, BigDecimal recibido, Usuario usuario) throws SQLException {
         Autorizacion.exigir(usuario, Autorizacion.CAJA);
         if (!"LISTO".equals(pedido.getEstado())) {

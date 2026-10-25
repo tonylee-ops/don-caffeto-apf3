@@ -7,24 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controla la gestión de usuarios (administrador).
- *
- * @author Equipo Don Caffeto
- */
 public class UsuariosController {
-
     private final FrmUsuarios vista;
     private final Servicios servicios;
     private final Usuario admin;
     private List<Usuario> usuarios = new ArrayList<>();
     private Usuario editando;
 
-    /**
-     * @param vista     pantalla de usuarios
-     * @param servicios servicios de la aplicación
-     * @param admin     administrador en sesión
-     */
     public UsuariosController(FrmUsuarios vista, Servicios servicios, Usuario admin) {
         this.vista = vista;
         this.servicios = servicios;
@@ -38,7 +27,6 @@ public class UsuariosController {
         });
     }
 
-    /** Carga los usuarios y muestra la pantalla. */
     public void iniciar() {
         try {
             cargar();

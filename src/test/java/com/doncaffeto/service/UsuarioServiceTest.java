@@ -10,11 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Pruebas de la gestión de usuarios.
- */
 public class UsuarioServiceTest {
-
     private String hashGuardado;
     private UsuarioService service;
 

@@ -9,11 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Datos y DAO falsos en memoria para probar sin MySQL.
- */
 public class DatosFalsos {
-
     static final Usuario ADMIN = new Usuario(1, "admin", "Rosa", "ADMIN");
     static final Usuario MESERO = new Usuario(2, "mesero1", "Julio", "MESERO");
     static final Usuario COCINA = new Usuario(3, "cocina1", "Marta", "COCINA");
@@ -35,7 +31,6 @@ public class DatosFalsos {
         return p;
     }
 
-    /** MesaDAO que anota a qué mesas se les pidió la cuenta. */
     static class MesaDAOFalso implements com.doncaffeto.dao.MesaDAO {
         final List<Integer> cuentas = new ArrayList<>();
 
@@ -51,7 +46,6 @@ public class DatosFalsos {
         }
     }
 
-    /** PedidoDAO que guarda en una lista y anota los cambios de estado. */
     static class PedidoDAOFalso implements PedidoDAO {
         final List<String> cambios = new ArrayList<>();
         Pedido registrado;

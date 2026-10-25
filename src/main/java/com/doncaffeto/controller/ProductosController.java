@@ -17,14 +17,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-/**
- * Controla la gestión de productos (administrador). Al elegir un producto de la tabla se edita;
- * con "Nuevo" se crea uno.
- *
- * @author Equipo Don Caffeto
- */
 public class ProductosController {
-
     private final FrmProductos vista;
     private final Servicios servicios;
     private final Usuario usuario;
@@ -32,11 +25,6 @@ public class ProductosController {
     private TableRowSorter<DefaultTableModel> filtro;
     private Producto editando;
 
-    /**
-     * @param vista     pantalla de productos
-     * @param servicios servicios de la aplicación
-     * @param usuario   administrador
-     */
     public ProductosController(FrmProductos vista, Servicios servicios, Usuario usuario) {
         this.vista = vista;
         this.servicios = servicios;
@@ -55,7 +43,6 @@ public class ProductosController {
         });
     }
 
-    /** Carga categorías y productos, y muestra la pantalla. */
     public void iniciar() {
         try {
             DefaultComboBoxModel<Object> cats = new DefaultComboBoxModel<>();

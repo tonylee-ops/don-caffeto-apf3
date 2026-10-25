@@ -10,13 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementación MySQL de {@link MesaDAO}.
- *
- * @author Equipo Don Caffeto
- */
 public class MesaDAOImpl implements MesaDAO {
-
     @Override
     public List<Mesa> listar() throws SQLException {
         String sql = "SELECT id_mesa, numero, capacidad, estado, "

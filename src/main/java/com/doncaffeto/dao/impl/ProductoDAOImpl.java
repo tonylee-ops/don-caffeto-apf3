@@ -10,13 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementación MySQL de {@link ProductoDAO}.
- *
- * @author Equipo Don Caffeto
- */
 public class ProductoDAOImpl implements ProductoDAO {
-
     @Override
     public List<Producto> listar(boolean soloDisponibles) throws SQLException {
         String sql = "SELECT p.id_producto, p.id_categoria, p.nombre, p.precio, p.disponible, c.nombre AS categoria "

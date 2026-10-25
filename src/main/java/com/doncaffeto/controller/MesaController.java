@@ -21,21 +21,7 @@ import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-/**
- * Pantalla de una mesa al estilo Restometrics:
- * <ul>
- *   <li>izquierda: el pedido (lo enviado y lo nuevo), el total y el teclado numérico;</li>
- *   <li>en medio: categorías y productos en botones grandes, por páginas;</li>
- *   <li>derecha: Confirmar, Nota, Observación, Pedir cuenta, Anular y Mesas.</li>
- * </ul>
- * Sirve para tomar el pedido de una mesa libre y para agregar productos a una ocupada.
- * Es el único lugar donde el mesero ve el pedido de salón.
- *
- * @author Equipo Don Caffeto
- */
 public class MesaController {
-
-    /** Productos por página (4 columnas x 3 filas). */
     private static final int POR_PAGINA = 12;
     private static final String TODAS = "Todos";
 
@@ -47,23 +33,16 @@ public class MesaController {
     private final Timer cronometro;
     private final Timer recarga;
 
-    private Pedido pedido;                                   // null mientras la mesa no tenga pedido
-    private List<DetallePedido> enviados = new ArrayList<>(); // ya están en cocina (no se editan)
-    private Pedido nuevos = new Pedido();                    // elegidos, falta confirmar
-    private String observacionNueva;                        // observación de un pedido aún no enviado
-    private String cantidad = "";                           // lo escrito en el teclado
+    private Pedido pedido;
+    private List<DetallePedido> enviados = new ArrayList<>();
+    private Pedido nuevos = new Pedido();
+    private String observacionNueva;
+    private String cantidad = "";
 
     private List<Producto> carta = new ArrayList<>();
     private String categoria = TODAS;
     private int pagina;
 
-    /**
-     * @param vista     pantalla de la mesa
-     * @param servicios servicios de la aplicación
-     * @param usuario   mesero o administrador
-     * @param mesa      mesa elegida en el mapa
-     * @param alCambiar se ejecuta cuando la mesa cambia (para refrescar el mapa)
-     */
     public MesaController(FrmMesa vista, Servicios servicios, Usuario usuario, Mesa mesa, Runnable alCambiar) {
         this.vista = vista;
         this.servicios = servicios;
@@ -77,7 +56,6 @@ public class MesaController {
         vista.getLblMesero().setText("·  " + usuario.getNombres());
         vista.setTitle("Don Caffeto - Mesa " + mesa.getNumero());
 
-        // teclado numérico
         JButton[] numeros = {vista.getBtnNum0(), vista.getBtnNum1(), vista.getBtnNum2(), vista.getBtnNum3(),
             vista.getBtnNum4(), vista.getBtnNum5(), vista.getBtnNum6(), vista.getBtnNum7(), vista.getBtnNum8(),
             vista.getBtnNum9()};
@@ -92,7 +70,6 @@ public class MesaController {
         vista.getBtnMas().addActionListener(e -> sumar(1));
         vista.getBtnMenos().addActionListener(e -> sumar(-1));
 
-        // carta
         vista.getBtnAnterior().addActionListener(e -> cambiarPagina(-1));
         vista.getBtnSiguiente().addActionListener(e -> cambiarPagina(1));
         vista.getTxtBuscar().getDocument().addDocumentListener(new DocumentListener() {
@@ -101,7 +78,6 @@ public class MesaController {
             @Override public void changedUpdate(DocumentEvent e) { irAPagina(0); }
         });
 
-        // acciones
         vista.getBtnConfirmar().addActionListener(e -> confirmar());
         vista.getBtnNota().addActionListener(e -> nota());
         vista.getBtnObservacion().addActionListener(e -> observacion());
@@ -122,7 +98,6 @@ public class MesaController {
         });
     }
 
-    /** Carga el pedido y la carta, y muestra la pantalla. */
     public void iniciar() {
         if (!cargar()) {
             return;
@@ -139,13 +114,6 @@ public class MesaController {
         vista.setVisible(true);
     }
 
-    // ============================ izquierda: pedido ============================
-
-    /**
-     * Lee de MySQL lo que ya está en cocina (la cocina pudo cambiar el estado).
-     *
-     * @return false si la mesa se liberó mientras tanto
-     */
     private boolean cargar() {
         boolean eraLibre = pedido == null && mesa.isLibre();
         try {
@@ -214,7 +182,6 @@ public class MesaController {
         return d.getNota() == null ? d.getProducto() : d.getProducto() + " (" + d.getNota() + ")";
     }
 
-    /** Índice de la línea nueva seleccionada, o -1 si se eligió una ya enviada o ninguna. */
     private int lineaNueva() {
         int fila = vista.getTblDetalle().getSelectedRow();
         return fila < enviados.size() ? -1 : fila - enviados.size();
@@ -227,7 +194,6 @@ public class MesaController {
         }
     }
 
-    /** Activa solo lo que tiene sentido en este momento. */
     private void actualizarBotones() {
         boolean hayNuevos = !nuevos.getDetalles().isEmpty();
         boolean lineaNueva = lineaNueva() >= 0;
@@ -243,19 +209,15 @@ public class MesaController {
         vista.getBtnPedirCuenta().setToolTipText(pedido != null && !"LISTO".equals(pedido.getEstado())
                 ? "Disponible cuando la cocina marque el pedido como listo" : null);
         vista.getBtnAnular().setEnabled(pedido != null && "PENDIENTE".equals(pedido.getEstado()));
-        // con la cuenta pedida ya no se agregan productos: la carta y el teclado quedan bloqueados
+
         bloquear(vista.getPnlCardCarta(), !cuenta);
         bloquear(vista.getPnlTeclado(), !cuenta);
         vista.getLblCantidad().setText(cuenta ? "Cuenta pedida" : "Cantidad: " + (cantidad.isEmpty() ? "1" : cantidad));
         if (cuenta && vista.getPnlProductos().getLayout() instanceof java.awt.GridLayout) {
-            irAPagina(0); // muestra el aviso en lugar de los productos
+            irAPagina(0);
         }
     }
 
-    /**
-     * Bloquea los botones y campos de un panel (cuando la cuenta ya fue pedida). La cuenta pedida no
-     * vuelve atrás, así que no hace falta reactivarlos: si {@code activo} es true no se cambia nada.
-     */
     private static void bloquear(java.awt.Container panel, boolean activo) {
         if (activo) {
             return;
@@ -270,11 +232,9 @@ public class MesaController {
         }
     }
 
-    // ============================ teclado numérico ============================
-
     private void escribir(String digitos) {
         if ((cantidad + digitos).replaceFirst("^0+", "").length() > 2) {
-            return; // máximo 99
+            return;
         }
         cantidad = (cantidad + digitos).replaceFirst("^0+", "");
         int linea = lineaNueva();
@@ -325,8 +285,6 @@ public class MesaController {
             mostrarPedido();
         }
     }
-
-    // ============================ en medio: carta ============================
 
     private void mostrarCategorias() {
         TreeSet<String> nombres = new TreeSet<>();
@@ -391,7 +349,7 @@ public class MesaController {
             vista.getPnlProductos().add(b);
         }
         for (int i = vista.getPnlProductos().getComponentCount(); i < POR_PAGINA; i++) {
-            vista.getPnlProductos().add(new javax.swing.JLabel()); // relleno: los botones mantienen su tamaño
+            vista.getPnlProductos().add(new javax.swing.JLabel());
         }
         vista.getPnlProductos().revalidate();
         vista.getPnlProductos().repaint();
@@ -400,7 +358,6 @@ public class MesaController {
         vista.getBtnSiguiente().setEnabled(pagina < paginas - 1);
     }
 
-    /** Toca un producto: se agrega con la cantidad escrita en el teclado (1 si no se escribió nada). */
     private void agregar(Producto p) {
         try {
             servicios.pedidos.agregarProducto(nuevos, p, cantidadEscrita(), null);
@@ -411,9 +368,6 @@ public class MesaController {
         }
     }
 
-    // ============================ derecha: acciones ============================
-
-    /** Envía a cocina lo nuevo: crea el pedido si la mesa estaba libre o lo agrega al existente. */
     private void confirmar() {
         try {
             if (pedido == null) {
@@ -461,7 +415,7 @@ public class MesaController {
             return;
         }
         if (pedido == null) {
-            observacionNueva = texto.toString().trim(); // se envía junto con el pedido
+            observacionNueva = texto.toString().trim();
             mostrarPedido();
             return;
         }

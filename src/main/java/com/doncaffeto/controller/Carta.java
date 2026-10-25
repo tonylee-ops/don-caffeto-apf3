@@ -17,26 +17,13 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-/**
- * Carta de productos reutilizable: llena la tabla, filtra por texto y categoría mientras se escribe
- * y avisa con doble clic. La usan la pantalla de pedido nuevo y la de la mesa.
- *
- * @author Equipo Don Caffeto
- */
 public class Carta {
-
     private final JTable tabla;
     private final JTextField buscar;
     private final JComboBox<Object> categoria;
     private List<Producto> productos = new ArrayList<>();
     private TableRowSorter<DefaultTableModel> filtro;
 
-    /**
-     * @param tabla     tabla de productos (Producto, Categoría, Precio)
-     * @param buscar    caja de búsqueda
-     * @param categoria combo de categorías
-     * @param alElegir  acción al hacer doble clic en un producto
-     */
     public Carta(JTable tabla, JTextField buscar, JComboBox<Object> categoria, Runnable alElegir) {
         this.tabla = tabla;
         this.buscar = buscar;
@@ -57,9 +44,6 @@ public class Carta {
         });
     }
 
-    /**
-     * @param lista productos disponibles
-     */
     public void mostrar(List<Producto> lista) {
         productos = lista;
         List<Object[]> filas = new ArrayList<>();
@@ -77,7 +61,6 @@ public class Carta {
         categoria.setModel(modelo);
     }
 
-    /** @return el producto seleccionado, o null si no hay ninguno */
     public Producto seleccionado() {
         int fila = tabla.getSelectedRow();
         return fila < 0 ? null : productos.get(tabla.convertRowIndexToModel(fila));

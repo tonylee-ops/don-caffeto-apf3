@@ -26,23 +26,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-/**
- * Controla el menú principal: muestra solo los módulos que permite el rol y los abre.
- *
- * @author Equipo Don Caffeto
- */
 public class PrincipalController {
-
     private final FrmPrincipal vista;
     private final Usuario usuario;
     private final Servicios servicios;
     private final Map<String, JFrame> abiertas = new HashMap<>();
 
-    /**
-     * @param vista     menú principal
-     * @param usuario   usuario que inició sesión
-     * @param servicios servicios de la aplicación
-     */
     public PrincipalController(FrmPrincipal vista, Usuario usuario, Servicios servicios) {
         this.vista = vista;
         this.usuario = usuario;
@@ -59,7 +48,7 @@ public class PrincipalController {
                     new MesasController(f, servicios, usuario).iniciar();
                     return f;
                 });
-        // el mesero ve los pedidos de salón solo entrando a cada mesa; la lista completa es del administrador
+
         modulo("pedidos", Autorizacion.ADMIN, vista.getBtnMenuPedidos(),
                 vista.getBtnPedidos(), vista.getPnlCardPedidos(), () -> {
                     FrmPedidos f = new FrmPedidos();
@@ -107,15 +96,10 @@ public class PrincipalController {
         });
     }
 
-    /** Muestra la pantalla. */
     public void iniciar() {
         vista.setVisible(true);
     }
 
-    /**
-     * Muestra el módulo solo si el rol lo permite y conecta el botón del menú y el de la tarjeta.
-     * Si la ventana ya está abierta, la trae al frente en lugar de abrir otra.
-     */
     private void modulo(String clave, String[] roles, JButton menu, JButton tarjeta, JPanel panel,
                         Supplier<JFrame> abrir) {
         boolean permitido = Autorizacion.permite(usuario, roles);

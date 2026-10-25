@@ -10,13 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementación MySQL de {@link ReporteDAO}.
- *
- * @author Equipo Don Caffeto
- */
 public class ReporteDAOImpl implements ReporteDAO {
-
     @Override
     public List<Object[]> ventasPorDia(LocalDate desde, LocalDate hasta) throws SQLException {
         return consultar("SELECT DATE_FORMAT(v.fecha, '%d/%m/%Y'), COUNT(*), SUM(v.total) FROM ventas v "

@@ -16,30 +16,21 @@ import com.doncaffeto.service.ProductoService;
 import com.doncaffeto.service.ReporteService;
 import com.doncaffeto.service.UsuarioService;
 
-/**
- * Único lugar donde se crean las clases MySQL (DAOImpl) y se entregan a los servicios.
- * El resto del programa solo conoce las interfaces DAO (principio de inversión de dependencias).
- *
- * @author Equipo Don Caffeto
- */
 public class Servicios {
-
-    /** Inicio de sesión. */
     public final LoginService login;
-    /** Pedidos del mesero. */
+
     public final PedidoService pedidos;
-    /** Cocina. */
+
     public final CocinaService cocina;
-    /** Caja. */
+
     public final PagoService pagos;
-    /** Productos. */
+
     public final ProductoService productos;
-    /** Usuarios. */
+
     public final UsuarioService usuarios;
-    /** Reportes. */
+
     public final ReporteService reportes;
 
-    /** Crea los servicios conectados a MySQL. */
     public Servicios() {
         PedidoDAO pedidoDAO = new PedidoDAOImpl();
         UsuarioDAOImpl usuarioDAO = new UsuarioDAOImpl();
@@ -52,17 +43,6 @@ public class Servicios {
         reportes = new ReporteService(new ReporteDAOImpl());
     }
 
-    /**
-     * Arma la aplicación con servicios ya creados (por ejemplo, con DAOs de prueba).
-     *
-     * @param login     inicio de sesión
-     * @param pedidos   pedidos
-     * @param cocina    cocina
-     * @param pagos     caja
-     * @param productos productos
-     * @param usuarios  usuarios
-     * @param reportes  reportes
-     */
     public Servicios(LoginService login, PedidoService pedidos, CocinaService cocina, PagoService pagos,
                      ProductoService productos, UsuarioService usuarios, ReporteService reportes) {
         this.login = login;

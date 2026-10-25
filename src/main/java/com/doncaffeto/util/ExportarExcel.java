@@ -14,23 +14,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-/**
- * Exporta una tabla a un archivo Excel (usa Apache POI).
- *
- * @author Equipo Don Caffeto
- */
 public final class ExportarExcel {
-
     private ExportarExcel() {
     }
 
-    /**
-     * @param titulo   nombre de la hoja
-     * @param columnas títulos de las columnas
-     * @param filas    datos (los BigDecimal se guardan como montos en soles)
-     * @param archivo  archivo .xlsx de destino
-     * @throws IOException si no se puede escribir el archivo
-     */
     public static void exportar(String titulo, String[] columnas, List<Object[]> filas, File archivo)
             throws IOException {
         try (XSSFWorkbook libro = new XSSFWorkbook(); FileOutputStream salida = new FileOutputStream(archivo)) {

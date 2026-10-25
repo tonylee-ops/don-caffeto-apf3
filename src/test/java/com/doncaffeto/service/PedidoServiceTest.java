@@ -9,11 +9,7 @@ import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Pruebas de las reglas de pedidos.
- */
 public class PedidoServiceTest {
-
     private DatosFalsos.PedidoDAOFalso dao;
     private DatosFalsos.MesaDAOFalso mesas;
     private PedidoService service;

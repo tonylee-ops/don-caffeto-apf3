@@ -17,14 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Timer;
 
-/**
- * Controla la pantalla de cocina. Se actualiza sola cada 15 segundos y avisa con un sonido
- * cuando llega un pedido nuevo.
- *
- * @author Equipo Don Caffeto
- */
 public class CocinaController {
-
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
 
     private final FrmCocina vista;
@@ -34,11 +27,6 @@ public class CocinaController {
     private List<Pedido> pedidos = new ArrayList<>();
     private int ultimoPedido = -1;
 
-    /**
-     * @param vista     pantalla de cocina
-     * @param servicios servicios de la aplicación
-     * @param usuario   cocinero o administrador
-     */
     public CocinaController(FrmCocina vista, Servicios servicios, Usuario usuario) {
         this.vista = vista;
         this.servicios = servicios;
@@ -60,7 +48,6 @@ public class CocinaController {
         });
     }
 
-    /** Carga los pedidos, inicia la actualización automática y muestra la pantalla. */
     public void iniciar() {
         actualizar();
         reloj.start();
@@ -89,14 +76,14 @@ public class CocinaController {
             mayor = Math.max(mayor, p.getIdPedido());
         }
         if (ultimoPedido >= 0 && mayor > ultimoPedido) {
-            Toolkit.getDefaultToolkit().beep(); // llegó un pedido nuevo
+            Toolkit.getDefaultToolkit().beep();
         }
         ultimoPedido = mayor;
         Tablas.llenar(vista.getTblCocina(), filas);
         vista.getLblResumen().setText(pendientes + (pendientes == 1 ? " pendiente" : " pendientes") + "  ·  "
                 + (pedidos.size() - pendientes) + " en preparación");
         vista.getLblActualizado().setText("Actualizado " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        // mantiene seleccionado el mismo pedido después de actualizar
+
         for (int i = 0; antes != null && i < pedidos.size(); i++) {
             if (pedidos.get(i).getIdPedido() == antes.getIdPedido()) {
                 vista.getTblCocina().setRowSelectionInterval(i, i);

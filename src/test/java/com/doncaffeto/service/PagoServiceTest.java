@@ -8,11 +8,7 @@ import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Pruebas del cobro: vuelto, IGV y permisos.
- */
 public class PagoServiceTest {
-
     private Pago registrado;
     private BigDecimal igvRegistrado;
     private PagoService service;

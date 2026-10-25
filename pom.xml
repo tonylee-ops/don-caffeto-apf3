@@ -17,13 +17,11 @@
     </properties>
 
     <dependencies>
-        <!-- Base de datos -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.4.0</version>
         </dependency>
-        <!-- Librerías pedidas en la rúbrica -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -44,19 +42,16 @@
             <artifactId>logback-classic</artifactId>
             <version>1.5.12</version>
         </dependency>
-        <!-- Seguridad: contraseñas cifradas -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
-        <!-- Tema de la interfaz -->
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>3.5.4</version>
         </dependency>
-        <!-- Pruebas (TDD) -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -13,23 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
-/**
- * Controla los reportes de ventas (administrador).
- *
- * @author Equipo Don Caffeto
- */
 public class ReportesController {
-
     private final FrmReportes vista;
     private final Servicios servicios;
     private final Usuario admin;
     private List<Object[]> filas = new ArrayList<>();
 
-    /**
-     * @param vista     pantalla de reportes
-     * @param servicios servicios de la aplicación
-     * @param admin     administrador en sesión
-     */
     public ReportesController(FrmReportes vista, Servicios servicios, Usuario admin) {
         this.vista = vista;
         this.servicios = servicios;
@@ -44,7 +33,6 @@ public class ReportesController {
                 "reporte_" + String.valueOf(vista.getCmbTipo().getSelectedItem()).toLowerCase().replace(' ', '_')));
     }
 
-    /** Genera el reporte del mes y muestra la pantalla. */
     public void iniciar() {
         generar();
         vista.setVisible(true);

@@ -8,20 +8,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 
-/**
- * Controla la pantalla de inicio de sesión.
- *
- * @author Equipo Don Caffeto
- */
 public class LoginController {
-
     private final FrmLogin vista;
     private final Servicios servicios;
 
-    /**
-     * @param vista     pantalla de login
-     * @param servicios servicios de la aplicación
-     */
     public LoginController(FrmLogin vista, Servicios servicios) {
         this.vista = vista;
         this.servicios = servicios;
@@ -38,7 +28,6 @@ public class LoginController {
         vista.getPwdPassword().addKeyListener(limpiarMensaje);
     }
 
-    /** Muestra la pantalla con el cursor en el usuario. */
     public void iniciar() {
         vista.getPwdPassword().setEchoChar('•');
         vista.setVisible(true);

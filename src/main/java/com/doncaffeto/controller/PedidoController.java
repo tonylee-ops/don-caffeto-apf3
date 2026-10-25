@@ -13,15 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 
-/**
- * Controla el registro de un pedido nuevo (mesero). Se abre desde el mapa de mesas con la mesa
- * ya elegida, o con los botones "Para llevar" y "Delivery".
- *
- * @author Equipo Don Caffeto
- */
 public class PedidoController {
-
-    /** Valores de la base, en el mismo orden que el combo (Salón, Para llevar, Delivery). */
     private static final String[] MODALIDADES = {"SALON", "PARA_LLEVAR", "DELIVERY"};
 
     private final FrmPedido vista;
@@ -33,14 +25,6 @@ public class PedidoController {
     private final Carta carta;
     private Pedido pedido = new Pedido();
 
-    /**
-     * @param vista     pantalla de pedido
-     * @param servicios servicios de la aplicación
-     * @param usuario   mesero que registra
-     * @param mesa      mesa elegida en el mapa (null para llevar o delivery)
-     * @param modalidad SALON, PARA_LLEVAR o DELIVERY
-     * @param alGuardar se ejecuta después de guardar (para refrescar el mapa de mesas)
-     */
     public PedidoController(FrmPedido vista, Servicios servicios, Usuario usuario, Mesa mesa, String modalidad,
                             Runnable alGuardar) {
         this.vista = vista;
@@ -62,7 +46,6 @@ public class PedidoController {
         vista.getTblDetalle().getSelectionModel().addListSelectionListener(e -> actualizarBotones());
     }
 
-    /** Carga la carta y las mesas libres, y muestra la pantalla. */
     public void iniciar() {
         try {
             carta.mostrar(servicios.productos.carta());
@@ -76,7 +59,6 @@ public class PedidoController {
         vista.getTxtBuscar().requestFocusInWindow();
     }
 
-    /** La mesa y la modalidad vienen del mapa de mesas y no se cambian aquí. */
     private void fijarModalidad() {
         int indice = java.util.Arrays.asList(MODALIDADES).indexOf(modalidadFija);
         vista.getCmbModalidad().setSelectedIndex(Math.max(indice, 0));
@@ -94,11 +76,10 @@ public class PedidoController {
         return MODALIDADES[vista.getCmbModalidad().getSelectedIndex()];
     }
 
-    /** Activa solo los campos que pide la modalidad elegida. */
     private void cambiarModalidad() {
         boolean salon = "SALON".equals(modalidad());
         boolean delivery = "DELIVERY".equals(modalidad());
-        // solo se muestran los datos que pide la modalidad
+
         vista.getCmbMesa().setEnabled(false);
         vista.getCmbMesa().setVisible(salon);
         vista.getLblEtqMesa().setVisible(salon);
@@ -174,7 +155,6 @@ public class PedidoController {
         actualizarBotones();
     }
 
-    /** Los botones solo se activan cuando tienen sentido. */
     private void actualizarBotones() {
         boolean hayLinea = vista.getTblDetalle().getSelectedRow() >= 0;
         vista.getBtnMas().setEnabled(hayLinea);

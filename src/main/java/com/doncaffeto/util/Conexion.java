@@ -9,14 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * Abre conexiones a MySQL. Los datos se leen de {@code config.properties} en la carpeta del
- * proyecto; ese archivo no se sube a GitHub, así la contraseña nunca queda publicada.
- *
- * @author Equipo Don Caffeto
- */
 public final class Conexion {
-
     private static Properties config;
 
     private Conexion() {
@@ -40,10 +33,6 @@ public final class Conexion {
         return config;
     }
 
-    /**
-     * @return una conexión nueva (se cierra con try-with-resources)
-     * @throws SQLException si MySQL no responde o los datos son incorrectos
-     */
     public static Connection obtener() throws SQLException {
         Properties p = config();
         return DriverManager.getConnection(p.getProperty("db.url"), p.getProperty("db.user"),

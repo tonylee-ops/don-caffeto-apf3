@@ -12,11 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mindrot.jbcrypt.BCrypt;
 
-/**
- * Pruebas de seguridad: inicio de sesión y permisos por rol.
- */
 public class LoginServiceTest {
-
     private LoginService service;
 
     @Before
@@ -62,7 +58,6 @@ public class LoginServiceTest {
             try {
                 service.ingresar("mesero1", "mala");
             } catch (IllegalArgumentException e) {
-                // intento fallido esperado
             }
         }
         try {

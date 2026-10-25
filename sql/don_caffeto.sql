@@ -1,16 +1,7 @@
--- =====================================================================
---  DON CAFFETO - Base de datos del sistema de ventas (MySQL 8)
---  Importar en MySQL Workbench: File > Open SQL Script > este archivo
---  y ejecutar todo con el rayo (Ctrl+Shift+Enter).
--- =====================================================================
-
 DROP DATABASE IF EXISTS don_caffeto;
 CREATE DATABASE don_caffeto CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci;
 USE don_caffeto;
 
--- ---------------------------------------------------------------------
--- Seguridad: roles y usuarios (contraseñas guardadas con BCrypt)
--- ---------------------------------------------------------------------
 CREATE TABLE roles (
   id_rol      INT AUTO_INCREMENT PRIMARY KEY,
   nombre      VARCHAR(20) NOT NULL,
@@ -31,17 +22,12 @@ CREATE TABLE usuarios (
   CONSTRAINT fk_usuarios_rol FOREIGN KEY (id_rol) REFERENCES roles (id_rol)
 );
 
--- ---------------------------------------------------------------------
--- Salón y carta
---   Mesas:  LIBRE (gris) -> OCUPADA (naranja, pedido enviado a cocina)
---           -> CUENTA (verde, el mesero pidió la cuenta) -> LIBRE al pagar
--- ---------------------------------------------------------------------
 CREATE TABLE mesas (
   id_mesa       INT AUTO_INCREMENT PRIMARY KEY,
   numero        INT NOT NULL,
   capacidad     INT NOT NULL,
   estado        ENUM('LIBRE', 'OCUPADA', 'CUENTA') NOT NULL DEFAULT 'LIBRE',
-  ocupada_desde DATETIME NULL,                     -- para el cronómetro de la mesa
+  ocupada_desde DATETIME NULL,
   CONSTRAINT uq_mesas_numero UNIQUE (numero),
   CONSTRAINT ck_mesas_capacidad CHECK (capacidad > 0),
   CONSTRAINT ck_mesas_hora CHECK ((estado = 'LIBRE' AND ocupada_desde IS NULL)
@@ -65,19 +51,15 @@ CREATE TABLE productos (
   CONSTRAINT fk_productos_categoria FOREIGN KEY (id_categoria) REFERENCES categorias (id_categoria)
 );
 
--- ---------------------------------------------------------------------
--- Pedidos
---   PENDIENTE -> EN_PREPARACION -> LISTO -> PAGADO   (o CANCELADO)
--- ---------------------------------------------------------------------
 CREATE TABLE pedidos (
   id_pedido  INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario INT NOT NULL,                          -- mesero que lo registra
-  id_mesa    INT NULL,                              -- solo en SALON
+  id_usuario INT NOT NULL,
+  id_mesa    INT NULL,
   modalidad  ENUM('SALON', 'PARA_LLEVAR', 'DELIVERY') NOT NULL,
   estado     ENUM('PENDIENTE', 'EN_PREPARACION', 'LISTO', 'PAGADO', 'CANCELADO') NOT NULL DEFAULT 'PENDIENTE',
   total      DECIMAL(10,2) NOT NULL DEFAULT 0,
-  direccion  VARCHAR(150) NULL,                     -- solo en DELIVERY
-  telefono   CHAR(9) NULL,                          -- solo en DELIVERY
+  direccion  VARCHAR(150) NULL,
+  telefono   CHAR(9) NULL,
   creado_en  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT ck_pedidos_total CHECK (total >= 0),
   CONSTRAINT ck_pedidos_mesa CHECK ((modalidad = 'SALON' AND id_mesa IS NOT NULL)
@@ -93,7 +75,7 @@ CREATE TABLE detalle_pedido (
   id_pedido       INT NOT NULL,
   id_producto     INT NOT NULL,
   cantidad        INT NOT NULL,
-  precio_unitario DECIMAL(8,2) NOT NULL,            -- precio al momento de la venta
+  precio_unitario DECIMAL(8,2) NOT NULL,
   subtotal        DECIMAL(10,2) AS (cantidad * precio_unitario) STORED,
   CONSTRAINT ck_detalle_cantidad CHECK (cantidad > 0),
   CONSTRAINT ck_detalle_precio CHECK (precio_unitario > 0),
@@ -101,7 +83,6 @@ CREATE TABLE detalle_pedido (
   CONSTRAINT fk_detalle_producto FOREIGN KEY (id_producto) REFERENCES productos (id_producto)
 );
 
--- Observación general del pedido (ej. "cliente con apuro")
 CREATE TABLE observaciones_pedido (
   id_observacion INT AUTO_INCREMENT PRIMARY KEY,
   id_pedido      INT NOT NULL,
@@ -112,7 +93,6 @@ CREATE TABLE observaciones_pedido (
   CONSTRAINT fk_obs_pedido_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
 );
 
--- Nota de un producto del pedido (ej. "sin azúcar")
 CREATE TABLE observaciones_detalle (
   id_observacion INT AUTO_INCREMENT PRIMARY KEY,
   id_detalle     INT NOT NULL,
@@ -120,13 +100,10 @@ CREATE TABLE observaciones_detalle (
   CONSTRAINT fk_obs_detalle FOREIGN KEY (id_detalle) REFERENCES detalle_pedido (id_detalle) ON DELETE CASCADE
 );
 
--- ---------------------------------------------------------------------
--- Cobro: un pago y una venta por pedido (se registran en una transacción)
--- ---------------------------------------------------------------------
 CREATE TABLE pagos (
   id_pago    INT AUTO_INCREMENT PRIMARY KEY,
   id_pedido  INT NOT NULL,
-  id_usuario INT NOT NULL,                          -- cajero
+  id_usuario INT NOT NULL,
   metodo     ENUM('EFECTIVO', 'YAPE', 'PLIN', 'TARJETA') NOT NULL,
   monto      DECIMAL(10,2) NOT NULL,
   recibido   DECIMAL(10,2) NOT NULL,
@@ -142,8 +119,8 @@ CREATE TABLE ventas (
   id_venta  INT AUTO_INCREMENT PRIMARY KEY,
   id_pedido INT NOT NULL,
   id_pago   INT NOT NULL,
-  subtotal  DECIMAL(10,2) NOT NULL,                 -- valor sin IGV
-  igv       DECIMAL(10,2) NOT NULL,                 -- 18 %
+  subtotal  DECIMAL(10,2) NOT NULL,
+  igv       DECIMAL(10,2) NOT NULL,
   total     DECIMAL(10,2) NOT NULL,
   fecha     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT uq_ventas_pedido UNIQUE (id_pedido),
@@ -156,10 +133,6 @@ CREATE INDEX ix_pedidos_estado ON pedidos (estado);
 CREATE INDEX ix_pedidos_fecha ON pedidos (creado_en);
 CREATE INDEX ix_ventas_fecha ON ventas (fecha);
 
--- =====================================================================
---  DATOS DE DEMOSTRACIÓN
---  Todos los usuarios tienen la contraseña: Caffeto2026!
--- =====================================================================
 INSERT INTO roles (id_rol, nombre, descripcion) VALUES
  (1, 'ADMIN',  'Administrador: productos, usuarios y reportes'),
  (2, 'MESERO', 'Registra pedidos'),
@@ -187,8 +160,6 @@ INSERT INTO productos (id_producto, id_categoria, nombre, precio) VALUES
  (13, 4, 'Tostadas con palta', 9.00), (14, 4, 'Desayuno americano', 16.00), (15, 4, 'Tamal con café', 12.00),
  (16, 5, 'Brownie', 6.00), (17, 5, 'Pie de limón', 8.00), (18, 5, 'Torta de chocolate', 9.00);
 
--- Pedidos de ejemplo de hoy: la mesa 3 ya pagó (gris), la mesa 5 está en cocina (naranja)
--- y la mesa 2 pidió la cuenta (verde).
 INSERT INTO pedidos (id_pedido, id_usuario, id_mesa, modalidad, estado, total, direccion, telefono, creado_en) VALUES
  (1, 2, 3, 'SALON', 'PAGADO', 22.00, NULL, NULL, NOW() - INTERVAL 90 MINUTE),
  (2, 2, NULL, 'DELIVERY', 'LISTO', 28.00, 'Jr. Los Cafetales 120', '964333444', NOW() - INTERVAL 25 MINUTE),
@@ -219,15 +190,8 @@ INSERT INTO pagos (id_pago, id_pedido, id_usuario, metodo, monto, recibido, vuel
 INSERT INTO ventas (id_pedido, id_pago, subtotal, igv, total, fecha) VALUES
  (1, 1, 18.64, 3.36, 22.00, NOW() - INTERVAL 60 MINUTE);
 
--- =====================================================================
---  FUNCIONES
---  (en MySQL Workbench se ejecutan junto con todo el script; DELIMITER
---   permite escribir el cuerpo de cada función con punto y coma)
--- =====================================================================
 DELIMITER $$
 
--- 1. IGV (18 %) que ya está incluido en un precio o total.
---    Ej.: SELECT fn_igv(22.00);            -> 3.36
 CREATE FUNCTION fn_igv(p_total DECIMAL(10,2))
 RETURNS DECIMAL(10,2)
 DETERMINISTIC NO SQL
@@ -235,8 +199,6 @@ BEGIN
   RETURN p_total - ROUND(p_total / 1.18, 2);
 END$$
 
--- 2. Valor de venta (total sin IGV).
---    Ej.: SELECT fn_valor_venta(22.00);    -> 18.64
 CREATE FUNCTION fn_valor_venta(p_total DECIMAL(10,2))
 RETURNS DECIMAL(10,2)
 DETERMINISTIC NO SQL
@@ -244,8 +206,6 @@ BEGIN
   RETURN ROUND(p_total / 1.18, 2);
 END$$
 
--- 3. Total de un pedido sumando su detalle (sirve para revisar que pedidos.total esté bien).
---    Ej.: SELECT fn_total_pedido(3);       -> 21.00
 CREATE FUNCTION fn_total_pedido(p_id_pedido INT)
 RETURNS DECIMAL(10,2)
 NOT DETERMINISTIC READS SQL DATA
@@ -255,8 +215,6 @@ BEGIN
   RETURN v_total;
 END$$
 
--- 4. Minutos que lleva ocupada una mesa (0 si está libre). Es el cronómetro del mapa de mesas.
---    Ej.: SELECT numero, fn_minutos_ocupada(id_mesa) FROM mesas;
 CREATE FUNCTION fn_minutos_ocupada(p_id_mesa INT)
 RETURNS INT
 NOT DETERMINISTIC READS SQL DATA
@@ -266,8 +224,6 @@ BEGIN
   RETURN COALESCE(TIMESTAMPDIFF(MINUTE, v_desde, NOW()), 0);
 END$$
 
--- 5. Total vendido (cobrado) en un día.
---    Ej.: SELECT fn_ventas_del_dia(CURDATE());
 CREATE FUNCTION fn_ventas_del_dia(p_fecha DATE)
 RETURNS DECIMAL(10,2)
 NOT DETERMINISTIC READS SQL DATA
@@ -277,8 +233,6 @@ BEGIN
   RETURN v_total;
 END$$
 
--- 6. Unidades vendidas de un producto entre dos fechas (solo pedidos cobrados).
---    Ej.: SELECT nombre, fn_unidades_vendidas(id_producto, CURDATE(), CURDATE()) FROM productos;
 CREATE FUNCTION fn_unidades_vendidas(p_id_producto INT, p_desde DATE, p_hasta DATE)
 RETURNS INT
 NOT DETERMINISTIC READS SQL DATA
@@ -290,8 +244,6 @@ BEGIN
   RETURN v_unidades;
 END$$
 
--- 7. Texto amigable de un estado de pedido.
---    Ej.: SELECT fn_estado_texto('EN_PREPARACION');   -> En preparación
 CREATE FUNCTION fn_estado_texto(p_estado VARCHAR(20))
 RETURNS VARCHAR(20)
 DETERMINISTIC NO SQL
@@ -308,28 +260,13 @@ END$$
 
 DELIMITER ;
 
--- =====================================================================
---  VISTAS (usan las funciones; se consultan como una tabla)
--- =====================================================================
--- Estado de las mesas con su cronómetro en minutos
 CREATE VIEW vw_mesas AS
 SELECT m.numero, m.capacidad, m.estado, fn_minutos_ocupada(m.id_mesa) AS minutos_ocupada,
        p.id_pedido, p.total
   FROM mesas m
   LEFT JOIN pedidos p ON p.id_mesa = m.id_mesa AND p.estado NOT IN ('PAGADO', 'CANCELADO');
 
--- Pedidos con su estado en texto y el IGV desglosado
 CREATE VIEW vw_pedidos AS
 SELECT p.id_pedido, p.creado_en, p.modalidad, fn_estado_texto(p.estado) AS estado,
        u.nombres AS mesero, fn_valor_venta(p.total) AS valor_venta, fn_igv(p.total) AS igv, p.total
   FROM pedidos p JOIN usuarios u ON u.id_usuario = p.id_usuario;
-
--- =====================================================================
---  PRUEBAS RÁPIDAS (seleccione una línea y ejecútela con el rayo)
--- =====================================================================
--- SELECT fn_igv(22.00), fn_valor_venta(22.00);
--- SELECT id_pedido, total, fn_total_pedido(id_pedido) FROM pedidos;
--- SELECT * FROM vw_mesas;
--- SELECT * FROM vw_pedidos;
--- SELECT fn_ventas_del_dia(CURDATE());
--- SELECT nombre, fn_unidades_vendidas(id_producto, CURDATE(), CURDATE()) AS vendidos FROM productos;

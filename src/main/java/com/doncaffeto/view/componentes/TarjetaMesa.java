@@ -12,19 +12,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.JButton;
 
-/**
- * Tarjeta de una mesa en el mapa: gris si está libre, naranja si su pedido está en cocina y verde
- * si pidió la cuenta. Muestra el número, la capacidad, el estado y el cronómetro.
- *
- * @author Equipo Don Caffeto
- */
 public class TarjetaMesa extends JButton {
-
     private Mesa mesa;
 
-    /**
-     * @param mesa mesa que representa
-     */
     public TarjetaMesa(Mesa mesa) {
         this.mesa = mesa;
         setPreferredSize(new Dimension(200, 150));
@@ -35,22 +25,16 @@ public class TarjetaMesa extends JButton {
         setToolTipText(mesa.isLibre() ? "Tomar pedido" : "Ver pedido de la mesa");
     }
 
-    /** @return la mesa que representa */
     public Mesa getMesa() {
         return mesa;
     }
 
-    /** @param mesa datos nuevos de la mesa */
     public void setMesa(Mesa mesa) {
         this.mesa = mesa;
         setToolTipText(mesa.isLibre() ? "Tomar pedido" : "Ver pedido de la mesa");
         repaint();
     }
 
-    /**
-     * @param segundos tiempo en segundos
-     * @return texto "mm:ss" o "h:mm:ss"
-     */
     public static String cronometro(long segundos) {
         long h = segundos / 3600;
         long m = segundos % 3600 / 60;
