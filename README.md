@@ -97,14 +97,14 @@ También hay dos vistas que usan esas funciones: `vw_mesas` (mesas con su cronó
 3. Botón **Run** (F6). La clase principal es `com.doncaffeto.App`.
 4. Para editar una pantalla, abre cualquier `Frm…` de `com.doncaffeto.view` y usa la pestaña **Design**.
 
-### Usuarios de demostración (contraseña de todos: `Caffeto2026!`)
+### Usuarios de demostración
 
-| Usuario | Rol |
-|---|---|
-| `admin` | Administrador |
-| `mesero1` | Mesero |
-| `cocina1` | Cocina |
-| `cajero1` | Cajero |
+| Usuario | Contraseña | Rol |
+|---|---|---|
+| `admin` | `admin123` | Administrador |
+| `mesero1` | `mesero123` | Mesero |
+| `cocina1` | `cocina123` | Cocina |
+| `cajero1` | `cajero123` | Cajero |
 
 Para ver que todos comparten los mismos datos:
 1. Con `mesero1` abre **Mesas** y toca una mesa gris → agrega productos → **Enviar a cocina** (la mesa queda naranja).

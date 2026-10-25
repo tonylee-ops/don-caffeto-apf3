@@ -140,10 +140,10 @@ INSERT INTO roles (id_rol, nombre, descripcion) VALUES
  (4, 'CAJERO', 'Cobra los pedidos');
 
 INSERT INTO usuarios (id_usuario, id_rol, username, password_hash, nombres) VALUES
- (1, 1, 'admin',   '$2a$10$tHo4ruKcsmI4v2tRH5Bui.zPnrBhvsQzm3nFIWUlZ0UYppof1soRe', 'Rosa Quispe'),
- (2, 2, 'mesero1', '$2a$10$tHo4ruKcsmI4v2tRH5Bui.zPnrBhvsQzm3nFIWUlZ0UYppof1soRe', 'Julio Ramos'),
- (3, 3, 'cocina1', '$2a$10$tHo4ruKcsmI4v2tRH5Bui.zPnrBhvsQzm3nFIWUlZ0UYppof1soRe', 'Marta Gonzales'),
- (4, 4, 'cajero1', '$2a$10$tHo4ruKcsmI4v2tRH5Bui.zPnrBhvsQzm3nFIWUlZ0UYppof1soRe', 'Sofía Camayo');
+ (1, 1, 'admin',   '$2a$10$MYA4dzwseQD1FB.KWyL3Ge2zzRzyoWI8YXycx1Cu1WFFKuCfcLSKW', 'Rosa Quispe'),
+ (2, 2, 'mesero1', '$2a$10$4h2IOQLEZA1A8zJo9YEQE.XRSA5BGrI.yQoMYI7crobkpJPcsw/Uy', 'Julio Ramos'),
+ (3, 3, 'cocina1', '$2a$10$12j7ZpD3E5lDX13PtW92SODmPOze2lLUSTnA6Rt/FRDP.UkFm9P5S', 'Marta Gonzales'),
+ (4, 4, 'cajero1', '$2a$10$fD.OGH2WjuHj9LHnpefm0.3tMGgZtiIVTgPoOl0iWrlZ2LzpsiWiu', 'Sofía Camayo');
 
 INSERT INTO mesas (numero, capacidad) VALUES
  (1, 2), (2, 2), (3, 4), (4, 4), (5, 4), (6, 6), (7, 6);
