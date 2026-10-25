@@ -41,9 +41,18 @@ Capturas de todas las pantallas: `docs/capturas/`.
 
 | Programa | Versión |
 |---|---|
-| JDK | 17 o superior |
-| Apache NetBeans | 17 o superior (ya trae Maven) |
-| MySQL Server + MySQL Workbench | 8.0 |
+| JDK | 17 o superior (funciona con JDK 26) |
+| Apache NetBeans | 17 o superior (funciona con NetBeans 30; ya trae Maven) |
+| MySQL Server + MySQL Workbench | 8.4 o superior (incluida la serie 9.x) |
+
+El proyecto compila con `maven.compiler.release` 17: aunque uses un JDK más nuevo, el código queda
+compatible con Java 17, que es la versión que pide el curso.
+
+Avisos que pueden salir en la consola con JDK 24 o superior (no son errores):
+- `WARNING: A restricted method in java.lang.System has been called`: lo produce FlatLaf al cargar su
+  librería nativa. Para ocultarlo: Properties → Run → VM Options → `--enable-native-access=ALL-UNNAMED`.
+- Si alguna librería mostrara un error con `sun.misc.Unsafe`, agrega en VM Options
+  `--sun-misc-unsafe-memory-access=warn`.
 
 ## 2. Importar la base de datos en MySQL Workbench
 
