@@ -218,3 +218,118 @@ INSERT INTO pagos (id_pago, id_pedido, id_usuario, metodo, monto, recibido, vuel
 
 INSERT INTO ventas (id_pedido, id_pago, subtotal, igv, total, fecha) VALUES
  (1, 1, 18.64, 3.36, 22.00, NOW() - INTERVAL 60 MINUTE);
+
+-- =====================================================================
+--  FUNCIONES
+--  (en MySQL Workbench se ejecutan junto con todo el script; DELIMITER
+--   permite escribir el cuerpo de cada función con punto y coma)
+-- =====================================================================
+DELIMITER $$
+
+-- 1. IGV (18 %) que ya está incluido en un precio o total.
+--    Ej.: SELECT fn_igv(22.00);            -> 3.36
+CREATE FUNCTION fn_igv(p_total DECIMAL(10,2))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC NO SQL
+BEGIN
+  RETURN p_total - ROUND(p_total / 1.18, 2);
+END$$
+
+-- 2. Valor de venta (total sin IGV).
+--    Ej.: SELECT fn_valor_venta(22.00);    -> 18.64
+CREATE FUNCTION fn_valor_venta(p_total DECIMAL(10,2))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC NO SQL
+BEGIN
+  RETURN ROUND(p_total / 1.18, 2);
+END$$
+
+-- 3. Total de un pedido sumando su detalle (sirve para revisar que pedidos.total esté bien).
+--    Ej.: SELECT fn_total_pedido(3);       -> 21.00
+CREATE FUNCTION fn_total_pedido(p_id_pedido INT)
+RETURNS DECIMAL(10,2)
+NOT DETERMINISTIC READS SQL DATA
+BEGIN
+  DECLARE v_total DECIMAL(10,2);
+  SELECT COALESCE(SUM(subtotal), 0) INTO v_total FROM detalle_pedido WHERE id_pedido = p_id_pedido;
+  RETURN v_total;
+END$$
+
+-- 4. Minutos que lleva ocupada una mesa (0 si está libre). Es el cronómetro del mapa de mesas.
+--    Ej.: SELECT numero, fn_minutos_ocupada(id_mesa) FROM mesas;
+CREATE FUNCTION fn_minutos_ocupada(p_id_mesa INT)
+RETURNS INT
+NOT DETERMINISTIC READS SQL DATA
+BEGIN
+  DECLARE v_desde DATETIME;
+  SELECT ocupada_desde INTO v_desde FROM mesas WHERE id_mesa = p_id_mesa;
+  RETURN COALESCE(TIMESTAMPDIFF(MINUTE, v_desde, NOW()), 0);
+END$$
+
+-- 5. Total vendido (cobrado) en un día.
+--    Ej.: SELECT fn_ventas_del_dia(CURDATE());
+CREATE FUNCTION fn_ventas_del_dia(p_fecha DATE)
+RETURNS DECIMAL(10,2)
+NOT DETERMINISTIC READS SQL DATA
+BEGIN
+  DECLARE v_total DECIMAL(10,2);
+  SELECT COALESCE(SUM(total), 0) INTO v_total FROM ventas WHERE DATE(fecha) = p_fecha;
+  RETURN v_total;
+END$$
+
+-- 6. Unidades vendidas de un producto entre dos fechas (solo pedidos cobrados).
+--    Ej.: SELECT nombre, fn_unidades_vendidas(id_producto, CURDATE(), CURDATE()) FROM productos;
+CREATE FUNCTION fn_unidades_vendidas(p_id_producto INT, p_desde DATE, p_hasta DATE)
+RETURNS INT
+NOT DETERMINISTIC READS SQL DATA
+BEGIN
+  DECLARE v_unidades INT;
+  SELECT COALESCE(SUM(d.cantidad), 0) INTO v_unidades
+    FROM detalle_pedido d JOIN ventas v ON v.id_pedido = d.id_pedido
+   WHERE d.id_producto = p_id_producto AND DATE(v.fecha) BETWEEN p_desde AND p_hasta;
+  RETURN v_unidades;
+END$$
+
+-- 7. Texto amigable de un estado de pedido.
+--    Ej.: SELECT fn_estado_texto('EN_PREPARACION');   -> En preparación
+CREATE FUNCTION fn_estado_texto(p_estado VARCHAR(20))
+RETURNS VARCHAR(20)
+DETERMINISTIC NO SQL
+BEGIN
+  RETURN CASE p_estado
+    WHEN 'PENDIENTE' THEN 'Pendiente'
+    WHEN 'EN_PREPARACION' THEN 'En preparación'
+    WHEN 'LISTO' THEN 'Listo'
+    WHEN 'PAGADO' THEN 'Pagado'
+    WHEN 'CANCELADO' THEN 'Cancelado'
+    ELSE p_estado
+  END;
+END$$
+
+DELIMITER ;
+
+-- =====================================================================
+--  VISTAS (usan las funciones; se consultan como una tabla)
+-- =====================================================================
+-- Estado de las mesas con su cronómetro en minutos
+CREATE VIEW vw_mesas AS
+SELECT m.numero, m.capacidad, m.estado, fn_minutos_ocupada(m.id_mesa) AS minutos_ocupada,
+       p.id_pedido, p.total
+  FROM mesas m
+  LEFT JOIN pedidos p ON p.id_mesa = m.id_mesa AND p.estado NOT IN ('PAGADO', 'CANCELADO');
+
+-- Pedidos con su estado en texto y el IGV desglosado
+CREATE VIEW vw_pedidos AS
+SELECT p.id_pedido, p.creado_en, p.modalidad, fn_estado_texto(p.estado) AS estado,
+       u.nombres AS mesero, fn_valor_venta(p.total) AS valor_venta, fn_igv(p.total) AS igv, p.total
+  FROM pedidos p JOIN usuarios u ON u.id_usuario = p.id_usuario;
+
+-- =====================================================================
+--  PRUEBAS RÁPIDAS (seleccione una línea y ejecútela con el rayo)
+-- =====================================================================
+-- SELECT fn_igv(22.00), fn_valor_venta(22.00);
+-- SELECT id_pedido, total, fn_total_pedido(id_pedido) FROM pedidos;
+-- SELECT * FROM vw_mesas;
+-- SELECT * FROM vw_pedidos;
+-- SELECT fn_ventas_del_dia(CURDATE());
+-- SELECT nombre, fn_unidades_vendidas(id_producto, CURDATE(), CURDATE()) AS vendidos FROM productos;

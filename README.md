@@ -59,6 +59,21 @@ Capturas de todas las pantallas: `docs/capturas/`.
 Tablas: `roles`, `usuarios`, `mesas`, `categorias`, `productos`, `pedidos`, `detalle_pedido`,
 `observaciones_pedido`, `observaciones_detalle`, `pagos` y `ventas`.
 
+Funciones de MySQL incluidas en el mismo script (se prueban con `SELECT` en Workbench):
+
+| Función | Qué devuelve | Ejemplo |
+|---|---|---|
+| `fn_igv(total)` | IGV 18 % incluido en un total | `SELECT fn_igv(22.00);` → 3.36 |
+| `fn_valor_venta(total)` | Total sin IGV | `SELECT fn_valor_venta(22.00);` → 18.64 |
+| `fn_total_pedido(id)` | Suma del detalle de un pedido | `SELECT fn_total_pedido(3);` → 21.00 |
+| `fn_minutos_ocupada(id_mesa)` | Minutos que lleva ocupada una mesa | `SELECT numero, fn_minutos_ocupada(id_mesa) FROM mesas;` |
+| `fn_ventas_del_dia(fecha)` | Total cobrado en un día | `SELECT fn_ventas_del_dia(CURDATE());` |
+| `fn_unidades_vendidas(id, desde, hasta)` | Unidades vendidas de un producto | `SELECT fn_unidades_vendidas(2, CURDATE(), CURDATE());` |
+| `fn_estado_texto(estado)` | Estado en texto amigable | `SELECT fn_estado_texto('EN_PREPARACION');` |
+
+También hay dos vistas que usan esas funciones: `vw_mesas` (mesas con su cronómetro) y `vw_pedidos`
+(pedidos con valor de venta e IGV).
+
 ## 3. Configurar la conexión (sin publicar la contraseña)
 
 1. En la carpeta del proyecto copia `config.example.properties` y renombra la copia a **`config.properties`**.
