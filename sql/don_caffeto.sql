@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS don_caffeto;
-CREATE DATABASE don_caffeto CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci;
-USE don_caffeto;
+DROP DATABASE IF EXISTS don_caffeto_apf3;
+CREATE DATABASE don_caffeto_apf3 CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci;
+USE don_caffeto_apf3;
 
 CREATE TABLE roles (
   id_rol      INT AUTO_INCREMENT PRIMARY KEY,
@@ -140,10 +140,10 @@ INSERT INTO roles (id_rol, nombre, descripcion) VALUES
  (4, 'CAJERO', 'Cobra los pedidos');
 
 INSERT INTO usuarios (id_usuario, id_rol, username, password_hash, nombres) VALUES
- (1, 1, 'admin',   '$2a$10$MYA4dzwseQD1FB.KWyL3Ge2zzRzyoWI8YXycx1Cu1WFFKuCfcLSKW', 'Rosa Quispe'),
- (2, 2, 'mesero1', '$2a$10$4h2IOQLEZA1A8zJo9YEQE.XRSA5BGrI.yQoMYI7crobkpJPcsw/Uy', 'Julio Ramos'),
- (3, 3, 'cocina1', '$2a$10$12j7ZpD3E5lDX13PtW92SODmPOze2lLUSTnA6Rt/FRDP.UkFm9P5S', 'Marta Gonzales'),
- (4, 4, 'cajero1', '$2a$10$fD.OGH2WjuHj9LHnpefm0.3tMGgZtiIVTgPoOl0iWrlZ2LzpsiWiu', 'Sofía Camayo');
+ (1, 1, 'admin',   '$2a$10$4.qdqEW7Bd.fJh8qpj4XFOaAChlyQf00uPo1E32MrS5sdbf5did3u', 'Rosa Quispe'),
+ (2, 2, 'mesero1', '$2a$10$.itMnI.RAXZd7hZrx13i.e3u1TCDiLr2oFtrM990JgKD5WK73EvqO', 'Julio Ramos'),
+ (3, 3, 'cocina1', '$2a$10$v/O89ndTPgM0rHc2EmqYAe2ZWIsWVYRFOAT9yyryPhM/tI5RkzsBy', 'Marta Gonzales'),
+ (4, 4, 'cajero1', '$2a$10$OkTFwtkCg2aIBzwpBwVAru3vJrpXFRIWuLKXB/rz1x.3w6Hxe/h4q', 'Sofía Camayo');
 
 INSERT INTO mesas (numero, capacidad) VALUES
  (1, 2), (2, 2), (3, 4), (4, 4), (5, 4), (6, 6), (7, 6);
@@ -270,3 +270,10 @@ CREATE VIEW vw_pedidos AS
 SELECT p.id_pedido, p.creado_en, p.modalidad, fn_estado_texto(p.estado) AS estado,
        u.nombres AS mesero, fn_valor_venta(p.total) AS valor_venta, fn_igv(p.total) AS igv, p.total
   FROM pedidos p JOIN usuarios u ON u.id_usuario = p.id_usuario;
+
+CREATE USER IF NOT EXISTS 'app_apf3'@'localhost' IDENTIFIED BY '1234';
+ALTER USER 'app_apf3'@'localhost' IDENTIFIED BY '1234';
+GRANT SELECT, INSERT, UPDATE, EXECUTE ON don_caffeto_apf3.* TO 'app_apf3'@'localhost';
+FLUSH PRIVILEGES;
+
+SELECT 'Base don_caffeto_apf3 creada' AS resultado, COUNT(*) AS usuarios FROM usuarios;

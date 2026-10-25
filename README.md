@@ -54,16 +54,21 @@ Avisos que pueden salir en la consola con JDK 24 o superior (no son errores):
 - Si alguna librería mostrara un error con `sun.misc.Unsafe`, agrega en VM Options
   `--sun-misc-unsafe-memory-access=warn`.
 
-## 2. Importar la base de datos en MySQL Workbench
+## 2. Crear la base de datos (Windows)
 
-1. Abre **MySQL Workbench** y entra a tu conexión local (usuario `root`).
-2. Menú **File → Open SQL Script…** y elige `sql/don_caffeto.sql`.
-3. Ejecuta todo con el botón del **rayo** (o `Ctrl + Shift + Enter`).
-   Se crea la base `don_caffeto` con sus 11 tablas y los datos de demostración.
-4. Abre `sql/usuario_app.sql`, cambia `ESCRIBA_SU_CLAVE` por una clave tuya y ejecútalo.
-   Crea el usuario `app_doncaffeto`, que solo puede consultar, insertar y actualizar
-   (no puede borrar tablas ni cambiar la estructura).
-5. Para revisar: en el panel **Schemas** pulsa el ícono de actualizar y abre `don_caffeto → Tables`.
+**Opción rápida:** doble clic en **`instalar_bd.bat`** (carpeta principal del proyecto) y escribe la
+contraseña de `root` de MySQL. Crea la base `don_caffeto_apf3`, sus 11 tablas, los datos de demostración,
+las funciones, las vistas y el usuario `app_apf3` (clave `1234`) que usa la aplicación.
+
+**Desde la consola** (lo mismo que hace el .bat):
+
+```
+cd "C:\Program Files\MySQL\MySQL Server 8.4\bin"
+mysql -u root -p --default-character-set=utf8mb4 < "RUTA_DEL_PROYECTO\sql\don_caffeto.sql"
+```
+
+El usuario `app_apf3` solo puede consultar, insertar y actualizar (no puede borrar tablas ni cambiar la
+estructura). Para ver la base en MySQL Workbench, entra con `root` y actualiza el panel **Schemas**.
 
 Tablas: `roles`, `usuarios`, `mesas`, `categorias`, `productos`, `pedidos`, `detalle_pedido`,
 `observaciones_pedido`, `observaciones_detalle`, `pagos` y `ventas`.
@@ -83,17 +88,24 @@ Funciones de MySQL incluidas en el mismo script (se prueban con `SELECT` en Work
 También hay dos vistas que usan esas funciones: `vw_mesas` (mesas con su cronómetro) y `vw_pedidos`
 (pedidos con valor de venta e IGV).
 
-## 3. Configurar la conexión (sin publicar la contraseña)
+## 3. Configurar la conexión
 
-1. En la carpeta del proyecto copia `config.example.properties` y renombra la copia a **`config.properties`**.
-2. Escribe en `db.password` la clave que pusiste en `usuario_app.sql`.
+El archivo **`config.properties`** (carpeta principal, junto al `pom.xml`) le dice a la app a qué base
+conectarse:
 
-`config.properties` está en `.gitignore`, así que la clave **nunca se sube a GitHub**.
+```properties
+db.url=jdbc:mysql://localhost:3306/don_caffeto_apf3?serverTimezone=America/Lima&useSSL=false&allowPublicKeyRetrieval=true
+db.user=app_apf3
+db.password=1234
+```
+
+Si no existe, copia `config.example.properties`, renómbrala a `config.properties` y escribe la clave.
+`config.properties` está en `.gitignore`, así que la clave **no se sube a GitHub**.
 
 ## 4. Ejecutar desde Apache NetBeans
 
 1. **File → Open Project…** y elige la carpeta `DonCaffeto-APF3` (NetBeans la reconoce por el `pom.xml`).
-2. Clic derecho en el proyecto → **Build with Dependencies** (la primera vez descarga las librerías de internet).
+2. Clic derecho en el proyecto → **Clean and Build** (la primera vez descarga las librerías de internet).
 3. Botón **Run** (F6). La clase principal es `com.doncaffeto.App`.
 4. Para editar una pantalla, abre cualquier `Frm…` de `com.doncaffeto.view` y usa la pestaña **Design**.
 
@@ -101,10 +113,10 @@ También hay dos vistas que usan esas funciones: `vw_mesas` (mesas con su cronó
 
 | Usuario | Contraseña | Rol |
 |---|---|---|
-| `admin` | `admin123` | Administrador |
-| `mesero1` | `mesero123` | Mesero |
-| `cocina1` | `cocina123` | Cocina |
-| `cajero1` | `cajero123` | Cajero |
+| `admin` | `1234` | Administrador |
+| `mesero1` | `1234` | Mesero |
+| `cocina1` | `1234` | Cocina |
+| `cajero1` | `1234` | Cajero |
 
 Para ver que todos comparten los mismos datos:
 1. Con `mesero1` abre **Mesas** y toca una mesa gris → agrega productos → **Enviar a cocina** (la mesa queda naranja).
@@ -112,8 +124,7 @@ Para ver que todos comparten los mismos datos:
 3. Con `mesero1` entra a la mesa → **Pedir la cuenta** (la mesa queda verde).
 4. Con `cajero1` cóbralo en **Caja**: la mesa vuelve a gris en el mapa.
 
-> Si ya habías importado la base antes de este cambio, vuelve a ejecutar `sql/don_caffeto.sql`
-> (la tabla `mesas` cambió: ahora tiene el estado CUENTA y la hora de ocupación).
+> Para volver a los datos de demostración, ejecuta otra vez `instalar_bd.bat`.
 
 ## 5. Pruebas
 
