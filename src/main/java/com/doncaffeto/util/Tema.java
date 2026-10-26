@@ -6,6 +6,9 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Graphics;
+import java.awt.FontMetrics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Field;
@@ -25,6 +28,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import org.apache.commons.lang3.StringUtils;
 
@@ -214,6 +218,9 @@ public final class Tema {
     }
 
     private static void colores(JButton b, Color fondo, Color encima, Color texto, Border borde) {
+        if (!(b.getUI() instanceof BotonUI)) {
+            b.setUI(new BotonUI());
+        }
         b.setContentAreaFilled(false);
         b.setOpaque(true);
         b.setBackground(fondo);
@@ -372,6 +379,27 @@ public final class Tema {
                 setBackground(fila % 2 == 0 ? Color.WHITE : FONDO);
             }
             return this;
+        }
+    }
+
+    private static class BotonUI extends BasicButtonUI {
+        private static final Color FONDO_INACTIVO = new Color(0xEFE9E4);
+        private static final Color TEXTO_INACTIVO = new Color(0xA39A93);
+
+        @Override
+        public void update(Graphics g, JComponent c) {
+            if (c.isOpaque()) {
+                g.setColor(c.isEnabled() ? c.getBackground() : FONDO_INACTIVO);
+                g.fillRect(0, 0, c.getWidth(), c.getHeight());
+            }
+            paint(g, c);
+        }
+
+        @Override
+        protected void paintText(Graphics g, AbstractButton b, Rectangle r, String texto) {
+            FontMetrics fm = g.getFontMetrics(b.getFont());
+            g.setColor(b.isEnabled() ? b.getForeground() : TEXTO_INACTIVO);
+            g.drawString(texto, r.x, r.y + fm.getAscent());
         }
     }
 }
