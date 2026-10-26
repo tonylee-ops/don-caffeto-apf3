@@ -1,21 +1,20 @@
 package mvc;
 
-import modelo.PedidoDAO;
-import modelo.CategoriaDAOImpl;
-import modelo.MesaDAOImpl;
-import modelo.PagoDAOImpl;
-import modelo.PedidoDAOImpl;
-import modelo.ProductoDAOImpl;
-import modelo.ReporteDAOImpl;
-import modelo.UsuarioDAOImpl;
-import modelo.CocinaService;
-import modelo.LoginService;
-import modelo.PagoService;
-import modelo.PedidoService;
-import modelo.ProductoService;
-import modelo.ReporteService;
-import modelo.UsuarioService;
-
+import dao.CategoriaDAOImpl;
+import dao.MesaDAOImpl;
+import dao.PagoDAOImpl;
+import dao.PedidoDAO;
+import dao.PedidoDAOImpl;
+import dao.ProductoDAOImpl;
+import dao.ReporteDAOImpl;
+import dao.UsuarioDAOImpl;
+import services.CocinaService;
+import services.LoginService;
+import services.PagoService;
+import services.PedidoService;
+import services.ProductoService;
+import services.ReporteService;
+import services.UsuarioService;
 public class Servicios {
     public final LoginService login;
 

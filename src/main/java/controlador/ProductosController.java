@@ -1,10 +1,10 @@
 package controlador;
 
-import mvc.Servicios;
 import modelo.Categoria;
 import modelo.Producto;
 import modelo.Usuario;
 import modelo.Validador;
+import mvc.Servicios;
 import vista.FrmProductos;
 import java.sql.SQLException;
 import java.util.ArrayList;

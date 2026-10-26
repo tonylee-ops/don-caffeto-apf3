@@ -1,7 +1,6 @@
 package vista;
 
 import modelo.Tema;
-
 public class FrmReportes extends javax.swing.JFrame {
     public FrmReportes() {
         initComponents();

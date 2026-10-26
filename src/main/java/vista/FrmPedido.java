@@ -1,7 +1,6 @@
 package vista;
 
 import modelo.Tema;
-
 public class FrmPedido extends javax.swing.JFrame {
     public FrmPedido() {
         initComponents();

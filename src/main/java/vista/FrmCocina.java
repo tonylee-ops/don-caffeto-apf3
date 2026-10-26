@@ -1,7 +1,6 @@
 package vista;
 
 import modelo.Tema;
-
 public class FrmCocina extends javax.swing.JFrame {
     public FrmCocina() {
         initComponents();

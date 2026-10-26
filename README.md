@@ -142,12 +142,13 @@ DAOs falsos en memoria, así que no necesitan MySQL:
 
 ## 6. Arquitectura y seguridad
 
-- **MVC** en cuatro paquetes:
+- **MVC + DAO** en seis paquetes:
   - `vista`: las 11 pantallas (JFrame Forms) y `TarjetaMesa`.
   - `controlador`: los controladores de cada pantalla.
-  - `modelo`: las entidades, los servicios con las reglas del negocio, los DAO y las utilidades.
+  - `modelo`: las entidades (`Usuario`, `Pedido`, `Mesa`…) y utilidades (`Tema`, `Validador`, `ExportarExcel`).
+  - `services`: las reglas del negocio (`PedidoService`, `PagoService`…) y `Autorizacion`.
+  - `dao`: 7 interfaces DAO, sus implementaciones MySQL (`…DAOImpl`, con JDBC) y `Conexion`.
   - `mvc`: `App` (inicia el programa) y `Servicios` (une los servicios con los DAO de MySQL).
-- **DAO**: 7 interfaces (`UsuarioDAO`, `PedidoDAO`…) y sus implementaciones MySQL (`…DAOImpl`) en `modelo` (JDBC + MySQL Connector/J).
 - **SOLID**: los servicios reciben las interfaces DAO por el constructor; solo la clase `Servicios` crea
   las clases MySQL (ver `docs/diagramas/solid.png`).
 - **Seguridad**:

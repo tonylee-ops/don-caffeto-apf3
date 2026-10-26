@@ -1,7 +1,6 @@
 package vista;
 
 import modelo.Tema;
-
 public class FrmLogin extends javax.swing.JFrame {
     public FrmLogin() {
         initComponents();

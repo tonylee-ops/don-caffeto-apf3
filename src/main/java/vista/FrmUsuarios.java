@@ -1,7 +1,6 @@
 package vista;
 
 import modelo.Tema;
-
 public class FrmUsuarios extends javax.swing.JFrame {
     public FrmUsuarios() {
         initComponents();

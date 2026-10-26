@@ -1,8 +1,8 @@
 package controlador;
 
-import mvc.Servicios;
 import modelo.Usuario;
-import modelo.Autorizacion;
+import mvc.Servicios;
+import services.Autorizacion;
 import vista.FrmCaja;
 import vista.FrmCocina;
 import vista.FrmLogin;
