@@ -5,7 +5,7 @@ digraph DAO {
   U [label="{«interface»\nUsuarioDAO|+ buscarPorUsername()\l+ listar()\l+ guardar()\l}"];
   C [label="{«interface»\nCategoriaDAO|+ listar()\l}"];
   P [label="{«interface»\nProductoDAO|+ listar()\l+ guardar()\l}"];
-  M [label="{«interface»\nMesaDAO|+ listarLibres()\l}"];
+  M [label="{«interface»\nMesaDAO|+ listar()\l+ pedirCuenta()\l}"];
   D [label="{«interface»\nPedidoDAO|+ registrar()  [transacción]\l+ listarPorFecha()\l+ listarPorEstado()\l+ listarDetalle()\l+ cambiarEstado()\l}"];
   G [label="{«interface»\nPagoDAO|+ registrarCobro()  [transacción]\l}"];
   R [label="{«interface»\nReporteDAO|+ ventasPorDia()\l+ productosMasVendidos()\l+ ventasPorMetodo()\l}"];

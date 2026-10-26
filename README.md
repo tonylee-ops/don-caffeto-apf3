@@ -106,8 +106,8 @@ Si no existe, copia `config.example.properties`, renómbrala a `config.propertie
 
 1. **File → Open Project…** y elige la carpeta `DonCaffeto-APF3` (NetBeans la reconoce por el `pom.xml`).
 2. Clic derecho en el proyecto → **Clean and Build** (la primera vez descarga las librerías de internet).
-3. Botón **Run** (F6). La clase principal es `com.doncaffeto.App`.
-4. Para editar una pantalla, abre cualquier `Frm…` de `com.doncaffeto.view` y usa la pestaña **Design**.
+3. Botón **Run** (F6). La clase principal es `mvc.App`.
+4. Para editar una pantalla, abre cualquier `Frm…` del paquete `vista` y usa la pestaña **Design**.
 
 ### Usuarios de demostración
 
@@ -142,8 +142,12 @@ DAOs falsos en memoria, así que no necesitan MySQL:
 
 ## 6. Arquitectura y seguridad
 
-- **MVC**: `view` (JFrame Forms), `controller`, `service` + `model`.
-- **DAO**: 7 interfaces en `dao` y sus implementaciones MySQL en `dao/impl` (JDBC + MySQL Connector/J).
+- **MVC** en cuatro paquetes:
+  - `vista`: las 11 pantallas (JFrame Forms) y `TarjetaMesa`.
+  - `controlador`: los controladores de cada pantalla.
+  - `modelo`: las entidades, los servicios con las reglas del negocio, los DAO y las utilidades.
+  - `mvc`: `App` (inicia el programa) y `Servicios` (une los servicios con los DAO de MySQL).
+- **DAO**: 7 interfaces (`UsuarioDAO`, `PedidoDAO`…) y sus implementaciones MySQL (`…DAOImpl`) en `modelo` (JDBC + MySQL Connector/J).
 - **SOLID**: los servicios reciben las interfaces DAO por el constructor; solo la clase `Servicios` crea
   las clases MySQL (ver `docs/diagramas/solid.png`).
 - **Seguridad**:

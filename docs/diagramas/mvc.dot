@@ -2,15 +2,15 @@ digraph MVC {
   rankdir=LR; fontname="Helvetica"; label="Arquitectura MVC - Don Caffeto"; labelloc=t; fontsize=18; nodesep=0.18;
   node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, fillcolor="#FFF3E0", color="#E65100"];
   edge [color="#BF360C", fontname="Helvetica", fontsize=9, arrowsize=0.7];
-  subgraph cluster_v { label="Vista (view)\nJFrame Forms"; style=filled; fillcolor="#FFE0B2";
+  subgraph cluster_v { label="Paquete vista\nJFrame Forms"; style=filled; fillcolor="#FFE0B2";
     FrmLogin; FrmPrincipal; FrmMesas; FrmMesa; FrmPedido; FrmPedidos; FrmCocina; FrmCaja; FrmProductos; FrmUsuarios; FrmReportes; }
-  subgraph cluster_c { label="Controlador (controller)"; style=filled; fillcolor="#FFCC80";
+  subgraph cluster_c { label="Paquete controlador"; style=filled; fillcolor="#FFCC80";
     LoginController; PrincipalController; MesasController; MesaController; PedidoController; PedidosController; CocinaController; CajaController;
     ProductosController; UsuariosController; ReportesController; }
-  subgraph cluster_m { label="Modelo (service + model)"; style=filled; fillcolor="#FFB74D";
+  subgraph cluster_m { label="Paquete modelo\n(servicios y entidades)"; style=filled; fillcolor="#FFB74D";
     Autorizacion [label="Autorizacion\n(permisos por rol)", fillcolor="#FFFFFF"];
     LoginService; PedidoService; CocinaService; PagoService; ProductoService; UsuarioService; ReporteService; }
-  subgraph cluster_d { label="DAO"; style=filled; fillcolor="#FFA726";
+  subgraph cluster_d { label="Paquete modelo (DAO)"; style=filled; fillcolor="#FFA726";
     DAO [label="7 interfaces DAO\n+ implementaciones MySQL\n(JDBC, PreparedStatement)"]; }
   BD [shape=cylinder, fillcolor="#4E342E", fontcolor=white, label="MySQL\ndon_caffeto"];
   FrmLogin -> LoginController; FrmPrincipal -> PrincipalController; FrmMesas -> MesasController; FrmMesa -> MesaController; FrmPedido -> PedidoController; FrmPedidos -> PedidosController;

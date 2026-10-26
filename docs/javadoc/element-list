@@ -1,9 +1,4 @@
-com.doncaffeto
-com.doncaffeto.controller
-com.doncaffeto.dao
-com.doncaffeto.dao.impl
-com.doncaffeto.model
-com.doncaffeto.service
-com.doncaffeto.util
-com.doncaffeto.view
-com.doncaffeto.view.componentes
+controlador
+modelo
+mvc
+vista

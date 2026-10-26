@@ -1,0 +1,257 @@
+package vista;
+
+import modelo.Tema;
+
+public class FrmProductos extends javax.swing.JFrame {
+    public FrmProductos() {
+        initComponents();
+        personalizar();
+    }
+
+    private void personalizar() {
+        Tema.aplicar(this);
+        Tema.ayuda(txtBuscar, "Buscar producto...");
+        Tema.ayuda(txtPrecio, "Ej. 9.50");
+        setSize(1100, 640);
+        setLocationRelativeTo(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+        lblTitulo = new javax.swing.JLabel();
+        txtBuscar = new javax.swing.JTextField();
+        scrProductos = new javax.swing.JScrollPane();
+        tblProductos = new javax.swing.JTable();
+        pnlCardFormulario = new javax.swing.JPanel();
+        lblSubFormulario = new javax.swing.JLabel();
+        lblModo = new javax.swing.JLabel();
+        lblEtqNombre = new javax.swing.JLabel();
+        txtNombre = new javax.swing.JTextField();
+        lblEtqCategoria = new javax.swing.JLabel();
+        cmbCategoria = new javax.swing.JComboBox<>();
+        lblEtqPrecio = new javax.swing.JLabel();
+        txtPrecio = new javax.swing.JTextField();
+        chkDisponible = new javax.swing.JCheckBox();
+        btnNuevo = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Don Caffeto - Productos");
+
+        lblTitulo.setText("Productos");
+
+        tblProductos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+            },
+            new String [] {
+                "Producto", "Categoría", "Precio", "Disponible"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblProductos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        scrProductos.setViewportView(tblProductos);
+
+        lblSubFormulario.setText("Datos del producto");
+
+        lblModo.setText("Nuevo producto");
+
+        lblEtqNombre.setText("Nombre");
+
+        lblEtqCategoria.setText("Categoría");
+
+        cmbCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-" }));
+
+        lblEtqPrecio.setText("Precio S/");
+
+        chkDisponible.setSelected(true);
+        chkDisponible.setText("Disponible para la venta");
+
+        btnNuevo.setText("Nuevo");
+
+        btnGuardar.setText("Guardar");
+
+        javax.swing.GroupLayout pnlCardFormularioLayout = new javax.swing.GroupLayout(pnlCardFormulario);
+        pnlCardFormulario.setLayout(pnlCardFormularioLayout);
+        pnlCardFormularioLayout.setHorizontalGroup(
+            pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardFormularioLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(lblSubFormulario)
+                .addGap(18, 18, 18))
+            .addGroup(pnlCardFormularioLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(lblModo)
+                .addGap(18, 18, 18))
+            .addGroup(pnlCardFormularioLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(lblEtqNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
+            .addGroup(pnlCardFormularioLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(lblEtqCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(cmbCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
+            .addGroup(pnlCardFormularioLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(lblEtqPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(txtPrecio, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
+            .addGroup(pnlCardFormularioLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(chkDisponible)
+                .addGap(18, 18, 18))
+            .addGroup(pnlCardFormularioLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(btnNuevo)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnGuardar)
+                .addGap(18, 18, 18))
+        );
+        pnlCardFormularioLayout.setVerticalGroup(
+            pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardFormularioLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSubFormulario))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblModo))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEtqNombre)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEtqCategoria)
+                    .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEtqPrecio)
+                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chkDisponible))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnNuevo)
+                    .addComponent(btnGuardar))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(lblTitulo)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(txtBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(scrProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                .addGap(16, 16, 16)
+                .addComponent(pnlCardFormulario, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTitulo)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                    .addComponent(pnlCardFormulario, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    public javax.swing.JButton getBtnGuardar() {
+        return btnGuardar;
+    }
+
+    public javax.swing.JButton getBtnNuevo() {
+        return btnNuevo;
+    }
+
+    public javax.swing.JCheckBox getChkDisponible() {
+        return chkDisponible;
+    }
+
+    public javax.swing.JComboBox<Object> getCmbCategoria() {
+        return cmbCategoria;
+    }
+
+    public javax.swing.JLabel getLblModo() {
+        return lblModo;
+    }
+
+    public javax.swing.JLabel getLblTitulo() {
+        return lblTitulo;
+    }
+
+    public javax.swing.JPanel getPnlCardFormulario() {
+        return pnlCardFormulario;
+    }
+
+    public javax.swing.JTable getTblProductos() {
+        return tblProductos;
+    }
+
+    public javax.swing.JTextField getTxtBuscar() {
+        return txtBuscar;
+    }
+
+    public javax.swing.JTextField getTxtNombre() {
+        return txtNombre;
+    }
+
+    public javax.swing.JTextField getTxtPrecio() {
+        return txtPrecio;
+    }
+
+    public static void main(String args[]) {
+        Tema.instalar();
+        java.awt.EventQueue.invokeLater(() -> new FrmProductos().setVisible(true));
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnNuevo;
+    private javax.swing.JCheckBox chkDisponible;
+    private javax.swing.JComboBox<Object> cmbCategoria;
+    private javax.swing.JLabel lblEtqCategoria;
+    private javax.swing.JLabel lblEtqNombre;
+    private javax.swing.JLabel lblEtqPrecio;
+    private javax.swing.JLabel lblModo;
+    private javax.swing.JLabel lblSubFormulario;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel pnlCardFormulario;
+    private javax.swing.JScrollPane scrProductos;
+    private javax.swing.JTable tblProductos;
+    private javax.swing.JTextField txtBuscar;
+    private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtPrecio;
+    // End of variables declaration//GEN-END:variables
+}

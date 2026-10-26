@@ -1,0 +1,335 @@
+package vista;
+
+import modelo.Tema;
+
+public class FrmCaja extends javax.swing.JFrame {
+    public FrmCaja() {
+        initComponents();
+        personalizar();
+    }
+
+    private void personalizar() {
+        Tema.aplicar(this);
+        Tema.ayuda(txtRecibido, "Ej. 50.00");
+        setSize(1120, 680);
+        setLocationRelativeTo(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+        lblTitulo = new javax.swing.JLabel();
+        btnActualizar = new javax.swing.JButton();
+        pnlCardCola = new javax.swing.JPanel();
+        lblSubCola = new javax.swing.JLabel();
+        lblResumen = new javax.swing.JLabel();
+        scrPorCobrar = new javax.swing.JScrollPane();
+        tblPorCobrar = new javax.swing.JTable();
+        pnlCardCobro = new javax.swing.JPanel();
+        lblSubCobro = new javax.swing.JLabel();
+        lblSeleccion = new javax.swing.JLabel();
+        scrDetalle = new javax.swing.JScrollPane();
+        tblDetalle = new javax.swing.JTable();
+        lblIgv = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
+        lblEtqMetodo = new javax.swing.JLabel();
+        cmbMetodo = new javax.swing.JComboBox<>();
+        lblEtqRecibido = new javax.swing.JLabel();
+        txtRecibido = new javax.swing.JTextField();
+        lblEtqVuelto = new javax.swing.JLabel();
+        lblVuelto = new javax.swing.JLabel();
+        btnCobrar = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Don Caffeto - Caja");
+
+        lblTitulo.setText("Caja");
+
+        btnActualizar.setText("Actualizar");
+
+        lblSubCola.setText("Pedidos por cobrar");
+
+        lblResumen.setText(" ");
+
+        tblPorCobrar.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+            },
+            new String [] {
+                "N°", "Destino", "Mesero", "Total"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblPorCobrar.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        scrPorCobrar.setViewportView(tblPorCobrar);
+
+        javax.swing.GroupLayout pnlCardColaLayout = new javax.swing.GroupLayout(pnlCardCola);
+        pnlCardCola.setLayout(pnlCardColaLayout);
+        pnlCardColaLayout.setHorizontalGroup(
+            pnlCardColaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardColaLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(lblSubCola)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(lblResumen)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardColaLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(scrPorCobrar, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+        );
+        pnlCardColaLayout.setVerticalGroup(
+            pnlCardColaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardColaLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(pnlCardColaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSubCola)
+                    .addComponent(lblResumen))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardColaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrPorCobrar, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE))
+                .addGap(16, 16, 16))
+        );
+
+        lblSubCobro.setText("Cobro");
+
+        lblSeleccion.setText("Selecciona un pedido");
+
+        tblDetalle.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+            },
+            new String [] {
+                "Producto", "Cant.", "Precio", "Importe"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblDetalle.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        scrDetalle.setViewportView(tblDetalle);
+
+        lblIgv.setText("Op. gravada S/ 0.00 · IGV 18 % S/ 0.00");
+
+        lblTotal.setText("S/ 0.00");
+
+        lblEtqMetodo.setText("Método");
+
+        cmbMetodo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Efectivo", "Yape", "Plin", "Tarjeta" }));
+
+        lblEtqRecibido.setText("Recibido S/");
+
+        lblEtqVuelto.setText("Vuelto");
+
+        lblVuelto.setText("S/ 0.00");
+
+        btnCobrar.setText("Cobrar");
+
+        javax.swing.GroupLayout pnlCardCobroLayout = new javax.swing.GroupLayout(pnlCardCobro);
+        pnlCardCobro.setLayout(pnlCardCobroLayout);
+        pnlCardCobroLayout.setHorizontalGroup(
+            pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardCobroLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(lblSubCobro)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(lblSeleccion)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardCobroLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardCobroLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(lblIgv)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(lblTotal)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardCobroLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(lblEtqMetodo, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(cmbMetodo, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardCobroLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(lblEtqRecibido, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(txtRecibido, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardCobroLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(lblEtqVuelto, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(lblVuelto, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+            .addGroup(pnlCardCobroLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnCobrar)
+                .addGap(16, 16, 16))
+        );
+        pnlCardCobroLayout.setVerticalGroup(
+            pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCardCobroLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSubCobro)
+                    .addComponent(lblSeleccion))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblIgv)
+                    .addComponent(lblTotal))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEtqMetodo)
+                    .addComponent(cmbMetodo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEtqRecibido)
+                    .addComponent(txtRecibido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEtqVuelto)
+                    .addComponent(lblVuelto))
+                .addGap(10, 10, 10)
+                .addGroup(pnlCardCobroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCobrar))
+                .addGap(16, 16, 16))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(lblTitulo)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnActualizar)
+                .addGap(20, 20, 20))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(pnlCardCola, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                .addGap(16, 16, 16)
+                .addComponent(pnlCardCobro, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTitulo)
+                    .addComponent(btnActualizar))
+                .addGap(14, 14, 14)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlCardCola, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                    .addComponent(pnlCardCobro, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    public javax.swing.JButton getBtnActualizar() {
+        return btnActualizar;
+    }
+
+    public javax.swing.JButton getBtnCobrar() {
+        return btnCobrar;
+    }
+
+    public javax.swing.JComboBox<Object> getCmbMetodo() {
+        return cmbMetodo;
+    }
+
+    public javax.swing.JLabel getLblIgv() {
+        return lblIgv;
+    }
+
+    public javax.swing.JLabel getLblResumen() {
+        return lblResumen;
+    }
+
+    public javax.swing.JLabel getLblSeleccion() {
+        return lblSeleccion;
+    }
+
+    public javax.swing.JLabel getLblTitulo() {
+        return lblTitulo;
+    }
+
+    public javax.swing.JLabel getLblTotal() {
+        return lblTotal;
+    }
+
+    public javax.swing.JLabel getLblVuelto() {
+        return lblVuelto;
+    }
+
+    public javax.swing.JPanel getPnlCardCobro() {
+        return pnlCardCobro;
+    }
+
+    public javax.swing.JPanel getPnlCardCola() {
+        return pnlCardCola;
+    }
+
+    public javax.swing.JTable getTblDetalle() {
+        return tblDetalle;
+    }
+
+    public javax.swing.JTable getTblPorCobrar() {
+        return tblPorCobrar;
+    }
+
+    public javax.swing.JTextField getTxtRecibido() {
+        return txtRecibido;
+    }
+
+    public static void main(String args[]) {
+        Tema.instalar();
+        java.awt.EventQueue.invokeLater(() -> new FrmCaja().setVisible(true));
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizar;
+    private javax.swing.JButton btnCobrar;
+    private javax.swing.JComboBox<Object> cmbMetodo;
+    private javax.swing.JLabel lblEtqMetodo;
+    private javax.swing.JLabel lblEtqRecibido;
+    private javax.swing.JLabel lblEtqVuelto;
+    private javax.swing.JLabel lblIgv;
+    private javax.swing.JLabel lblResumen;
+    private javax.swing.JLabel lblSeleccion;
+    private javax.swing.JLabel lblSubCobro;
+    private javax.swing.JLabel lblSubCola;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JLabel lblVuelto;
+    private javax.swing.JPanel pnlCardCobro;
+    private javax.swing.JPanel pnlCardCola;
+    private javax.swing.JScrollPane scrDetalle;
+    private javax.swing.JScrollPane scrPorCobrar;
+    private javax.swing.JTable tblDetalle;
+    private javax.swing.JTable tblPorCobrar;
+    private javax.swing.JTextField txtRecibido;
+    // End of variables declaration//GEN-END:variables
+}

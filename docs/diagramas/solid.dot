@@ -7,7 +7,7 @@ digraph SOLID {
   I [label="I · Segregación de interfaces", fillcolor="#FB8C00", fontcolor=white];
   D [label="D · Inversión de dependencias", fillcolor="#FF9800", fontcolor=white];
   node [fillcolor="#FFF3E0"];
-  S1 [label="Cada capa hace una sola cosa: la vista dibuja,\nel controller atiende eventos, el service valida,\nel DAO guarda en MySQL"];
+  S1 [label="Cada capa hace una sola cosa: la vista dibuja,\nel controlador atiende eventos, el servicio valida,\nel DAO guarda en MySQL"];
   O1 [label="Para cambiar de base de datos se crea otra\nimplementación del DAO sin tocar los servicios"];
   L1 [label="Los servicios funcionan igual con los DAO de MySQL\no con los DAO falsos de las pruebas JUnit"];
   I1 [label="Un DAO pequeño por tema (usuarios, pedidos, pagos...)\nsolo con los métodos que se usan"];
