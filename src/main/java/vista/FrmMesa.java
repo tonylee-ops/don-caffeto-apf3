@@ -1,6 +1,7 @@
 package vista;
 
 import modelo.Tema;
+
 public class FrmMesa extends javax.swing.JFrame {
     public FrmMesa() {
         initComponents();
